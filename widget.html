@@ -975,8 +975,33 @@
     R.style.setProperty('--border', T.borderColor || '#22222e');
     R.style.setProperty('--accent', T.accentColor || '#7c3aed');
     R.style.setProperty('--accent-rgb', hexToRgb(T.accentColor || '#7c3aed'));
-    R.style.setProperty('--text', T.textPrimary || '#ffffff');
-    R.style.setProperty('--muted', T.textSecondary || '#aaaaaa');
+
+    // ===== CONTRASTE AUTOMÁTICO: ajustar color del texto según luminosidad del fondo =====
+    function getLuminance(hex) {
+      const rgb = parseInt(hex.slice(1), 16);
+      const r = (rgb >> 16) & 0xff;
+      const g = (rgb >> 8) & 0xff;
+      const b = (rgb >> 0) & 0xff;
+      const rs = r / 255;
+      const gs = g / 255;
+      const bs = b / 255;
+      const gamma = (c) => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      const lum = 0.2126 * gamma(rs) + 0.7152 * gamma(gs) + 0.0722 * gamma(bs);
+      return lum;
+    }
+
+    const bgColor = T.bgColor || '#111117';
+    const lum = getLuminance(bgColor);
+    if (lum > 0.5) {
+      // Fondo claro: texto oscuro
+      R.style.setProperty('--text', '#111111');
+      R.style.setProperty('--muted', '#555555');
+    } else {
+      // Fondo oscuro: texto claro (valores por defecto)
+      R.style.setProperty('--text', '#ffffff');
+      R.style.setProperty('--muted', '#aaaaaa');
+    }
+
     R.style.setProperty('--radius', T.borderRadius || '4px');
 
     (function () {
