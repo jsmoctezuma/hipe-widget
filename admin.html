@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Hipe Widget — Panel de Control</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <script src="config.js"></script>
+  <style>
+    /* ===== ESTILOS ORIGINALES (sin cambios) ===== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #0b0b10;
+      --surf: #13131a;
+      --card: #1a1a24;
+      --bord: #27273a;
+      --acc: #7c3aed;
+      --acc2: #a78bfa;
+      --grn: #4ade80;
+      --red: #f87171;
+      --txt: #f4f4f8;
+      --mut: #8888aa;
+      --rad: 8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    header {
+      background: var(--surf);
+      border-bottom: 1px solid var(--bord);
+      padding: 18px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .logo img {
+      height: 48px;
+      width: auto;
+    }
+
+    .logo span {
+      color: var(--txt);
+    }
+
+    .logo span span {
+      color: var(--acc2);
+    }
+
+    .logo em {
+      font-style: normal;
+      font-size: 13px;
+      color: var(--mut);
+      background: var(--bord);
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: .05em;
+    }
+
+    .btn-save {
+      background: var(--acc);
+      color: #fff;
+      border: none;
+      padding: 13px 30px;
+      border-radius: var(--rad);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background .2s;
+    }
+
+    .btn-save:hover {
+      background: var(--acc2);
+    }
+
+    #folder-bar {
+      background: var(--surf);
+      border-bottom: 1px solid var(--bord);
+      padding: 10px 36px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #folder-path {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--bord);
+      border-radius: var(--rad);
+      color: var(--txt);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      padding: 9px 14px;
+      outline: none;
+    }
+
+    #folder-path:focus {
+      border-color: var(--acc);
+    }
+
+    .btn-folder {
+      background: var(--acc);
+      color: #fff;
+      border: none;
+      border-radius: var(--rad);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 9px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: background .2s;
+      white-space: nowrap;
+    }
+
+    .btn-folder:hover {
+      background: var(--acc2);
+    }
+
+    .folder-hint {
+      font-size: 13px;
+      color: var(--mut);
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--bord);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .card-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--acc2);
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: var(--acc);
+      border-radius: 2px;
+      display: block;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mut);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+
+    input[type=text],
+    input[type=number],
+    select {
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rad);
+      color: var(--txt);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      padding: 12px 15px;
+      outline: none;
+      width: 100%;
+      transition: border-color .2s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--acc);
+    }
+
+    input[type=color] {
+      padding: 4px 6px;
+      height: 46px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .r2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .r3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+    }
+
+    .fp-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .fp-row input[type=text] {
+      flex: 1;
+    }
+
+    .btn-browse {
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rad);
+      color: var(--acc2);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 0 18px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color .2s, color .2s;
+    }
+
+    .btn-browse:hover {
+      border-color: var(--acc);
+    }
+
+    input[type=file] {
+      display: none;
+    }
+
+    .fhint {
+      font-size: 13px;
+      color: var(--mut);
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    .tog-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rad);
+      margin-bottom: 9px;
+      transition: border-color .2s;
+      gap: 12px;
+    }
+
+    .tog-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .tog-row.on {
+      border-color: var(--acc);
+    }
+
+    .tog-lbl {
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--txt);
+    }
+
+    .tog-sub {
+      font-size: 14px;
+      color: var(--mut);
+      margin-top: 3px;
+    }
+
+    .tog {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .tog input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .tog-sl {
+      position: absolute;
+      inset: 0;
+      background: var(--bord);
+      border-radius: 26px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .tog-sl::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      background: var(--mut);
+      border-radius: 50%;
+      transition: transform .2s, background .2s;
+    }
+
+    .tog input:checked+.tog-sl {
+      background: var(--acc);
+    }
+
+    .tog input:checked+.tog-sl::before {
+      transform: translateX(20px);
+      background: #fff;
+    }
+
+    /* Toggle pequeño para sonido */
+    .tog-small {
+      width: 36px;
+      height: 22px;
+    }
+
+    .tog-small .tog-sl::before {
+      width: 16px;
+      height: 16px;
+      left: 3px;
+      top: 3px;
+    }
+
+    .tog-small input:checked+.tog-sl::before {
+      transform: translateX(14px);
+    }
+
+    .soc-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rad);
+      margin-bottom: 9px;
+      transition: border-color .2s;
+    }
+
+    .soc-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .soc-row.on {
+      border-color: var(--acc);
+    }
+
+    .soc-icon-box {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .soc-icon-box svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .soc-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--txt);
+      min-width: 96px;
+    }
+
+    .soc-inp {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--bord);
+      border-radius: var(--rad);
+      color: var(--txt);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      padding: 9px 13px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .soc-inp:focus {
+      border-color: var(--acc);
+    }
+
+    .soc-inp:disabled {
+      opacity: .3;
+      pointer-events: none;
+    }
+
+    /* Estilo para anidar las redes sociales bajo el toggle principal */
+    #socials-content {
+      margin-left: 24px;
+      border-left: 2px solid var(--bord);
+      padding-left: 16px;
+      margin-top: 12px;
+    }
+
+    .sp-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rad);
+      margin-bottom: 9px;
+      flex-wrap: wrap;
+    }
+
+    .sp-row input {
+      background: var(--bg);
+      border: 1px solid var(--bord);
+      border-radius: var(--rad);
+      color: var(--txt);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      padding: 9px 13px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .sp-row input:focus {
+      border-color: var(--acc);
+    }
+
+    .sp-name {
+      flex: 1.5;
+    }
+
+    .sp-path {
+      flex: 2;
+    }
+
+    .sp-dur {
+      width: 100%;
+    }
+
+    .sp-grid {
+      display: grid;
+      grid-template-columns: minmax(150px, 1.15fr) minmax(130px, 145px) auto auto;
+      gap: 14px 12px;
+      width: 100%;
+      align-items: end;
+    }
+
+    .sp-grid>* {
+      min-width: 0;
+    }
+
+    .sp-name,
+    .sp-path,
+    .sp-dur {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .sp-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .sp-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .sp-inline {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .sp-inline .sp-path {
+      flex: 1;
+    }
+
+    .sp-field label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--mut);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .sp-mini {
+      font-size: 12px;
+      color: var(--mut);
+      line-height: 1.35;
+      margin-top: 2px;
+    }
+
+    .btn-sp-browse {
+      background: transparent;
+      border: 1px solid var(--bord);
+      border-radius: 6px;
+      color: var(--acc2);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 0 14px;
+      height: 40px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: border-color .2s, color .2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-sp-browse:hover {
+      border-color: var(--acc);
+    }
+
+    .btn-rm {
+      background: transparent;
+      border: 1px solid var(--bord);
+      border-radius: 6px;
+      color: var(--red);
+      cursor: pointer;
+      font-size: 20px;
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s, border-color .2s;
+    }
+
+    .btn-rm:hover {
+      background: rgba(248, 113, 113, .1);
+      border-color: var(--red);
+    }
+
+    .btn-add {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: 1px dashed var(--bord);
+      border-radius: var(--rad);
+      color: var(--mut);
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 13px 18px;
+      width: 100%;
+      margin-top: 9px;
+      transition: border-color .2s, color .2s;
+    }
+
+    .btn-add:hover {
+      border-color: var(--acc);
+      color: var(--acc2);
+    }
+
+    .ev-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .event-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--surf);
+      border: 1px solid var(--bord);
+      border-radius: var(--rad);
+      transition: border-color .2s;
+      gap: 12px;
+    }
+
+    .event-row.on {
+      border-color: var(--acc);
+    }
+
+    .event-row .tog-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .event-row .tog-group .sound-tog {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sound-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mut);
+      margin-right: 4px;
+    }
+
+    .hint {
+      font-size: 14px;
+      color: var(--mut);
+      line-height: 1.6;
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: var(--surf);
+      border-radius: var(--rad);
+      border-left: 3px solid var(--acc);
+    }
+
+    .subcard {
+      margin-top: 16px;
+      padding: 14px;
+      background: rgba(255, 255, 255, .02);
+      border: 1px dashed var(--bord);
+      border-radius: var(--rad);
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--acc);
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: var(--rad);
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: .04em;
+      opacity: 0;
+      transition: opacity .3s, transform .3s;
+      pointer-events: none;
+      z-index: 999;
+      max-width: 540px;
+      text-align: center;
+      white-space: pre-line;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Anidar el contenido de sponsors bajo su toggle */
+    #sponsors-content {
+      margin-left: 24px;
+      border-left: 2px solid var(--bord);
+      padding-left: 16px;
+      margin-top: 12px;
+      transition: all 0.2s;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">
+      <img src="assets/mc.png" alt="MC Logo" onerror="this.style.display='none'">
+      <span>HIPE <span>Widget</span></span>
+      <em>Panel de Control</em>
+    </div>
+    <button class="btn-save" id="btn-save" onclick="saveConfig()" disabled style="opacity:.4;cursor:not-allowed;">
+      💾 Guardar configuración
+    </button>
+  </header>
+
+  <div id="folder-bar">
+    <span class="folder-hint">📁 Carpeta del widget (hipe-widget):</span>
+    <input type="text" id="folder-path"
+      placeholder="⬅ Primero selecciona la carpeta donde está el widget para poder guardar" readonly>
+    <button type="button" class="btn-folder" id="btn-folder" onclick="pickFolder()">📂 Seleccionar carpeta</button>
+  </div>
+  <div id="folder-warn"
+    style="background:#7c3aed22;border-bottom:1px solid #7c3aed55;padding:10px 36px;font-size:14px;color:#a78bfa;display:flex;align-items:center;gap:10px;">
+    ⚠️ <strong>Selecciona tu carpeta hipe-widget</strong> para habilitar el botón Guardar. La configuración se guardará
+    directamente ahí y las imágenes se copiarán automáticamente a la carpeta "assets".
+  </div>
+
+  <main>
+
+    <!-- ========== CONFIGURACIÓN GENERAL DEL WIDGET ========== -->
+    <div class="card">
+      <div class="card-title">Diseño del Widget</div>
+
+      <div class="field" style="max-width:320px;">
+        <label for="layoutMode">Elige el estilo</label>
+        <select id="layoutMode" onchange="applyLayoutModeUI()">
+          <option value="classic">Compacto (dos filas)</option>
+          <option value="horizontal">Horizontal (una fila ancha)</option>
+        </select>
+      </div>
+
+      <div id="layout-classic-note" class="hint">
+        En el diseño compacto, la información del canal, la meta de suscriptores y los mensajes en pantalla siempre se muestran. Solo puedes ocultar la sección de patrocinadores y el contador de tiempo en vivo, o la sección de redes sociales / código de creador.
+      </div>
+
+      <div id="layout-horizontal-controls" class="subcard" style="display:none;">
+        <div class="tog-row" id="tr-showBranding" style="margin-bottom:10px;">
+          <div>
+            <div class="tog-lbl">Mostrar información del canal</div>
+            <div class="tog-sub">Logo, nombre y estado en vivo.</div>
+          </div>
+          <label class="tog">
+            <input type="checkbox" id="showBranding"
+              onchange="document.getElementById('tr-showBranding').classList.toggle('on',this.checked)">
+            <span class="tog-sl"></span>
+          </label>
+        </div>
+
+        <div class="tog-row" id="tr-showGoal" style="margin-bottom:10px;">
+          <div>
+            <div class="tog-lbl">Mostrar meta de suscriptores</div>
+            <div class="tog-sub">Bloque con la barra de progreso y el corazón.</div>
+          </div>
+          <label class="tog">
+            <input type="checkbox" id="showGoal"
+              onchange="document.getElementById('tr-showGoal').classList.toggle('on',this.checked)">
+            <span class="tog-sl"></span>
+          </label>
+        </div>
+
+        <div class="tog-row" id="tr-showTicker">
+          <div>
+            <div class="tog-lbl">Mostrar mensajes en pantalla</div>
+            <div class="tog-sub">Los eventos como follows, subs, raids, etc.</div>
+          </div>
+          <label class="tog">
+            <input type="checkbox" id="showTicker"
+              onchange="document.getElementById('tr-showTicker').classList.toggle('on',this.checked)">
+            <span class="tog-sl"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== DATOS DEL CANAL ========== -->
+    <div class="card">
+      <div class="card-title">Tu Canal</div>
+      <div class="r2">
+        <div class="field">
+          <label>Nombre del canal o usuario</label>
+          <input type="text" id="channelName" placeholder="Ej. MancoSquad">
+          <span class="fhint">Se verá junto a tu foto de perfil en el widget.</span>
+        </div>
+        <div class="field">
+          <label>Puerto de conexión con Streamer.bot</label>
+          <input type="number" id="sbPort" value="8080">
+          <span class="fhint">Déjalo en 8080 si no lo cambiaste en Streamer.bot.</span>
+        </div>
+      </div>
+      <div class="r2">
+        <div class="field">
+          <label>Foto de perfil / logo</label>
+          <div class="fp-row">
+            <input type="text" id="logoPath" placeholder="assets/logo.png" readonly>
+            <button type="button" class="btn-browse" onclick="pickAsset('logoPath','imgLogo','logo')">📁 Buscar imagen</button>
+          </div>
+          <input type="file" id="imgLogo" accept="image/*" onchange="handleAsset(this,'logoPath','logo')">
+          <div class="fhint">Se copiará como <code>assets/logo.png</code> al guardar.</div>
+        </div>
+        <div class="field">
+          <label>Animación del corazón (meta de subs)</label>
+          <div class="fp-row">
+            <input type="text" id="goalGifPath" placeholder="assets/corazon.gif" readonly>
+            <button type="button" class="btn-browse" onclick="pickAsset('goalGifPath','imgGif','corazon')">📁 Buscar GIF</button>
+          </div>
+          <input type="file" id="imgGif" accept="image/*" onchange="handleAsset(this,'goalGifPath','corazon')">
+          <div class="fhint">Se copiará como <code>assets/corazon.gif</code> al guardar.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== META DE SUSCRIPTORES ========== -->
+    <div class="card">
+      <div class="card-title">Meta de Suscriptores</div>
+      <div class="r2">
+        <div class="field">
+          <label>Tiempo de celebración al alcanzar la meta (segundos)</label>
+          <input type="number" id="goalCelebSecs" value="10" min="5" max="60">
+          <span class="fhint">Cuántos segundos muestra el mensaje "¡META ALCANZADA!" antes de volver a la barra normal.</span>
+        </div>
+        <div class="field">
+          <label>Cuánto tiempo se ve el contador de tiempo en vivo (segundos)</label>
+          <input type="number" id="goalRotSecs" value="30" min="10" max="120">
+          <span class="fhint">Tiempo que aparece el cronómetro antes de pasar al siguiente patrocinador.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SECCIÓN DE PATROCINADORES Y CRONÓMETRO ========== -->
+    <div class="card">
+      <div class="card-title">Patrocinadores y tiempo en vivo</div>
+
+      <div class="tog-row" id="tr-sponsors" style="margin-bottom:9px;">
+        <div>
+          <div class="tog-lbl">Activar patrocinadores</div>
+          <div class="tog-sub">Muestra logos o vídeos que rotan en el widget.</div>
+        </div>
+        <label class="tog">
+          <input type="checkbox" id="showSponsors" checked
+            onchange="toggleSponsorsUI();document.getElementById('tr-sponsors').classList.toggle('on',this.checked)">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+
+      <div id="sponsors-content">
+        <div id="sponsors-list"></div>
+        <button type="button" class="btn-add" onclick="addSponsor()">＋ Añadir patrocinador</button>
+        <div class="field" style="margin-top:18px;max-width:320px;">
+          <label for="sponsorTransition">Efecto de cambio entre patrocinadores</label>
+          <select id="sponsorTransition" aria-describedby="sponsorTransitionHelp">
+            <option value="fade">Desvanecimiento suave</option>
+            <option value="slide">Deslizamiento</option>
+            <option value="zoom">Zoom</option>
+          </select>
+          <span class="fhint" id="sponsorTransitionHelp">
+            Cómo se reemplaza una imagen por la siguiente cuando rotan.
+          </span>
+        </div>
+      </div>
+
+      <div class="tog-row" id="tr-uptime" style="margin-bottom:18px;">
+        <div>
+          <div class="tog-lbl">Mostrar cronómetro en vivo</div>
+          <div class="tog-sub">Contador del tiempo que llevas en directo.</div>
+        </div>
+        <label class="tog">
+          <input type="checkbox" id="showUptime" checked
+            onchange="document.getElementById('tr-uptime').classList.toggle('on',this.checked)">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ========== REDES SOCIALES Y CÓDIGO DE CREADOR ========== -->
+    <div class="card">
+      <div class="card-title">Redes sociales y código de creador</div>
+
+      <div class="tog-row" id="tr-showSocials" style="margin-bottom:9px;">
+        <div>
+          <div class="tog-lbl">Activar redes sociales</div>
+          <div class="tog-sub">Muestra tus cuentas de Twitch, YouTube, etc. rotando.</div>
+        </div>
+        <label class="tog">
+          <input type="checkbox" id="showSocials"
+            onchange="toggleSocialsUI();document.getElementById('tr-showSocials').classList.toggle('on',this.checked)">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+
+      <div id="socials-content">
+        <div id="socials-list"></div>
+        <div class="field" style="margin-top:18px;max-width:180px;">
+          <label for="socialRotSecs">Segundos que se ve cada red social</label>
+          <input type="number" id="socialRotSecs" value="5" min="2" max="30">
+          <span class="fhint">Tiempo antes de pasar a la siguiente red (si hay varias activas).</span>
+        </div>
+        <div class="field" style="margin-top:18px;max-width:320px;">
+          <label for="socialTransition">Efecto de cambio entre redes</label>
+          <select id="socialTransition" aria-describedby="socialTransitionHelp">
+            <option value="fade">Desvanecimiento suave</option>
+            <option value="slide">Deslizamiento</option>
+            <option value="zoom">Zoom</option>
+          </select>
+          <span class="fhint" id="socialTransitionHelp">
+            Cómo se reemplaza una red por la siguiente.
+          </span>
+        </div>
+      </div>
+
+      <div class="tog-row" id="tr-showCreatorCode" style="margin-top:16px;margin-bottom:9px;">
+        <div>
+          <div class="tog-lbl">Activar código de creador</div>
+          <div class="tog-sub">Muestra tu código promocional (Ej. "EPIC", "JSMOCTEZUMA") y un logo.</div>
+        </div>
+        <label class="tog">
+          <input type="checkbox" id="showCreatorCode"
+            onchange="toggleCreatorUI();document.getElementById('tr-showCreatorCode').classList.toggle('on',this.checked)">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+
+      <div id="creator-content" class="subcard">
+        <div class="r2">
+          <div class="field">
+            <label>Texto que aparecerá arriba (etiqueta)</label>
+            <input type="text" id="creatorLabel" placeholder="Ej. CÓDIGO EPIC">
+            <span class="fhint">Ejemplo: "CÓDIGO DE CREADOR", "USÁ MI CÓDIGO", etc.</span>
+          </div>
+          <div class="field">
+            <label>Código que mostrará el widget</label>
+            <input type="text" id="creatorValue" placeholder="Ej. JSMOCTEZUMA">
+            <span class="fhint">El texto o código que quieras que aparezca.</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Logo o imagen del código de creador</label>
+          <div class="fp-row">
+            <input type="text" id="creatorLogoPath" placeholder="assets/codigo.png" readonly>
+            <button type="button" class="btn-browse" onclick="pickAsset('creatorLogoPath','imgCreatorLogo','codigo')">📁 Buscar imagen</button>
+          </div>
+          <input type="file" id="imgCreatorLogo" accept="image/*"
+            onchange="handleAsset(this,'creatorLogoPath','codigo')">
+          <div class="fhint">Se copiará como <code>assets/codigo.png</code> (o con la extensión elegida).</div>
+        </div>
+        <div class="fhint">Este bloque rota en el mismo espacio que las redes sociales (comparte la zona).</div>
+      </div>
+    </div>
+
+    <!-- ========== MENSAJES EN PANTALLA (TICKER) ========== -->
+    <div class="card">
+      <div class="card-title">Mensajes en pantalla (eventos)</div>
+
+      <!-- Activar sonido global -->
+      <div class="tog-row" id="tr-enableSounds" style="margin-bottom: 16px;">
+        <div>
+          <div class="tog-lbl">🔊 Activar sonidos para los eventos</div>
+          <div class="tog-sub">Control principal: si lo apagas, no sonará ningún evento (aunque tengas activados sonidos individuales).</div>
+        </div>
+        <label class="tog">
+          <input type="checkbox" id="enableSounds" onchange="toggleSoundGlobal()">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+
+      <!-- Lista de eventos con dos interruptores: mostrar y sonido -->
+      <div class="ev-grid" id="events-grid"></div>
+
+      <!-- Volumen de las notificaciones -->
+      <div class="field" style="margin-top:18px;max-width:300px;">
+        <label>Volumen de los sonidos (%)</label>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <input type="range" id="notificationVolume" min="0" max="100" step="10" value="80" onchange="document.getElementById('volumeLabel').textContent = this.value + '%'">
+          <span id="volumeLabel">80%</span>
+        </div>
+        <div class="fhint">Ajusta qué tan fuerte se escuchan los sonidos (0% = sin sonido).</div>
+      </div>
+
+      <div class="field" style="margin-top:18px;max-width:220px;">
+        <label>Segundos que dura cada mensaje en pantalla</label>
+        <input type="number" id="tickerSecs" value="8" min="3" max="30">
+        <span class="fhint">Tiempo que se ve cada evento antes de que aparezca el siguiente.</span>
+      </div>
+    </div>
+
+    <!-- ========== APARIENCIA ========== -->
+    <div class="card">
+      <div class="card-title">Colores y forma</div>
+      <div class="r3">
+        <div class="field"><label>Color de fondo</label><input type="color" id="th-bg" value="#111117"></div>
+        <div class="field"><label>Color de los bordes</label><input type="color" id="th-border" value="#22222e"></div>
+        <div class="field"><label>Color principal (acento)</label><input type="color" id="th-accent" value="#7c3aed">
+        </div>
+      </div>
+      <div class="r2">
+        <div class="field"><label>Redondeo de las esquinas</label><input type="text" id="th-radius" value="6px"
+            placeholder="Ej. 6px, 10px, 0px"></div>
+      </div>
+      <div class="hint">
+        El color principal se usa en la barra de progreso de la meta, el cronómetro y otros detalles decorativos.
+      </div>
+    </div>
+
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    /* ==================== CÓDIGO ORIGINAL (sin cambios) ==================== */
+    const PLATS = [
+      { k: 'twitch', n: 'Twitch', c: '#9147ff', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>` },
+      { k: 'youtube', n: 'YouTube', c: '#ff0000', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>` },
+      { k: 'instagram', n: 'Instagram', c: '#e1306c', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>` },
+      { k: 'tiktok', n: 'TikTok', c: '#ffffff', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>` },
+      { k: 'x', n: 'X', c: '#ffffff', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>` },
+      { k: 'facebook', n: 'Facebook', c: '#1877f2', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>` },
+      { k: 'discord', n: 'Discord', c: '#5865f2', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.042.03.052a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>` },
+    ];
+
+    const EVTS = [
+      { k: 'showSubs', l: 'Suscripciones de Twitch', d: true, soundKey: 'soundSubs', eventType: 'sub' },
+      { k: 'showReSubs', l: 'Renovaciones de suscripción', d: true, soundKey: 'soundReSubs', eventType: 'resub' },
+      { k: 'showGiftSubs', l: 'Regalos de suscripción', d: true, soundKey: 'soundGiftSubs', eventType: 'giftsub' },
+      { k: 'showGiftBombs', l: 'Ráfagas de regalos (gift bombs)', d: true, soundKey: 'soundGiftBombs', eventType: 'giftbomb' },
+      { k: 'showRaids', l: 'Raids (llegada de espectadores)', d: true, soundKey: 'soundRaids', eventType: 'raid' },
+      { k: 'showCheers', l: 'Bits / Cheers', d: true, soundKey: 'soundCheers', eventType: 'bits' },
+      { k: 'showFollows', l: 'Nuevos seguidores', d: false, soundKey: 'soundFollows', eventType: 'follow' },
+      { k: 'showRedemptions', l: 'Canjes de puntos de la comunidad', d: true, soundKey: 'soundRedemptions', eventType: 'redeem' },
+      { k: 'showYTMembers', l: 'Miembros de YouTube', d: true, soundKey: 'soundYTMembers', eventType: 'member' },
+      { k: 'showSuperChat', l: 'Superchats de YouTube', d: true, soundKey: 'soundSuperChat', eventType: 'super' },
+      { k: 'showDonations', l: 'Donaciones (StreamElements)', d: true, soundKey: 'soundDonations', eventType: 'donate' },
+    ];
+
+    let CFG = null; try { if (typeof CONFIG !== 'undefined') CFG = CONFIG; } catch (e) { }
+    const gv = (p, fb) => { if (!CFG) return fb; const ps = p.split('.'); let o = CFG; for (const k of ps) { if (o == null) return fb; o = o[k]; } return o ?? fb; };
+
+    let folderHandle = null;
+    const pendingFiles = {};
+
+    async function pickFolder() {
+      if (!('showDirectoryPicker' in window)) {
+        toast('Tu navegador no soporta selección de carpeta directa. Usa Chrome o Edge.');
+        return;
+      }
+      try {
+        folderHandle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
+        document.getElementById('folder-path').value = '📁 ' + folderHandle.name;
+        document.getElementById('btn-save').disabled = false;
+        document.getElementById('btn-save').style.opacity = '1';
+        document.getElementById('btn-save').style.cursor = 'pointer';
+        document.getElementById('folder-warn').style.display = 'none';
+        document.getElementById('btn-folder').textContent = '✓ Cambiar carpeta';
+        toast('✓ Carpeta "' + folderHandle.name + '" lista. Ahora puedes guardar directamente.');
+      } catch (e) {
+        if (e.name !== 'AbortError') toast('No se pudo acceder a la carpeta: ' + e.message);
+      }
+    }
+
+    function pickAsset(fieldId, inputId, assetName) {
+      document.getElementById(inputId).click();
+    }
+
+    function handleAsset(input, fieldId, assetName) {
+      const file = input.files[0]; if (!file) return;
+      const ext = file.name.split('.').pop().toLowerCase();
+      const newName = `${assetName}.${ext}`;
+      document.getElementById(fieldId).value = `assets/${newName}`;
+      pendingFiles[newName] = file;
+      toast(`✓ "${file.name}" registrado → se guardará como assets/${newName}`);
+    }
+
+    function pickSponsorFile(btn) {
+      const tmp = document.createElement('input');
+      tmp.type = 'file'; tmp.accept = 'image/*,video/mp4,video/webm';
+      tmp.onchange = () => {
+        const file = tmp.files[0]; if (!file) return;
+        const ext = file.name.split('.').pop().toLowerCase();
+        const base = file.name.replace(/\.[^.]+$/, '').replace(/\s+/g, '_');
+        const newName = `${base}.${ext}`;
+        btn.closest('.sp-row').querySelector('.sp-path').value = `assets/${newName}`;
+        pendingFiles[newName] = file;
+        toast(`✓ "${file.name}" registrado → assets/${newName}`);
+      };
+      tmp.click();
+    }
+
+    function toggleSponsorsUI() {
+      const on = document.getElementById('showSponsors').checked;
+      document.getElementById('sponsors-content').style.display = on ? '' : 'none';
+    }
+
+    function toggleSocialsUI() {
+      const on = document.getElementById('showSocials').checked;
+      document.getElementById('socials-content').style.display = on ? '' : 'none';
+    }
+
+    function toggleCreatorUI() {
+      const on = document.getElementById('showCreatorCode').checked;
+      document.getElementById('creator-content').style.display = on ? '' : 'none';
+    }
+
+    function applyLayoutModeUI() {
+      const mode = document.getElementById('layoutMode').value;
+      const horizontal = mode === 'horizontal';
+      document.getElementById('layout-horizontal-controls').style.display = horizontal ? '' : 'none';
+      document.getElementById('layout-classic-note').style.display = horizontal ? 'none' : '';
+
+      if (!horizontal) {
+        document.getElementById('showBranding').checked = true;
+        document.getElementById('showGoal').checked = true;
+        document.getElementById('showTicker').checked = true;
+        document.getElementById('tr-showBranding').classList.add('on');
+        document.getElementById('tr-showGoal').classList.add('on');
+        document.getElementById('tr-showTicker').classList.add('on');
+      }
+    }
+
+    function buildSocials() {
+      const c = document.getElementById('socials-list'); c.innerHTML = '';
+      PLATS.forEach(p => {
+        const sv = CFG?.socials?.find(s => s.platform === p.k);
+        const on = sv?.active ?? false; const h = sv?.handle ?? '';
+        const row = document.createElement('div');
+        row.className = 'soc-row' + (on ? ' on' : ''); row.dataset.p = p.k;
+        row.innerHTML = `
+      <div class="soc-icon-box" style="background:${p.c}22;color:${p.c}">${p.svg}</div>
+      <span class="soc-name">${p.n}</span>
+      <input class="soc-inp" type="text" placeholder="tu_usuario" value="${h}" ${on ? '' : 'disabled'} data-p="${p.k}">
+      <label class="tog" title="Activar/desactivar">
+        <input type="checkbox" ${on ? 'checked' : ''} onchange="togSoc(this,'${p.k}')">
+        <span class="tog-sl"></span>
+      </label>`;
+        c.appendChild(row);
+      });
+    }
+
+    function togSoc(cb, p) {
+      const row = document.querySelector(`.soc-row[data-p="${p}"]`);
+      row.querySelector('.soc-inp').disabled = !cb.checked;
+      row.classList.toggle('on', cb.checked);
+    }
+
+    function buildSponsors() {
+      const l = document.getElementById('sponsors-list'); l.innerHTML = '';
+      (CFG?.sponsors ?? []).forEach(sp => addSponsorRow(sp));
+    }
+
+    function addSponsor() { addSponsorRow({}); }
+
+    function addSponsorRow(sp = {}) {
+      const l = document.getElementById('sponsors-list');
+      const d = document.createElement('div');
+      d.className = 'sp-row';
+      const uid = 'sp_' + Math.random().toString(36).slice(2, 8);
+      const durSecs = Math.max(1, Math.round((sp.duration || 8000) / 1000));
+      d.innerHTML = `
+  <div class="sp-grid">
+    <div class="sp-field">
+      <label for="${uid}_name">Nombre del patrocinador (solo para ti)</label>
+      <input id="${uid}_name" class="sp-name" type="text" placeholder="Ej. Red Bull" value="${sp.name || ''}">
+      <div class="sp-mini">No se muestra en el widget; solo sirve para que identifiques al patrocinador.</div>
+    </div>
+    <div class="sp-field">
+      <label for="${uid}_dur">Segundos que se ve este patrocinador</label>
+      <input id="${uid}_dur" class="sp-dur" type="number" placeholder="8" value="${durSecs}" min="1" step="1">
+      <div class="sp-mini">Cuánto tiempo aparece antes de pasar al siguiente.</div>
+    </div>
+    <div class="sp-field">
+      <label for="${uid}_active">Activo</label>
+      <label class="tog" title="Activo">
+        <input id="${uid}_active" data-role="sp-active" type="checkbox" ${sp.active !== false ? 'checked' : ''}>
+        <span class="tog-sl"></span>
+      </label>
+    </div>
+    <div class="sp-field">
+      <label>Eliminar</label>
+      <button type="button" class="btn-rm" onclick="this.closest('.sp-row').remove()" title="Eliminar">×</button>
+    </div>
+    <div class="sp-field full">
+      <label for="${uid}_path">Imagen o vídeo del patrocinador</label>
+      <div class="sp-inline">
+        <input id="${uid}_path" class="sp-path" type="text" placeholder="assets/logo_patrocinador.png" value="${sp.imagePath || ''}" readonly>
+        <button class="btn-sp-browse" type="button" onclick="pickSponsorFile(this)">📁 Buscar archivo</button>
+      </div>
+      <div class="sp-mini">Archivo (imagen o vídeo .mp4/.webm) que se mostrará en la rotación.</div>
+    </div>
+  </div>
+`;
+      l.appendChild(d);
+    }
+
+    function buildEvents() {
+      const container = document.getElementById('events-grid');
+      container.innerHTML = '';
+      EVTS.forEach(ev => {
+        const showChecked = gv(`events.${ev.k}`, ev.d);
+        const soundChecked = gv(`soundEvents.${ev.soundKey}`, true);
+        const row = document.createElement('div');
+        row.className = 'event-row' + (showChecked ? ' on' : '');
+        row.innerHTML = `
+          <div class="tog-lbl">${ev.l}</div>
+          <div class="tog-group">
+            <label class="tog" title="Mostrar en pantalla">
+              <input type="checkbox" id="ev-${ev.k}" ${showChecked ? 'checked' : ''} onchange="document.getElementById('tr-${ev.k}').classList.toggle('on',this.checked)">
+              <span class="tog-sl"></span>
+            </label>
+            <div class="sound-tog">
+              <span class="sound-label">🔊</span>
+              <label class="tog tog-small" title="Sonido para este evento">
+                <input type="checkbox" id="sound-${ev.soundKey}" ${soundChecked ? 'checked' : ''}>
+                <span class="tog-sl"></span>
+              </label>
+            </div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+      toggleSoundGlobal();
+    }
+
+    function toggleSoundGlobal() {
+      const isGlobalOn = document.getElementById('enableSounds').checked;
+      const soundCheckboxes = document.querySelectorAll('.event-row input[id^="sound-"]');
+      soundCheckboxes.forEach(cb => {
+        if (isGlobalOn) {
+          cb.disabled = false;
+          cb.closest('.sound-tog').style.opacity = '1';
+        } else {
+          cb.disabled = true;
+          cb.closest('.sound-tog').style.opacity = '0.5';
+        }
+      });
+    }
+
+    function loadVals() {
+      document.getElementById('layoutMode').value = gv('layout', 'classic');
+      document.getElementById('showBranding').checked = gv('showBranding', true);
+      document.getElementById('tr-showBranding').classList.toggle('on', document.getElementById('showBranding').checked);
+      document.getElementById('showGoal').checked = gv('showGoal', true);
+      document.getElementById('tr-showGoal').classList.toggle('on', document.getElementById('showGoal').checked);
+      document.getElementById('showTicker').checked = gv('showTicker', true);
+      document.getElementById('tr-showTicker').classList.toggle('on', document.getElementById('showTicker').checked);
+      document.getElementById('channelName').value = gv('channelName', 'MancoSquad');
+      document.getElementById('sbPort').value = gv('sbPort', 8080);
+      document.getElementById('logoPath').value = gv('logoPath', 'assets/logo.png');
+      document.getElementById('goalGifPath').value = gv('goalGifPath', 'assets/corazon.gif');
+      document.getElementById('goalCelebSecs').value = gv('goalCelebrationSeconds', 10);
+      document.getElementById('goalRotSecs').value = gv('goalRotationSeconds', 30);
+      const showSponsors = gv('showSponsors', true);
+      document.getElementById('showSponsors').checked = showSponsors;
+      document.getElementById('tr-sponsors').classList.toggle('on', showSponsors);
+      const showUptime = gv('showUptime', true);
+      document.getElementById('showUptime').checked = showUptime;
+      document.getElementById('tr-uptime').classList.toggle('on', showUptime);
+      const showSocials = gv('showSocials', true);
+      document.getElementById('showSocials').checked = showSocials;
+      document.getElementById('tr-showSocials').classList.toggle('on', showSocials);
+      const showCreatorCode = gv('showCreatorCode', gv('creatorCode.active', true));
+      document.getElementById('showCreatorCode').checked = showCreatorCode;
+      document.getElementById('tr-showCreatorCode').classList.toggle('on', showCreatorCode);
+      document.getElementById('creatorLabel').value = gv('creatorCode.label', 'CÓDIGO EPIC');
+      document.getElementById('creatorValue').value = gv('creatorCode.value', '');
+      document.getElementById('creatorLogoPath').value = gv('creatorCode.logo', 'assets/codigo.png');
+      document.getElementById('sponsorTransition').value = gv('sponsorTransition', 'fade');
+      document.getElementById('socialRotSecs').value = gv('socialRotationSeconds', 5);
+      document.getElementById('socialTransition').value = gv('socialTransition', 'fade');
+      document.getElementById('tickerSecs').value = gv('tickerDisplaySeconds', 8);
+      document.getElementById('th-bg').value = gv('theme.bgColor', '#111117');
+      document.getElementById('th-border').value = gv('theme.borderColor', '#22222e');
+      document.getElementById('th-accent').value = gv('theme.accentColor', '#7c3aed');
+      document.getElementById('th-radius').value = gv('theme.borderRadius', '6px');
+
+      const enableSounds = gv('enableSounds', false);
+      document.getElementById('enableSounds').checked = enableSounds;
+      document.getElementById('tr-enableSounds').classList.toggle('on', enableSounds);
+
+      const volume = gv('notificationVolume', 80);
+      document.getElementById('notificationVolume').value = volume;
+      document.getElementById('volumeLabel').textContent = volume + '%';
+
+      toggleSponsorsUI();
+      toggleSocialsUI();
+      toggleCreatorUI();
+      applyLayoutModeUI();
+    }
+
+    async function saveConfig() {
+      const socials = PLATS.map(p => {
+        const row = document.querySelector(`.soc-row[data-p="${p.k}"]`);
+        return { platform: p.k, handle: row.querySelector('.soc-inp').value.trim(), active: row.querySelector('input[type=checkbox]').checked };
+      });
+      const spRows = document.querySelectorAll('.sp-row');
+      const sponsors = Array.from(spRows).map(r => ({
+        name: r.querySelector('.sp-name').value.trim(),
+        imagePath: r.querySelector('.sp-path').value.trim(),
+        duration: (parseInt(r.querySelector('.sp-dur').value) || 8) * 1000,
+        active: r.querySelector('[data-role="sp-active"]').checked
+      })).filter(sp => sp.imagePath !== '');
+      const events = {};
+      const soundEvents = {};
+      EVTS.forEach(ev => {
+        events[ev.k] = document.getElementById(`ev-${ev.k}`).checked;
+        const soundCb = document.getElementById(`sound-${ev.soundKey}`);
+        soundEvents[ev.soundKey] = soundCb ? soundCb.checked : true;
+      });
+      const channelName = document.getElementById('channelName').value.trim();
+      const layout = document.getElementById('layoutMode').value;
+      const cfg = {
+        channelName,
+        logoPath: document.getElementById('logoPath').value.trim(),
+        sbHost: '127.0.0.1',
+        sbPort: parseInt(document.getElementById('sbPort').value) || 8080,
+        goalGifPath: document.getElementById('goalGifPath').value.trim(),
+        layout,
+        showBranding: layout === 'horizontal' ? document.getElementById('showBranding').checked : true,
+        showGoal: layout === 'horizontal' ? document.getElementById('showGoal').checked : true,
+        showTicker: layout === 'horizontal' ? document.getElementById('showTicker').checked : true,
+        goalCelebrationSeconds: parseInt(document.getElementById('goalCelebSecs').value) || 10,
+        showSponsors: document.getElementById('showSponsors').checked,
+        showUptime: document.getElementById('showUptime').checked,
+        goalRotationSeconds: parseInt(document.getElementById('goalRotSecs').value) || 30,
+        sponsors,
+        sponsorTransition: document.getElementById('sponsorTransition').value,
+        showSocials: document.getElementById('showSocials').checked,
+        showCreatorCode: document.getElementById('showCreatorCode').checked,
+        creatorCode: {
+          active: document.getElementById('showCreatorCode').checked,
+          label: document.getElementById('creatorLabel').value.trim() || 'CÓDIGO EPIC',
+          value: document.getElementById('creatorValue').value.trim(),
+          logo: document.getElementById('creatorLogoPath').value.trim() || 'assets/codigo.png'
+        },
+        socials,
+        socialRotationSeconds: parseInt(document.getElementById('socialRotSecs').value) || 5,
+        socialTransition: document.getElementById('socialTransition').value,
+        events,
+        tickerDisplaySeconds: parseInt(document.getElementById('tickerSecs').value) || 8,
+        enableSounds: document.getElementById('enableSounds').checked,
+        soundEvents: soundEvents,
+        notificationVolume: parseInt(document.getElementById('notificationVolume').value),
+        theme: {
+          bgColor: document.getElementById('th-bg').value,
+          borderColor: document.getElementById('th-border').value,
+          accentColor: document.getElementById('th-accent').value,
+          textPrimary: '#ffffff',
+          textSecondary: '#aaaaaa',
+          borderRadius: document.getElementById('th-radius').value,
+        },
+      };
+      const js = `// HIPE WIDGET — config.js\n// Generado: ${new Date().toLocaleString('es-MX')}\n\nconst CONFIG = ${JSON.stringify(cfg, null, 2)};\n`;
+      if (folderHandle) {
+        try {
+          const fh = await folderHandle.getFileHandle('config.js', { create: true });
+          const w = await fh.createWritable();
+          await w.write(js); await w.close();
+          let assetsHandle;
+          try { assetsHandle = await folderHandle.getDirectoryHandle('assets', { create: true }); } catch (e) { }
+          if (assetsHandle) {
+            for (const [name, file] of Object.entries(pendingFiles)) {
+              const fh2 = await assetsHandle.getFileHandle(name, { create: true });
+              const w2 = await fh2.createWritable();
+              await w2.write(file); await w2.close();
+            }
+          }
+          const assetCount = Object.keys(pendingFiles).length;
+          Object.keys(pendingFiles).forEach(k => delete pendingFiles[k]);
+          toast(`✓ config.js guardado en "${folderHandle.name}".${assetCount > 0 ? '\n' + assetCount + ' archivo(s) copiados a assets/.' : ''}\nRecarga el Browser Source en OBS.`);
+          return;
+        } catch (e) {
+          toast('Error al guardar: ' + e.message + '\nIntentando descarga normal...');
+        }
+      }
+      if ('showSaveFilePicker' in window) {
+        try {
+          const fh = await window.showSaveFilePicker({ suggestedName: 'config.js', types: [{ description: 'JavaScript', accept: { 'application/javascript': ['.js'] } }] });
+          const w = await fh.createWritable(); await w.write(js); await w.close();
+          toast('✓ config.js guardado.\nReemplázalo en tu carpeta hipe-widget y recarga el Browser Source en OBS.');
+          return;
+        } catch (e) { if (e.name !== 'AbortError') console.warn(e); }
+      }
+      const blob = new Blob([js], { type: 'application/javascript' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'config.js'; a.click(); URL.revokeObjectURL(a.href);
+      toast('✓ config.js descargado.\nReemplázalo en la carpeta hipe-widget y recarga el Browser Source en OBS.');
+    }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 5000);
+    }
+
+    loadVals();
+    buildSocials();
+    buildSponsors();
+    buildEvents();
+  </script>
+</body>
+
+</html>
