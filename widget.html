@@ -9,7 +9,7 @@
     rel="stylesheet">
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
   <style>
-    /* ========== ESTILOS (exactamente igual que antes, sin cambios) ========== */
+    /* ========== ESTILOS (sin cambios) ========== */
     *,
     *::before,
     *::after {
@@ -859,22 +859,62 @@
     const configParam = urlParams.get('config');
     if (configParam) {
       try {
-        // El parámetro viene en Base64
         const decoded = atob(configParam);
-        // decoded es un string JSON (puede venir con caracteres UTF-8)
         const json = decodeURIComponent(escape(decoded));
         CFG = JSON.parse(json);
       } catch (e) {
         console.warn('Error al leer la configuración de la URL', e);
       }
     }
-    // Si no hay parámetro, se usa un objeto vacío (valores por defecto en el widget)
+
+    // ========== VALORES POR DEFECTO (cuando no vienen en la URL) ==========
+    // Imágenes: usar archivos locales de assets si no se proporciona URL
+    const logoPath = CFG.logoPath || 'assets/logo.png';
+    const goalGifPath = CFG.goalGifPath || 'assets/corazon.gif';
+    // Sonido global: activado por defecto
+    const enableSounds = CFG.enableSounds === undefined ? true : CFG.enableSounds === true;
+    // Volumen: 80% por defecto
+    const notificationVolume = (CFG.notificationVolume !== undefined ? CFG.notificationVolume : 80) / 100;
+    // Eventos del ticker: todos activados por defecto
+    const defaultEvents = {
+      showSubs: true, showReSubs: true, showGiftSubs: true, showGiftBombs: true,
+      showRaids: true, showCheers: true, showFollows: true, showRedemptions: true,
+      showYTMembers: true, showSuperChat: true, showDonations: true
+    };
+    const eventsFromCfg = CFG.events || {};
+    const events = { ...defaultEvents, ...eventsFromCfg };
+    // Sonidos individuales: todos activados por defecto
+    const defaultSoundEvents = {
+      soundSubs: true, soundReSubs: true, soundGiftSubs: true, soundGiftBombs: true,
+      soundRaids: true, soundCheers: true, soundFollows: true, soundRedemptions: true,
+      soundYTMembers: true, soundSuperChat: true, soundDonations: true
+    };
+    const soundEventsFromCfg = CFG.soundEvents || {};
+    const soundEvents = { ...defaultSoundEvents, ...soundEventsFromCfg };
+
+    // Actualizar CFG para que el resto del código use estos valores
+    CFG.logoPath = logoPath;
+    CFG.goalGifPath = goalGifPath;
+    CFG.events = events;
+    CFG.soundEvents = soundEvents;
+    CFG.enableSounds = enableSounds;
+    CFG.notificationVolume = notificationVolume * 100; // para que el slider de volumen (si se usa) lo entienda
+
+    // Para el código de creador, también se usará su propio logo por defecto si no viene
+    if (CFG.creatorCode && !CFG.creatorCode.logo) {
+      CFG.creatorCode.logo = 'assets/codigo.png';
+    } else if (CFG.creatorCode === undefined && (CFG.showCreatorCode === true)) {
+      // Si no existe creatorCode pero está activado, crear uno con valores por defecto
+      CFG.creatorCode = {
+        active: true,
+        label: "CÓDIGO DE CREADOR",
+        value: "CÓDIGO",
+        logo: "assets/codigo.png"
+      };
+    }
+
     const T = CFG.theme || {};
     const R = document.documentElement;
-
-    // Configuración de sonido
-    const enableSounds = CFG.enableSounds === true;
-    const soundEvents = CFG.soundEvents || {};
 
     // Mapeo de tipos de evento a las claves del config
     const soundMap = {
@@ -900,22 +940,23 @@
 
       const audio = document.getElementById('notification-sound');
       if (!audio) return;
-
-      // Si el audio no está listo, intentar cargarlo y esperar un poco
       if (audio.readyState < 2) {
-        // No está listo, programar reintento en 200ms
         setTimeout(() => playNotificationSound(eventType), 200);
         return;
       }
-
       try {
         audio.pause();
         audio.currentTime = 0;
-        // Usar promesa para capturar errores (ej. si el archivo no existe)
         audio.play().catch(e => console.warn('Sonido no reproducido:', e));
       } catch (e) {
         console.warn('Error al reproducir sonido:', e);
       }
+    }
+
+    // Configurar volumen del audio
+    const audioElem = document.getElementById('notification-sound');
+    if (audioElem) {
+      audioElem.volume = notificationVolume;
     }
 
     function normalizeLayout(raw) { return (raw === 'horizontal' || raw === 'completo') ? 'completo' : 'compacto'; }
@@ -1280,7 +1321,6 @@
       badge.innerHTML = `<span class="ev-icon"><iconify-icon icon="${icon}" width="22"></iconify-icon></span><span class="ev-label">${label}</span>`;
       document.getElementById('tick-user').textContent = ev.user || '';
       document.getElementById('tick-extra').textContent = ev.extra || '';
-      // Reproducir sonido según el tipo de evento
       playNotificationSound(ev.type);
       setTimeout(adjustTickerFontSize, 0);
       const bar = document.getElementById('tick-bar');
@@ -1393,7 +1433,6 @@
     // Inicialización
     window.addEventListener('load', () => {
       connect();
-      // Precargar el sonido manualmente
       const audio = document.getElementById('notification-sound');
       if (audio && audio.load) {
         audio.load();
