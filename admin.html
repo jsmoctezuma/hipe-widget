@@ -8,7 +8,7 @@
     href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
     rel="stylesheet">
   <style>
-    /* ===== ESTILOS (sin cambios estructurales) ===== */
+    /* ===== ESTILOS (con adición para botones en header) ===== */
     *,
     *::before,
     *::after {
@@ -86,14 +86,51 @@
       letter-spacing: .05em;
     }
 
-    .btn-save {
-      background: var(--acc);
-      color: #fff;
+    /* Nueva barra de botones debajo del header */
+    .action-bar {
+      background: var(--surf);
+      border-bottom: 1px solid var(--bord);
+      padding: 16px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-copy {
+      background: var(--grn);
+      color: #000;
       border: none;
-      padding: 10px 20px;
+      padding: 14px 28px;
       border-radius: var(--rad);
       font-family: 'Rajdhani', sans-serif;
-      font-size: 16px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      transition: background .2s, transform .1s;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .btn-copy:hover {
+      background: #5aee9e;
+      transform: scale(1.02);
+    }
+
+    .btn-reset {
+      background: #2a2a3a;
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      border-radius: var(--rad);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
       font-weight: 700;
       letter-spacing: .07em;
       text-transform: uppercase;
@@ -104,30 +141,8 @@
       transition: background .2s;
     }
 
-    .btn-save:hover {
-      background: var(--acc2);
-    }
-
-    .btn-reset {
-      background: #2a2a3a;
-    }
     .btn-reset:hover {
       background: var(--red);
-    }
-
-    .button-bar {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-top: 20px;
-    }
-
-    .copy-url {
-      background: var(--grn);
-      color: #000;
-    }
-    .copy-url:hover {
-      background: #5aee9e;
     }
 
     main {
@@ -663,6 +678,12 @@
     </div>
   </header>
 
+  <!-- Barra de acciones destacada -->
+  <div class="action-bar">
+    <button class="btn-copy" id="copyUrlBtn">📋 Copiar enlace del widget</button>
+    <button class="btn-reset" id="resetBtn">⟳ Restaurar valores</button>
+  </div>
+
   <main>
     <!-- ========== CONFIGURACIÓN GENERAL DEL WIDGET ========== -->
     <div class="card">
@@ -760,12 +781,6 @@
       </div>
       <div class="r2"><div class="field"><label>Redondeo de las esquinas</label><input type="text" id="th-radius" value="6px" placeholder="6px" onchange="saveToLocalStorage()"></div></div>
       <div class="hint">El color principal se usa en la barra de progreso de la meta, el cronómetro y otros detalles.</div>
-    </div>
-
-    <!-- Botones de acción -->
-    <div class="button-bar">
-      <button class="btn-save btn-reset" id="resetBtn">⟳ Restaurar valores por defecto</button>
-      <button class="btn-save copy-url" id="copyUrlBtn">📋 Copiar enlace del widget</button>
     </div>
   </main>
 
@@ -900,7 +915,6 @@
 
     // ==================== LOCALSTORAGE Y GENERACIÓN DE URL ====================
     const STORAGE_KEY = 'hipe_widget_config';
-    let currentConfig = {};
 
     function collectConfig() {
       // Redes sociales
