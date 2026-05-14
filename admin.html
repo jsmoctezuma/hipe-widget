@@ -7,9 +7,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
     rel="stylesheet">
-  <script src="config.js"></script>
   <style>
-    /* ===== ESTILOS ORIGINALES (sin cambios) ===== */
+    /* ===== ESTILOS (sin cambios estructurales) ===== */
     *,
     *::before,
     *::after {
@@ -91,15 +90,15 @@
       background: var(--acc);
       color: #fff;
       border: none;
-      padding: 13px 30px;
+      padding: 10px 20px;
       border-radius: var(--rad);
       font-family: 'Rajdhani', sans-serif;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       letter-spacing: .07em;
       text-transform: uppercase;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
       transition: background .2s;
@@ -109,55 +108,26 @@
       background: var(--acc2);
     }
 
-    #folder-bar {
-      background: var(--surf);
-      border-bottom: 1px solid var(--bord);
-      padding: 10px 36px;
+    .btn-reset {
+      background: #2a2a3a;
+    }
+    .btn-reset:hover {
+      background: var(--red);
+    }
+
+    .button-bar {
       display: flex;
-      align-items: center;
       gap: 12px;
+      justify-content: flex-end;
+      margin-top: 20px;
     }
 
-    #folder-path {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--bord);
-      border-radius: var(--rad);
-      color: var(--txt);
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      padding: 9px 14px;
-      outline: none;
+    .copy-url {
+      background: var(--grn);
+      color: #000;
     }
-
-    #folder-path:focus {
-      border-color: var(--acc);
-    }
-
-    .btn-folder {
-      background: var(--acc);
-      color: #fff;
-      border: none;
-      border-radius: var(--rad);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      padding: 9px 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      transition: background .2s;
-      white-space: nowrap;
-    }
-
-    .btn-folder:hover {
-      background: var(--acc2);
-    }
-
-    .folder-hint {
-      font-size: 13px;
-      color: var(--mut);
+    .copy-url:hover {
+      background: #5aee9e;
     }
 
     main {
@@ -256,42 +226,6 @@
       gap: 18px;
     }
 
-    .fp-row {
-      display: flex;
-      gap: 8px;
-      align-items: stretch;
-    }
-
-    .fp-row input[type=text] {
-      flex: 1;
-    }
-
-    .btn-browse {
-      background: var(--surf);
-      border: 1px solid var(--bord);
-      border-radius: var(--rad);
-      color: var(--acc2);
-      font-family: 'Inter', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      padding: 0 18px;
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: border-color .2s, color .2s;
-    }
-
-    .btn-browse:hover {
-      border-color: var(--acc);
-    }
-
-    input[type=file] {
-      display: none;
-    }
-
     .fhint {
       font-size: 13px;
       color: var(--mut);
@@ -375,7 +309,6 @@
       background: #fff;
     }
 
-    /* Toggle pequeño para sonido */
     .tog-small {
       width: 36px;
       height: 22px;
@@ -456,7 +389,6 @@
       pointer-events: none;
     }
 
-    /* Estilo para anidar las redes sociales bajo el toggle principal */
     #socials-content {
       margin-left: 24px;
       border-left: 2px solid var(--bord);
@@ -574,7 +506,6 @@
       align-items: center;
       gap: 5px;
       transition: border-color .2s, color .2s;
-      font-family: 'Inter', sans-serif;
     }
 
     .btn-sp-browse:hover {
@@ -712,7 +643,6 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Anidar el contenido de sponsors bajo su toggle */
     #sponsors-content {
       margin-left: 24px;
       border-left: 2px solid var(--bord);
@@ -731,76 +661,32 @@
       <span>HIPE <span>Widget</span></span>
       <em>Panel de Control</em>
     </div>
-    <button class="btn-save" id="btn-save" onclick="saveConfig()" disabled style="opacity:.4;cursor:not-allowed;">
-      💾 Guardar configuración
-    </button>
   </header>
 
-  <div id="folder-bar">
-    <span class="folder-hint">📁 Carpeta del widget (hipe-widget):</span>
-    <input type="text" id="folder-path"
-      placeholder="⬅ Primero selecciona la carpeta donde está el widget para poder guardar" readonly>
-    <button type="button" class="btn-folder" id="btn-folder" onclick="pickFolder()">📂 Seleccionar carpeta</button>
-  </div>
-  <div id="folder-warn"
-    style="background:#7c3aed22;border-bottom:1px solid #7c3aed55;padding:10px 36px;font-size:14px;color:#a78bfa;display:flex;align-items:center;gap:10px;">
-    ⚠️ <strong>Selecciona tu carpeta hipe-widget</strong> para habilitar el botón Guardar. La configuración se guardará
-    directamente ahí y las imágenes se copiarán automáticamente a la carpeta "assets".
-  </div>
-
   <main>
-
     <!-- ========== CONFIGURACIÓN GENERAL DEL WIDGET ========== -->
     <div class="card">
       <div class="card-title">Diseño del Widget</div>
-
       <div class="field" style="max-width:320px;">
         <label for="layoutMode">Elige el estilo</label>
-        <select id="layoutMode" onchange="applyLayoutModeUI()">
+        <select id="layoutMode" onchange="saveToLocalStorage()">
           <option value="classic">Compacto (dos filas)</option>
           <option value="horizontal">Horizontal (una fila ancha)</option>
         </select>
       </div>
-
-      <div id="layout-classic-note" class="hint">
-        En el diseño compacto, la información del canal, la meta de suscriptores y los mensajes en pantalla siempre se muestran. Solo puedes ocultar la sección de patrocinadores y el contador de tiempo en vivo, o la sección de redes sociales / código de creador.
-      </div>
-
+      <div id="layout-classic-note" class="hint">En el diseño compacto, la información del canal, la meta de suscriptores y los mensajes en pantalla siempre se muestran. Solo puedes ocultar la sección de patrocinadores y el contador de tiempo en vivo, o la sección de redes sociales / código de creador.</div>
       <div id="layout-horizontal-controls" class="subcard" style="display:none;">
-        <div class="tog-row" id="tr-showBranding" style="margin-bottom:10px;">
-          <div>
-            <div class="tog-lbl">Mostrar información del canal</div>
-            <div class="tog-sub">Logo, nombre y estado en vivo.</div>
-          </div>
-          <label class="tog">
-            <input type="checkbox" id="showBranding"
-              onchange="document.getElementById('tr-showBranding').classList.toggle('on',this.checked)">
-            <span class="tog-sl"></span>
-          </label>
+        <div class="tog-row" id="tr-showBranding">
+          <div><div class="tog-lbl">Mostrar información del canal</div><div class="tog-sub">Logo, nombre y estado en vivo.</div></div>
+          <label class="tog"><input type="checkbox" id="showBranding"><span class="tog-sl"></span></label>
         </div>
-
-        <div class="tog-row" id="tr-showGoal" style="margin-bottom:10px;">
-          <div>
-            <div class="tog-lbl">Mostrar meta de suscriptores</div>
-            <div class="tog-sub">Bloque con la barra de progreso y el corazón.</div>
-          </div>
-          <label class="tog">
-            <input type="checkbox" id="showGoal"
-              onchange="document.getElementById('tr-showGoal').classList.toggle('on',this.checked)">
-            <span class="tog-sl"></span>
-          </label>
+        <div class="tog-row" id="tr-showGoal">
+          <div><div class="tog-lbl">Mostrar meta de suscriptores</div><div class="tog-sub">Bloque con la barra de progreso y el corazón.</div></div>
+          <label class="tog"><input type="checkbox" id="showGoal"><span class="tog-sl"></span></label>
         </div>
-
         <div class="tog-row" id="tr-showTicker">
-          <div>
-            <div class="tog-lbl">Mostrar mensajes en pantalla</div>
-            <div class="tog-sub">Los eventos como follows, subs, raids, etc.</div>
-          </div>
-          <label class="tog">
-            <input type="checkbox" id="showTicker"
-              onchange="document.getElementById('tr-showTicker').classList.toggle('on',this.checked)">
-            <span class="tog-sl"></span>
-          </label>
+          <div><div class="tog-lbl">Mostrar mensajes en pantalla</div><div class="tog-sub">Los eventos como follows, subs, raids, etc.</div></div>
+          <label class="tog"><input type="checkbox" id="showTicker"><span class="tog-sl"></span></label>
         </div>
       </div>
     </div>
@@ -809,36 +695,12 @@
     <div class="card">
       <div class="card-title">Tu Canal</div>
       <div class="r2">
-        <div class="field">
-          <label>Nombre del canal o usuario</label>
-          <input type="text" id="channelName" placeholder="Ej. MancoSquad">
-          <span class="fhint">Se verá junto a tu foto de perfil en el widget.</span>
-        </div>
-        <div class="field">
-          <label>Puerto de conexión con Streamer.bot</label>
-          <input type="number" id="sbPort" value="8080">
-          <span class="fhint">Déjalo en 8080 si no lo cambiaste en Streamer.bot.</span>
-        </div>
+        <div class="field"><label>Nombre del canal o usuario</label><input type="text" id="channelName" placeholder="Ej. MancoSquad" onchange="saveToLocalStorage()"><span class="fhint">Se verá junto a tu foto de perfil en el widget.</span></div>
+        <div class="field"><label>Puerto de conexión con Streamer.bot</label><input type="number" id="sbPort" value="8080" onchange="saveToLocalStorage()"><span class="fhint">Déjalo en 8080 si no lo cambiaste en Streamer.bot.</span></div>
       </div>
       <div class="r2">
-        <div class="field">
-          <label>Foto de perfil / logo</label>
-          <div class="fp-row">
-            <input type="text" id="logoPath" placeholder="assets/logo.png" readonly>
-            <button type="button" class="btn-browse" onclick="pickAsset('logoPath','imgLogo','logo')">📁 Buscar imagen</button>
-          </div>
-          <input type="file" id="imgLogo" accept="image/*" onchange="handleAsset(this,'logoPath','logo')">
-          <div class="fhint">Se copiará como <code>assets/logo.png</code> al guardar.</div>
-        </div>
-        <div class="field">
-          <label>Animación del corazón (meta de subs)</label>
-          <div class="fp-row">
-            <input type="text" id="goalGifPath" placeholder="assets/corazon.gif" readonly>
-            <button type="button" class="btn-browse" onclick="pickAsset('goalGifPath','imgGif','corazon')">📁 Buscar GIF</button>
-          </div>
-          <input type="file" id="imgGif" accept="image/*" onchange="handleAsset(this,'goalGifPath','corazon')">
-          <div class="fhint">Se copiará como <code>assets/corazon.gif</code> al guardar.</div>
-        </div>
+        <div class="field"><label>URL de la foto de perfil / logo</label><input type="text" id="logoPath" placeholder="https://i.imgur.com/ejemplo.png" onchange="saveToLocalStorage()"><div class="fhint">Pega aquí la URL de tu logo (Imgur, Discord, etc.)</div></div>
+        <div class="field"><label>URL del GIF del corazón (meta de subs)</label><input type="text" id="goalGifPath" placeholder="https://i.imgur.com/corazon.gif" onchange="saveToLocalStorage()"><div class="fhint">Pega la URL de un GIF animado para el corazón.</div></div>
       </div>
     </div>
 
@@ -846,199 +708,71 @@
     <div class="card">
       <div class="card-title">Meta de Suscriptores</div>
       <div class="r2">
-        <div class="field">
-          <label>Tiempo de celebración al alcanzar la meta (segundos)</label>
-          <input type="number" id="goalCelebSecs" value="10" min="5" max="60">
-          <span class="fhint">Cuántos segundos muestra el mensaje "¡META ALCANZADA!" antes de volver a la barra normal.</span>
-        </div>
-        <div class="field">
-          <label>Cuánto tiempo se ve el contador de tiempo en vivo (segundos)</label>
-          <input type="number" id="goalRotSecs" value="30" min="10" max="120">
-          <span class="fhint">Tiempo que aparece el cronómetro antes de pasar al siguiente patrocinador.</span>
-        </div>
+        <div class="field"><label>Tiempo de celebración (segundos)</label><input type="number" id="goalCelebSecs" value="10" min="5" max="60" onchange="saveToLocalStorage()"><span class="fhint">Cuántos segundos muestra el mensaje "¡META ALCANZADA!".</span></div>
+        <div class="field"><label>Tiempo que se ve el cronómetro (segundos)</label><input type="number" id="goalRotSecs" value="30" min="10" max="120" onchange="saveToLocalStorage()"><span class="fhint">Antes de pasar al siguiente patrocinador.</span></div>
       </div>
     </div>
 
-    <!-- ========== SECCIÓN DE PATROCINADORES Y CRONÓMETRO ========== -->
+    <!-- ========== PATROCINADORES Y CRONÓMETRO ========== -->
     <div class="card">
       <div class="card-title">Patrocinadores y tiempo en vivo</div>
-
-      <div class="tog-row" id="tr-sponsors" style="margin-bottom:9px;">
-        <div>
-          <div class="tog-lbl">Activar patrocinadores</div>
-          <div class="tog-sub">Muestra logos o vídeos que rotan en el widget.</div>
-        </div>
-        <label class="tog">
-          <input type="checkbox" id="showSponsors" checked
-            onchange="toggleSponsorsUI();document.getElementById('tr-sponsors').classList.toggle('on',this.checked)">
-          <span class="tog-sl"></span>
-        </label>
-      </div>
-
+      <div class="tog-row" id="tr-sponsors"><div><div class="tog-lbl">Activar patrocinadores</div><div class="tog-sub">Muestra logos o vídeos rotando.</div></div><label class="tog"><input type="checkbox" id="showSponsors" checked><span class="tog-sl"></span></label></div>
       <div id="sponsors-content">
         <div id="sponsors-list"></div>
         <button type="button" class="btn-add" onclick="addSponsor()">＋ Añadir patrocinador</button>
-        <div class="field" style="margin-top:18px;max-width:320px;">
-          <label for="sponsorTransition">Efecto de cambio entre patrocinadores</label>
-          <select id="sponsorTransition" aria-describedby="sponsorTransitionHelp">
-            <option value="fade">Desvanecimiento suave</option>
-            <option value="slide">Deslizamiento</option>
-            <option value="zoom">Zoom</option>
-          </select>
-          <span class="fhint" id="sponsorTransitionHelp">
-            Cómo se reemplaza una imagen por la siguiente cuando rotan.
-          </span>
-        </div>
+        <div class="field" style="margin-top:18px;max-width:320px;"><label>Efecto de cambio entre patrocinadores</label><select id="sponsorTransition" onchange="saveToLocalStorage()"><option value="fade">Desvanecimiento suave</option><option value="slide">Deslizamiento</option><option value="zoom">Zoom</option></select><span class="fhint">Cómo se reemplaza una imagen por la siguiente.</span></div>
       </div>
-
-      <div class="tog-row" id="tr-uptime" style="margin-bottom:18px;">
-        <div>
-          <div class="tog-lbl">Mostrar cronómetro en vivo</div>
-          <div class="tog-sub">Contador del tiempo que llevas en directo.</div>
-        </div>
-        <label class="tog">
-          <input type="checkbox" id="showUptime" checked
-            onchange="document.getElementById('tr-uptime').classList.toggle('on',this.checked)">
-          <span class="tog-sl"></span>
-        </label>
-      </div>
+      <div class="tog-row" id="tr-uptime"><div><div class="tog-lbl">Mostrar cronómetro en vivo</div><div class="tog-sub">Contador del tiempo que llevas en directo.</div></div><label class="tog"><input type="checkbox" id="showUptime" checked><span class="tog-sl"></span></label></div>
     </div>
 
     <!-- ========== REDES SOCIALES Y CÓDIGO DE CREADOR ========== -->
     <div class="card">
       <div class="card-title">Redes sociales y código de creador</div>
-
-      <div class="tog-row" id="tr-showSocials" style="margin-bottom:9px;">
-        <div>
-          <div class="tog-lbl">Activar redes sociales</div>
-          <div class="tog-sub">Muestra tus cuentas de Twitch, YouTube, etc. rotando.</div>
-        </div>
-        <label class="tog">
-          <input type="checkbox" id="showSocials"
-            onchange="toggleSocialsUI();document.getElementById('tr-showSocials').classList.toggle('on',this.checked)">
-          <span class="tog-sl"></span>
-        </label>
-      </div>
-
+      <div class="tog-row" id="tr-showSocials"><div><div class="tog-lbl">Activar redes sociales</div><div class="tog-sub">Muestra tus cuentas rotando.</div></div><label class="tog"><input type="checkbox" id="showSocials" checked><span class="tog-sl"></span></label></div>
       <div id="socials-content">
         <div id="socials-list"></div>
-        <div class="field" style="margin-top:18px;max-width:180px;">
-          <label for="socialRotSecs">Segundos que se ve cada red social</label>
-          <input type="number" id="socialRotSecs" value="5" min="2" max="30">
-          <span class="fhint">Tiempo antes de pasar a la siguiente red (si hay varias activas).</span>
-        </div>
-        <div class="field" style="margin-top:18px;max-width:320px;">
-          <label for="socialTransition">Efecto de cambio entre redes</label>
-          <select id="socialTransition" aria-describedby="socialTransitionHelp">
-            <option value="fade">Desvanecimiento suave</option>
-            <option value="slide">Deslizamiento</option>
-            <option value="zoom">Zoom</option>
-          </select>
-          <span class="fhint" id="socialTransitionHelp">
-            Cómo se reemplaza una red por la siguiente.
-          </span>
-        </div>
+        <div class="field" style="margin-top:18px;max-width:180px;"><label>Segundos que se ve cada red</label><input type="number" id="socialRotSecs" value="5" min="2" max="30" onchange="saveToLocalStorage()"><span class="fhint">Tiempo antes de pasar a la siguiente.</span></div>
+        <div class="field" style="margin-top:18px;max-width:320px;"><label>Efecto de cambio entre redes</label><select id="socialTransition" onchange="saveToLocalStorage()"><option value="fade">Desvanecimiento suave</option><option value="slide">Deslizamiento</option><option value="zoom">Zoom</option></select><span class="fhint">Cómo se reemplaza una red por la siguiente.</span></div>
       </div>
-
-      <div class="tog-row" id="tr-showCreatorCode" style="margin-top:16px;margin-bottom:9px;">
-        <div>
-          <div class="tog-lbl">Activar código de creador</div>
-          <div class="tog-sub">Muestra tu código promocional (Ej. "EPIC", "JSMOCTEZUMA") y un logo.</div>
-        </div>
-        <label class="tog">
-          <input type="checkbox" id="showCreatorCode"
-            onchange="toggleCreatorUI();document.getElementById('tr-showCreatorCode').classList.toggle('on',this.checked)">
-          <span class="tog-sl"></span>
-        </label>
-      </div>
-
+      <div class="tog-row" id="tr-showCreatorCode"><div><div class="tog-lbl">Activar código de creador</div><div class="tog-sub">Muestra tu código promocional y un logo.</div></div><label class="tog"><input type="checkbox" id="showCreatorCode"><span class="tog-sl"></span></label></div>
       <div id="creator-content" class="subcard">
-        <div class="r2">
-          <div class="field">
-            <label>Texto que aparecerá arriba (etiqueta)</label>
-            <input type="text" id="creatorLabel" placeholder="Ej. CÓDIGO EPIC">
-            <span class="fhint">Ejemplo: "CÓDIGO DE CREADOR", "USÁ MI CÓDIGO", etc.</span>
-          </div>
-          <div class="field">
-            <label>Código que mostrará el widget</label>
-            <input type="text" id="creatorValue" placeholder="Ej. JSMOCTEZUMA">
-            <span class="fhint">El texto o código que quieras que aparezca.</span>
-          </div>
-        </div>
-        <div class="field">
-          <label>Logo o imagen del código de creador</label>
-          <div class="fp-row">
-            <input type="text" id="creatorLogoPath" placeholder="assets/codigo.png" readonly>
-            <button type="button" class="btn-browse" onclick="pickAsset('creatorLogoPath','imgCreatorLogo','codigo')">📁 Buscar imagen</button>
-          </div>
-          <input type="file" id="imgCreatorLogo" accept="image/*"
-            onchange="handleAsset(this,'creatorLogoPath','codigo')">
-          <div class="fhint">Se copiará como <code>assets/codigo.png</code> (o con la extensión elegida).</div>
-        </div>
-        <div class="fhint">Este bloque rota en el mismo espacio que las redes sociales (comparte la zona).</div>
+        <div class="r2"><div class="field"><label>Texto de la etiqueta</label><input type="text" id="creatorLabel" placeholder="CÓDIGO EPIC" onchange="saveToLocalStorage()"></div><div class="field"><label>Código / texto a mostrar</label><input type="text" id="creatorValue" placeholder="JSMOCTEZUMA" onchange="saveToLocalStorage()"></div></div>
+        <div class="field"><label>URL del logo del código de creador</label><input type="text" id="creatorLogoPath" placeholder="https://i.imgur.com/codigo.png" onchange="saveToLocalStorage()"><div class="fhint">Pega la URL de la imagen que quieras.</div></div>
       </div>
     </div>
 
     <!-- ========== MENSAJES EN PANTALLA (TICKER) ========== -->
     <div class="card">
       <div class="card-title">Mensajes en pantalla (eventos)</div>
-
-      <!-- Activar sonido global -->
-      <div class="tog-row" id="tr-enableSounds" style="margin-bottom: 16px;">
-        <div>
-          <div class="tog-lbl">🔊 Activar sonidos para los eventos</div>
-          <div class="tog-sub">Control principal: si lo apagas, no sonará ningún evento (aunque tengas activados sonidos individuales).</div>
-        </div>
-        <label class="tog">
-          <input type="checkbox" id="enableSounds" onchange="toggleSoundGlobal()">
-          <span class="tog-sl"></span>
-        </label>
-      </div>
-
-      <!-- Lista de eventos con dos interruptores: mostrar y sonido -->
+      <div class="tog-row" id="tr-enableSounds"><div><div class="tog-lbl">🔊 Activar sonidos para los eventos</div><div class="tog-sub">Control principal. Si lo apagas, no sonará ningún evento.</div></div><label class="tog"><input type="checkbox" id="enableSounds"><span class="tog-sl"></span></label></div>
       <div class="ev-grid" id="events-grid"></div>
-
-      <!-- Volumen de las notificaciones -->
-      <div class="field" style="margin-top:18px;max-width:300px;">
-        <label>Volumen de los sonidos (%)</label>
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <input type="range" id="notificationVolume" min="0" max="100" step="10" value="80" onchange="document.getElementById('volumeLabel').textContent = this.value + '%'">
-          <span id="volumeLabel">80%</span>
-        </div>
-        <div class="fhint">Ajusta qué tan fuerte se escuchan los sonidos (0% = sin sonido).</div>
-      </div>
-
-      <div class="field" style="margin-top:18px;max-width:220px;">
-        <label>Segundos que dura cada mensaje en pantalla</label>
-        <input type="number" id="tickerSecs" value="8" min="3" max="30">
-        <span class="fhint">Tiempo que se ve cada evento antes de que aparezca el siguiente.</span>
-      </div>
+      <div class="field" style="margin-top:18px;max-width:300px;"><label>Volumen de los sonidos (%)</label><div style="display: flex; align-items: center; gap: 12px;"><input type="range" id="notificationVolume" min="0" max="100" step="10" value="80" onchange="updateVolumeLabel(); saveToLocalStorage()"><span id="volumeLabel">80%</span></div><div class="fhint">Ajusta qué tan fuerte se escuchan (0% = sin sonido).</div></div>
+      <div class="field" style="margin-top:18px;max-width:220px;"><label>Segundos que dura cada mensaje</label><input type="number" id="tickerSecs" value="8" min="3" max="30" onchange="saveToLocalStorage()"><span class="fhint">Tiempo que se ve cada evento en pantalla.</span></div>
     </div>
 
     <!-- ========== APARIENCIA ========== -->
     <div class="card">
       <div class="card-title">Colores y forma</div>
       <div class="r3">
-        <div class="field"><label>Color de fondo</label><input type="color" id="th-bg" value="#111117"></div>
-        <div class="field"><label>Color de los bordes</label><input type="color" id="th-border" value="#22222e"></div>
-        <div class="field"><label>Color principal (acento)</label><input type="color" id="th-accent" value="#7c3aed">
-        </div>
+        <div class="field"><label>Color de fondo</label><input type="color" id="th-bg" value="#111117" onchange="saveToLocalStorage()"></div>
+        <div class="field"><label>Color de los bordes</label><input type="color" id="th-border" value="#22222e" onchange="saveToLocalStorage()"></div>
+        <div class="field"><label>Color principal (acento)</label><input type="color" id="th-accent" value="#7c3aed" onchange="saveToLocalStorage()"></div>
       </div>
-      <div class="r2">
-        <div class="field"><label>Redondeo de las esquinas</label><input type="text" id="th-radius" value="6px"
-            placeholder="Ej. 6px, 10px, 0px"></div>
-      </div>
-      <div class="hint">
-        El color principal se usa en la barra de progreso de la meta, el cronómetro y otros detalles decorativos.
-      </div>
+      <div class="r2"><div class="field"><label>Redondeo de las esquinas</label><input type="text" id="th-radius" value="6px" placeholder="6px" onchange="saveToLocalStorage()"></div></div>
+      <div class="hint">El color principal se usa en la barra de progreso de la meta, el cronómetro y otros detalles.</div>
     </div>
 
+    <!-- Botones de acción -->
+    <div class="button-bar">
+      <button class="btn-save btn-reset" id="resetBtn">⟳ Restaurar valores por defecto</button>
+      <button class="btn-save copy-url" id="copyUrlBtn">📋 Copiar enlace del widget</button>
+    </div>
   </main>
 
   <div id="toast"></div>
 
   <script>
-    /* ==================== CÓDIGO ORIGINAL (sin cambios) ==================== */
+    // ==================== DEFINICIONES GLOBALES ====================
     const PLATS = [
       { k: 'twitch', n: 'Twitch', c: '#9147ff', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>` },
       { k: 'youtube', n: 'YouTube', c: '#ff0000', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>` },
@@ -1063,72 +797,40 @@
       { k: 'showDonations', l: 'Donaciones (StreamElements)', d: true, soundKey: 'soundDonations', eventType: 'donate' },
     ];
 
-    let CFG = null; try { if (typeof CONFIG !== 'undefined') CFG = CONFIG; } catch (e) { }
-    const gv = (p, fb) => { if (!CFG) return fb; const ps = p.split('.'); let o = CFG; for (const k of ps) { if (o == null) return fb; o = o[k]; } return o ?? fb; };
-
-    let folderHandle = null;
-    const pendingFiles = {};
-
-    async function pickFolder() {
-      if (!('showDirectoryPicker' in window)) {
-        toast('Tu navegador no soporta selección de carpeta directa. Usa Chrome o Edge.');
-        return;
-      }
-      try {
-        folderHandle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
-        document.getElementById('folder-path').value = '📁 ' + folderHandle.name;
-        document.getElementById('btn-save').disabled = false;
-        document.getElementById('btn-save').style.opacity = '1';
-        document.getElementById('btn-save').style.cursor = 'pointer';
-        document.getElementById('folder-warn').style.display = 'none';
-        document.getElementById('btn-folder').textContent = '✓ Cambiar carpeta';
-        toast('✓ Carpeta "' + folderHandle.name + '" lista. Ahora puedes guardar directamente.');
-      } catch (e) {
-        if (e.name !== 'AbortError') toast('No se pudo acceder a la carpeta: ' + e.message);
-      }
+    // Funciones de UI y lógica
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    function pickAsset(fieldId, inputId, assetName) {
-      document.getElementById(inputId).click();
-    }
-
-    function handleAsset(input, fieldId, assetName) {
-      const file = input.files[0]; if (!file) return;
-      const ext = file.name.split('.').pop().toLowerCase();
-      const newName = `${assetName}.${ext}`;
-      document.getElementById(fieldId).value = `assets/${newName}`;
-      pendingFiles[newName] = file;
-      toast(`✓ "${file.name}" registrado → se guardará como assets/${newName}`);
-    }
-
-    function pickSponsorFile(btn) {
-      const tmp = document.createElement('input');
-      tmp.type = 'file'; tmp.accept = 'image/*,video/mp4,video/webm';
-      tmp.onchange = () => {
-        const file = tmp.files[0]; if (!file) return;
-        const ext = file.name.split('.').pop().toLowerCase();
-        const base = file.name.replace(/\.[^.]+$/, '').replace(/\s+/g, '_');
-        const newName = `${base}.${ext}`;
-        btn.closest('.sp-row').querySelector('.sp-path').value = `assets/${newName}`;
-        pendingFiles[newName] = file;
-        toast(`✓ "${file.name}" registrado → assets/${newName}`);
-      };
-      tmp.click();
+    function updateVolumeLabel() {
+      const vol = document.getElementById('notificationVolume').value;
+      document.getElementById('volumeLabel').textContent = vol + '%';
     }
 
     function toggleSponsorsUI() {
       const on = document.getElementById('showSponsors').checked;
       document.getElementById('sponsors-content').style.display = on ? '' : 'none';
+      document.getElementById('tr-sponsors').classList.toggle('on', on);
     }
-
     function toggleSocialsUI() {
       const on = document.getElementById('showSocials').checked;
       document.getElementById('socials-content').style.display = on ? '' : 'none';
+      document.getElementById('tr-showSocials').classList.toggle('on', on);
     }
-
     function toggleCreatorUI() {
       const on = document.getElementById('showCreatorCode').checked;
       document.getElementById('creator-content').style.display = on ? '' : 'none';
+      document.getElementById('tr-showCreatorCode').classList.toggle('on', on);
+    }
+    function toggleSoundGlobal() {
+      const isGlobalOn = document.getElementById('enableSounds').checked;
+      const soundCheckboxes = document.querySelectorAll('.event-row input[id^="sound-"]');
+      soundCheckboxes.forEach(cb => {
+        cb.disabled = !isGlobalOn;
+        cb.closest('.sound-tog').style.opacity = isGlobalOn ? '1' : '0.5';
+      });
     }
 
     function applyLayoutModeUI() {
@@ -1136,198 +838,88 @@
       const horizontal = mode === 'horizontal';
       document.getElementById('layout-horizontal-controls').style.display = horizontal ? '' : 'none';
       document.getElementById('layout-classic-note').style.display = horizontal ? 'none' : '';
-
       if (!horizontal) {
         document.getElementById('showBranding').checked = true;
         document.getElementById('showGoal').checked = true;
         document.getElementById('showTicker').checked = true;
-        document.getElementById('tr-showBranding').classList.add('on');
-        document.getElementById('tr-showGoal').classList.add('on');
-        document.getElementById('tr-showTicker').classList.add('on');
       }
     }
 
     function buildSocials() {
       const c = document.getElementById('socials-list'); c.innerHTML = '';
       PLATS.forEach(p => {
-        const sv = CFG?.socials?.find(s => s.platform === p.k);
-        const on = sv?.active ?? false; const h = sv?.handle ?? '';
         const row = document.createElement('div');
-        row.className = 'soc-row' + (on ? ' on' : ''); row.dataset.p = p.k;
+        row.className = 'soc-row'; row.dataset.p = p.k;
         row.innerHTML = `
-      <div class="soc-icon-box" style="background:${p.c}22;color:${p.c}">${p.svg}</div>
-      <span class="soc-name">${p.n}</span>
-      <input class="soc-inp" type="text" placeholder="tu_usuario" value="${h}" ${on ? '' : 'disabled'} data-p="${p.k}">
-      <label class="tog" title="Activar/desactivar">
-        <input type="checkbox" ${on ? 'checked' : ''} onchange="togSoc(this,'${p.k}')">
-        <span class="tog-sl"></span>
-      </label>`;
+          <div class="soc-icon-box" style="background:${p.c}22;color:${p.c}">${p.svg}</div>
+          <span class="soc-name">${p.n}</span>
+          <input class="soc-inp" type="text" placeholder="tu_usuario" value="" data-p="${p.k}">
+          <label class="tog"><input type="checkbox"><span class="tog-sl"></span></label>`;
         c.appendChild(row);
       });
     }
 
-    function togSoc(cb, p) {
-      const row = document.querySelector(`.soc-row[data-p="${p}"]`);
-      row.querySelector('.soc-inp').disabled = !cb.checked;
-      row.classList.toggle('on', cb.checked);
-    }
-
-    function buildSponsors() {
-      const l = document.getElementById('sponsors-list'); l.innerHTML = '';
-      (CFG?.sponsors ?? []).forEach(sp => addSponsorRow(sp));
-    }
-
     function addSponsor() { addSponsorRow({}); }
-
     function addSponsorRow(sp = {}) {
       const l = document.getElementById('sponsors-list');
-      const d = document.createElement('div');
-      d.className = 'sp-row';
+      const d = document.createElement('div'); d.className = 'sp-row';
       const uid = 'sp_' + Math.random().toString(36).slice(2, 8);
       const durSecs = Math.max(1, Math.round((sp.duration || 8000) / 1000));
       d.innerHTML = `
-  <div class="sp-grid">
-    <div class="sp-field">
-      <label for="${uid}_name">Nombre del patrocinador (solo para ti)</label>
-      <input id="${uid}_name" class="sp-name" type="text" placeholder="Ej. Red Bull" value="${sp.name || ''}">
-      <div class="sp-mini">No se muestra en el widget; solo sirve para que identifiques al patrocinador.</div>
-    </div>
-    <div class="sp-field">
-      <label for="${uid}_dur">Segundos que se ve este patrocinador</label>
-      <input id="${uid}_dur" class="sp-dur" type="number" placeholder="8" value="${durSecs}" min="1" step="1">
-      <div class="sp-mini">Cuánto tiempo aparece antes de pasar al siguiente.</div>
-    </div>
-    <div class="sp-field">
-      <label for="${uid}_active">Activo</label>
-      <label class="tog" title="Activo">
-        <input id="${uid}_active" data-role="sp-active" type="checkbox" ${sp.active !== false ? 'checked' : ''}>
-        <span class="tog-sl"></span>
-      </label>
-    </div>
-    <div class="sp-field">
-      <label>Eliminar</label>
-      <button type="button" class="btn-rm" onclick="this.closest('.sp-row').remove()" title="Eliminar">×</button>
-    </div>
-    <div class="sp-field full">
-      <label for="${uid}_path">Imagen o vídeo del patrocinador</label>
-      <div class="sp-inline">
-        <input id="${uid}_path" class="sp-path" type="text" placeholder="assets/logo_patrocinador.png" value="${sp.imagePath || ''}" readonly>
-        <button class="btn-sp-browse" type="button" onclick="pickSponsorFile(this)">📁 Buscar archivo</button>
-      </div>
-      <div class="sp-mini">Archivo (imagen o vídeo .mp4/.webm) que se mostrará en la rotación.</div>
-    </div>
-  </div>
-`;
+        <div class="sp-grid">
+          <div class="sp-field"><label for="${uid}_name">Nombre (solo para ti)</label><input id="${uid}_name" class="sp-name" type="text" placeholder="Ej. Red Bull" value="${sp.name || ''}"><div class="sp-mini">No se muestra en el widget.</div></div>
+          <div class="sp-field"><label for="${uid}_dur">Segundos visibles</label><input id="${uid}_dur" class="sp-dur" type="number" placeholder="8" value="${durSecs}" min="1" step="1"></div>
+          <div class="sp-field"><label>Activo</label><label class="tog"><input id="${uid}_active" data-role="sp-active" type="checkbox" ${sp.active !== false ? 'checked' : ''}><span class="tog-sl"></span></label></div>
+          <div class="sp-field"><label>Eliminar</label><button type="button" class="btn-rm" onclick="this.closest('.sp-row').remove()">×</button></div>
+          <div class="sp-field full"><label for="${uid}_path">URL de la imagen/vídeo</label><input id="${uid}_path" class="sp-path" type="text" placeholder="https://i.imgur.com/patrocinador.png" value="${sp.imagePath || ''}"><div class="sp-mini">Pega la URL del archivo (imagen o .mp4/.webm).</div></div>
+        </div>`;
       l.appendChild(d);
+      attachSponsorEvents(d);
+    }
+    function attachSponsorEvents(row) {
+      const inputs = row.querySelectorAll('input, button:not(.btn-rm)');
+      inputs.forEach(inp => inp.addEventListener('change', saveToLocalStorage));
+      row.querySelector('.btn-rm')?.addEventListener('click', saveToLocalStorage);
     }
 
     function buildEvents() {
       const container = document.getElementById('events-grid');
       container.innerHTML = '';
       EVTS.forEach(ev => {
-        const showChecked = gv(`events.${ev.k}`, ev.d);
-        const soundChecked = gv(`soundEvents.${ev.soundKey}`, true);
         const row = document.createElement('div');
-        row.className = 'event-row' + (showChecked ? ' on' : '');
+        row.className = 'event-row';
         row.innerHTML = `
           <div class="tog-lbl">${ev.l}</div>
           <div class="tog-group">
-            <label class="tog" title="Mostrar en pantalla">
-              <input type="checkbox" id="ev-${ev.k}" ${showChecked ? 'checked' : ''} onchange="document.getElementById('tr-${ev.k}').classList.toggle('on',this.checked)">
-              <span class="tog-sl"></span>
-            </label>
-            <div class="sound-tog">
-              <span class="sound-label">🔊</span>
-              <label class="tog tog-small" title="Sonido para este evento">
-                <input type="checkbox" id="sound-${ev.soundKey}" ${soundChecked ? 'checked' : ''}>
-                <span class="tog-sl"></span>
-              </label>
-            </div>
-          </div>
-        `;
+            <label class="tog"><input type="checkbox" id="ev-${ev.k}"><span class="tog-sl"></span></label>
+            <div class="sound-tog"><span class="sound-label">🔊</span><label class="tog tog-small"><input type="checkbox" id="sound-${ev.soundKey}"><span class="tog-sl"></span></label></div>
+          </div>`;
         container.appendChild(row);
       });
-      toggleSoundGlobal();
     }
 
-    function toggleSoundGlobal() {
-      const isGlobalOn = document.getElementById('enableSounds').checked;
-      const soundCheckboxes = document.querySelectorAll('.event-row input[id^="sound-"]');
-      soundCheckboxes.forEach(cb => {
-        if (isGlobalOn) {
-          cb.disabled = false;
-          cb.closest('.sound-tog').style.opacity = '1';
-        } else {
-          cb.disabled = true;
-          cb.closest('.sound-tog').style.opacity = '0.5';
-        }
-      });
-    }
+    // ==================== LOCALSTORAGE Y GENERACIÓN DE URL ====================
+    const STORAGE_KEY = 'hipe_widget_config';
+    let currentConfig = {};
 
-    function loadVals() {
-      document.getElementById('layoutMode').value = gv('layout', 'classic');
-      document.getElementById('showBranding').checked = gv('showBranding', true);
-      document.getElementById('tr-showBranding').classList.toggle('on', document.getElementById('showBranding').checked);
-      document.getElementById('showGoal').checked = gv('showGoal', true);
-      document.getElementById('tr-showGoal').classList.toggle('on', document.getElementById('showGoal').checked);
-      document.getElementById('showTicker').checked = gv('showTicker', true);
-      document.getElementById('tr-showTicker').classList.toggle('on', document.getElementById('showTicker').checked);
-      document.getElementById('channelName').value = gv('channelName', 'MancoSquad');
-      document.getElementById('sbPort').value = gv('sbPort', 8080);
-      document.getElementById('logoPath').value = gv('logoPath', 'assets/logo.png');
-      document.getElementById('goalGifPath').value = gv('goalGifPath', 'assets/corazon.gif');
-      document.getElementById('goalCelebSecs').value = gv('goalCelebrationSeconds', 10);
-      document.getElementById('goalRotSecs').value = gv('goalRotationSeconds', 30);
-      const showSponsors = gv('showSponsors', true);
-      document.getElementById('showSponsors').checked = showSponsors;
-      document.getElementById('tr-sponsors').classList.toggle('on', showSponsors);
-      const showUptime = gv('showUptime', true);
-      document.getElementById('showUptime').checked = showUptime;
-      document.getElementById('tr-uptime').classList.toggle('on', showUptime);
-      const showSocials = gv('showSocials', true);
-      document.getElementById('showSocials').checked = showSocials;
-      document.getElementById('tr-showSocials').classList.toggle('on', showSocials);
-      const showCreatorCode = gv('showCreatorCode', gv('creatorCode.active', true));
-      document.getElementById('showCreatorCode').checked = showCreatorCode;
-      document.getElementById('tr-showCreatorCode').classList.toggle('on', showCreatorCode);
-      document.getElementById('creatorLabel').value = gv('creatorCode.label', 'CÓDIGO EPIC');
-      document.getElementById('creatorValue').value = gv('creatorCode.value', '');
-      document.getElementById('creatorLogoPath').value = gv('creatorCode.logo', 'assets/codigo.png');
-      document.getElementById('sponsorTransition').value = gv('sponsorTransition', 'fade');
-      document.getElementById('socialRotSecs').value = gv('socialRotationSeconds', 5);
-      document.getElementById('socialTransition').value = gv('socialTransition', 'fade');
-      document.getElementById('tickerSecs').value = gv('tickerDisplaySeconds', 8);
-      document.getElementById('th-bg').value = gv('theme.bgColor', '#111117');
-      document.getElementById('th-border').value = gv('theme.borderColor', '#22222e');
-      document.getElementById('th-accent').value = gv('theme.accentColor', '#7c3aed');
-      document.getElementById('th-radius').value = gv('theme.borderRadius', '6px');
-
-      const enableSounds = gv('enableSounds', false);
-      document.getElementById('enableSounds').checked = enableSounds;
-      document.getElementById('tr-enableSounds').classList.toggle('on', enableSounds);
-
-      const volume = gv('notificationVolume', 80);
-      document.getElementById('notificationVolume').value = volume;
-      document.getElementById('volumeLabel').textContent = volume + '%';
-
-      toggleSponsorsUI();
-      toggleSocialsUI();
-      toggleCreatorUI();
-      applyLayoutModeUI();
-    }
-
-    async function saveConfig() {
+    function collectConfig() {
+      // Redes sociales
       const socials = PLATS.map(p => {
         const row = document.querySelector(`.soc-row[data-p="${p.k}"]`);
-        return { platform: p.k, handle: row.querySelector('.soc-inp').value.trim(), active: row.querySelector('input[type=checkbox]').checked };
+        if (!row) return { platform: p.k, handle: '', active: false };
+        const handle = row.querySelector('.soc-inp').value;
+        const active = row.querySelector('input[type="checkbox"]').checked;
+        return { platform: p.k, handle, active };
       });
+      // Patrocinadores
       const spRows = document.querySelectorAll('.sp-row');
       const sponsors = Array.from(spRows).map(r => ({
-        name: r.querySelector('.sp-name').value.trim(),
-        imagePath: r.querySelector('.sp-path').value.trim(),
+        name: r.querySelector('.sp-name').value,
+        imagePath: r.querySelector('.sp-path').value,
         duration: (parseInt(r.querySelector('.sp-dur').value) || 8) * 1000,
         active: r.querySelector('[data-role="sp-active"]').checked
-      })).filter(sp => sp.imagePath !== '');
+      })).filter(sp => sp.imagePath.trim() !== '');
+      // Eventos y sonidos
       const events = {};
       const soundEvents = {};
       EVTS.forEach(ev => {
@@ -1335,14 +927,12 @@
         const soundCb = document.getElementById(`sound-${ev.soundKey}`);
         soundEvents[ev.soundKey] = soundCb ? soundCb.checked : true;
       });
-      const channelName = document.getElementById('channelName').value.trim();
       const layout = document.getElementById('layoutMode').value;
       const cfg = {
-        channelName,
-        logoPath: document.getElementById('logoPath').value.trim(),
-        sbHost: '127.0.0.1',
+        channelName: document.getElementById('channelName').value,
+        logoPath: document.getElementById('logoPath').value,
         sbPort: parseInt(document.getElementById('sbPort').value) || 8080,
-        goalGifPath: document.getElementById('goalGifPath').value.trim(),
+        goalGifPath: document.getElementById('goalGifPath').value,
         layout,
         showBranding: layout === 'horizontal' ? document.getElementById('showBranding').checked : true,
         showGoal: layout === 'horizontal' ? document.getElementById('showGoal').checked : true,
@@ -1357,9 +947,9 @@
         showCreatorCode: document.getElementById('showCreatorCode').checked,
         creatorCode: {
           active: document.getElementById('showCreatorCode').checked,
-          label: document.getElementById('creatorLabel').value.trim() || 'CÓDIGO EPIC',
-          value: document.getElementById('creatorValue').value.trim(),
-          logo: document.getElementById('creatorLogoPath').value.trim() || 'assets/codigo.png'
+          label: document.getElementById('creatorLabel').value,
+          value: document.getElementById('creatorValue').value,
+          logo: document.getElementById('creatorLogoPath').value
         },
         socials,
         socialRotationSeconds: parseInt(document.getElementById('socialRotSecs').value) || 5,
@@ -1367,7 +957,7 @@
         events,
         tickerDisplaySeconds: parseInt(document.getElementById('tickerSecs').value) || 8,
         enableSounds: document.getElementById('enableSounds').checked,
-        soundEvents: soundEvents,
+        soundEvents,
         notificationVolume: parseInt(document.getElementById('notificationVolume').value),
         theme: {
           bgColor: document.getElementById('th-bg').value,
@@ -1375,56 +965,136 @@
           accentColor: document.getElementById('th-accent').value,
           textPrimary: '#ffffff',
           textSecondary: '#aaaaaa',
-          borderRadius: document.getElementById('th-radius').value,
-        },
-      };
-      const js = `// HIPE WIDGET — config.js\n// Generado: ${new Date().toLocaleString('es-MX')}\n\nconst CONFIG = ${JSON.stringify(cfg, null, 2)};\n`;
-      if (folderHandle) {
-        try {
-          const fh = await folderHandle.getFileHandle('config.js', { create: true });
-          const w = await fh.createWritable();
-          await w.write(js); await w.close();
-          let assetsHandle;
-          try { assetsHandle = await folderHandle.getDirectoryHandle('assets', { create: true }); } catch (e) { }
-          if (assetsHandle) {
-            for (const [name, file] of Object.entries(pendingFiles)) {
-              const fh2 = await assetsHandle.getFileHandle(name, { create: true });
-              const w2 = await fh2.createWritable();
-              await w2.write(file); await w2.close();
-            }
-          }
-          const assetCount = Object.keys(pendingFiles).length;
-          Object.keys(pendingFiles).forEach(k => delete pendingFiles[k]);
-          toast(`✓ config.js guardado en "${folderHandle.name}".${assetCount > 0 ? '\n' + assetCount + ' archivo(s) copiados a assets/.' : ''}\nRecarga el Browser Source en OBS.`);
-          return;
-        } catch (e) {
-          toast('Error al guardar: ' + e.message + '\nIntentando descarga normal...');
+          borderRadius: document.getElementById('th-radius').value
         }
-      }
-      if ('showSaveFilePicker' in window) {
-        try {
-          const fh = await window.showSaveFilePicker({ suggestedName: 'config.js', types: [{ description: 'JavaScript', accept: { 'application/javascript': ['.js'] } }] });
-          const w = await fh.createWritable(); await w.write(js); await w.close();
-          toast('✓ config.js guardado.\nReemplázalo en tu carpeta hipe-widget y recarga el Browser Source en OBS.');
-          return;
-        } catch (e) { if (e.name !== 'AbortError') console.warn(e); }
-      }
-      const blob = new Blob([js], { type: 'application/javascript' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-      a.download = 'config.js'; a.click(); URL.revokeObjectURL(a.href);
-      toast('✓ config.js descargado.\nReemplázalo en la carpeta hipe-widget y recarga el Browser Source en OBS.');
+      };
+      return cfg;
     }
 
-    function toast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 5000);
+    function saveToLocalStorage() {
+      const config = collectConfig();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
     }
 
-    loadVals();
-    buildSocials();
-    buildSponsors();
-    buildEvents();
+    function loadFromLocalStorage() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return false;
+      try {
+        const cfg = JSON.parse(saved);
+        // Aplicar a los campos del DOM
+        document.getElementById('channelName').value = cfg.channelName || '';
+        document.getElementById('logoPath').value = cfg.logoPath || '';
+        document.getElementById('sbPort').value = cfg.sbPort || 8080;
+        document.getElementById('goalGifPath').value = cfg.goalGifPath || '';
+        document.getElementById('layoutMode').value = cfg.layout || 'classic';
+        if (cfg.layout === 'horizontal') {
+          document.getElementById('showBranding').checked = cfg.showBranding === true;
+          document.getElementById('showGoal').checked = cfg.showGoal === true;
+          document.getElementById('showTicker').checked = cfg.showTicker === true;
+        }
+        document.getElementById('goalCelebSecs').value = cfg.goalCelebrationSeconds || 10;
+        document.getElementById('showSponsors').checked = cfg.showSponsors !== false;
+        document.getElementById('showUptime').checked = cfg.showUptime !== false;
+        document.getElementById('goalRotSecs').value = cfg.goalRotationSeconds || 30;
+        document.getElementById('sponsorTransition').value = cfg.sponsorTransition || 'fade';
+        document.getElementById('showSocials').checked = cfg.showSocials !== false;
+        document.getElementById('showCreatorCode').checked = cfg.showCreatorCode === true;
+        document.getElementById('creatorLabel').value = cfg.creatorCode?.label || '';
+        document.getElementById('creatorValue').value = cfg.creatorCode?.value || '';
+        document.getElementById('creatorLogoPath').value = cfg.creatorCode?.logo || '';
+        document.getElementById('socialRotSecs').value = cfg.socialRotationSeconds || 5;
+        document.getElementById('socialTransition').value = cfg.socialTransition || 'fade';
+        document.getElementById('tickerSecs').value = cfg.tickerDisplaySeconds || 8;
+        document.getElementById('enableSounds').checked = cfg.enableSounds === true;
+        document.getElementById('notificationVolume').value = cfg.notificationVolume || 80;
+        updateVolumeLabel();
+        document.getElementById('th-bg').value = cfg.theme?.bgColor || '#111117';
+        document.getElementById('th-border').value = cfg.theme?.borderColor || '#22222e';
+        document.getElementById('th-accent').value = cfg.theme?.accentColor || '#7c3aed';
+        document.getElementById('th-radius').value = cfg.theme?.borderRadius || '6px';
+
+        // Redes sociales
+        if (cfg.socials) {
+          cfg.socials.forEach(s => {
+            const row = document.querySelector(`.soc-row[data-p="${s.platform}"]`);
+            if (row) {
+              row.querySelector('.soc-inp').value = s.handle || '';
+              row.querySelector('input[type="checkbox"]').checked = s.active === true;
+              row.classList.toggle('on', s.active === true);
+            }
+          });
+        }
+        // Patrocinadores
+        const sponsorsList = document.getElementById('sponsors-list');
+        sponsorsList.innerHTML = '';
+        (cfg.sponsors || []).forEach(sp => addSponsorRow(sp));
+        // Eventos
+        EVTS.forEach(ev => {
+          const evCb = document.getElementById(`ev-${ev.k}`);
+          if (evCb) evCb.checked = cfg.events?.[ev.k] === true;
+          const soundCb = document.getElementById(`sound-${ev.soundKey}`);
+          if (soundCb) soundCb.checked = cfg.soundEvents?.[ev.soundKey] === true;
+        });
+        toggleSponsorsUI();
+        toggleSocialsUI();
+        toggleCreatorUI();
+        applyLayoutModeUI();
+        toggleSoundGlobal();
+        return true;
+      } catch(e) { console.warn(e); return false; }
+    }
+
+    function resetToDefaults() {
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    }
+
+    function generateWidgetUrl() {
+      const config = collectConfig();
+      const jsonStr = JSON.stringify(config);
+      const base64 = btoa(unescape(encodeURIComponent(jsonStr))); // safe base64 for utf8
+      const baseUrl = window.location.href.replace(/admin\.html.*$/, 'widget.html');
+      const url = `${baseUrl}?config=${encodeURIComponent(base64)}`;
+      return url;
+    }
+
+    function copyWidgetUrl() {
+      const url = generateWidgetUrl();
+      navigator.clipboard.writeText(url).then(() => toast('✅ Enlace copiado al portapapeles. Pégarlo en OBS como Browser Source.')).catch(() => toast('❌ No se pudo copiar.'));
+    }
+
+    // Inicialización
+    function init() {
+      buildSocials();
+      buildEvents();
+      const loaded = loadFromLocalStorage();
+      if (!loaded) {
+        // valores por defecto adicionales
+        document.getElementById('showSocials').checked = true;
+        document.getElementById('showCreatorCode').checked = false;
+        toggleSocialsUI();
+        toggleCreatorUI();
+      }
+      // Adjuntar eventos de cambio para guardado automático
+      const allInputs = document.querySelectorAll('input, select, textarea');
+      allInputs.forEach(el => el.addEventListener('change', saveToLocalStorage));
+      // Botones
+      document.getElementById('copyUrlBtn').addEventListener('click', copyWidgetUrl);
+      document.getElementById('resetBtn').addEventListener('click', resetToDefaults);
+      // Toggles específicos
+      document.getElementById('showSponsors').addEventListener('change', () => { toggleSponsorsUI(); saveToLocalStorage(); });
+      document.getElementById('showSocials').addEventListener('change', () => { toggleSocialsUI(); saveToLocalStorage(); });
+      document.getElementById('showCreatorCode').addEventListener('change', () => { toggleCreatorUI(); saveToLocalStorage(); });
+      document.getElementById('enableSounds').addEventListener('change', () => { toggleSoundGlobal(); saveToLocalStorage(); });
+      document.getElementById('layoutMode').addEventListener('change', () => { applyLayoutModeUI(); saveToLocalStorage(); });
+      document.getElementById('notificationVolume').addEventListener('input', updateVolumeLabel);
+      applyLayoutModeUI();
+      toggleSponsorsUI();
+      toggleSocialsUI();
+      toggleCreatorUI();
+      toggleSoundGlobal();
+    }
+    init();
   </script>
 </body>
 
