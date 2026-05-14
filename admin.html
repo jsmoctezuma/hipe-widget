@@ -8,7 +8,7 @@
     href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
     rel="stylesheet">
   <style>
-    /* ===== ESTILOS (con adición para botones en header) ===== */
+    /* ===== ESTILOS (sin cambios) ===== */
     *,
     *::before,
     *::after {
@@ -86,7 +86,6 @@
       letter-spacing: .05em;
     }
 
-    /* Nueva barra de botones debajo del header */
     .action-bar {
       background: var(--surf);
       border-bottom: 1px solid var(--bord);
@@ -678,7 +677,6 @@
     </div>
   </header>
 
-  <!-- Barra de acciones destacada -->
   <div class="action-bar">
     <button class="btn-copy" id="copyUrlBtn">📋 Copiar enlace del widget</button>
     <button class="btn-reset" id="resetBtn">⟳ Restaurar valores</button>
@@ -812,7 +810,6 @@
       { k: 'showDonations', l: 'Donaciones (StreamElements)', d: true, soundKey: 'soundDonations', eventType: 'donate' },
     ];
 
-    // Funciones de UI y lógica
     function toast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg; t.classList.add('show');
@@ -917,7 +914,6 @@
     const STORAGE_KEY = 'hipe_widget_config';
 
     function collectConfig() {
-      // Redes sociales
       const socials = PLATS.map(p => {
         const row = document.querySelector(`.soc-row[data-p="${p.k}"]`);
         if (!row) return { platform: p.k, handle: '', active: false };
@@ -925,7 +921,6 @@
         const active = row.querySelector('input[type="checkbox"]').checked;
         return { platform: p.k, handle, active };
       });
-      // Patrocinadores
       const spRows = document.querySelectorAll('.sp-row');
       const sponsors = Array.from(spRows).map(r => ({
         name: r.querySelector('.sp-name').value,
@@ -933,7 +928,6 @@
         duration: (parseInt(r.querySelector('.sp-dur').value) || 8) * 1000,
         active: r.querySelector('[data-role="sp-active"]').checked
       })).filter(sp => sp.imagePath.trim() !== '');
-      // Eventos y sonidos
       const events = {};
       const soundEvents = {};
       EVTS.forEach(ev => {
@@ -995,7 +989,6 @@
       if (!saved) return false;
       try {
         const cfg = JSON.parse(saved);
-        // Aplicar a los campos del DOM
         document.getElementById('channelName').value = cfg.channelName || '';
         document.getElementById('logoPath').value = cfg.logoPath || '';
         document.getElementById('sbPort').value = cfg.sbPort || 8080;
@@ -1027,7 +1020,6 @@
         document.getElementById('th-accent').value = cfg.theme?.accentColor || '#7c3aed';
         document.getElementById('th-radius').value = cfg.theme?.borderRadius || '6px';
 
-        // Redes sociales
         if (cfg.socials) {
           cfg.socials.forEach(s => {
             const row = document.querySelector(`.soc-row[data-p="${s.platform}"]`);
@@ -1038,11 +1030,9 @@
             }
           });
         }
-        // Patrocinadores
         const sponsorsList = document.getElementById('sponsors-list');
         sponsorsList.innerHTML = '';
         (cfg.sponsors || []).forEach(sp => addSponsorRow(sp));
-        // Eventos
         EVTS.forEach(ev => {
           const evCb = document.getElementById(`ev-${ev.k}`);
           if (evCb) evCb.checked = cfg.events?.[ev.k] === true;
@@ -1066,7 +1056,7 @@
     function generateWidgetUrl() {
       const config = collectConfig();
       const jsonStr = JSON.stringify(config);
-      const base64 = btoa(unescape(encodeURIComponent(jsonStr))); // safe base64 for utf8
+      const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
       const baseUrl = window.location.href.replace(/admin\.html.*$/, 'widget.html');
       const url = `${baseUrl}?config=${encodeURIComponent(base64)}`;
       return url;
@@ -1077,25 +1067,34 @@
       navigator.clipboard.writeText(url).then(() => toast('✅ Enlace copiado al portapapeles. Pégarlo en OBS como Browser Source.')).catch(() => toast('❌ No se pudo copiar.'));
     }
 
-    // Inicialización
     function init() {
       buildSocials();
       buildEvents();
       const loaded = loadFromLocalStorage();
       if (!loaded) {
-        // valores por defecto adicionales
+        // PRIMERA VEZ: inicializar eventos y sonidos activados por defecto
+        EVTS.forEach(ev => {
+          const evCb = document.getElementById(`ev-${ev.k}`);
+          if (evCb) evCb.checked = true;
+          const soundCb = document.getElementById(`sound-${ev.soundKey}`);
+          if (soundCb) soundCb.checked = true;
+        });
+        // También aseguramos que el sonido global esté activado
+        document.getElementById('enableSounds').checked = true;
+        // Redes sociales activadas por defecto
         document.getElementById('showSocials').checked = true;
         document.getElementById('showCreatorCode').checked = false;
         toggleSocialsUI();
         toggleCreatorUI();
+        toggleSoundGlobal();
+        applyLayoutModeUI();
+        // Guardar esta configuración inicial para que no vuelva a pasar
+        saveToLocalStorage();
       }
-      // Adjuntar eventos de cambio para guardado automático
       const allInputs = document.querySelectorAll('input, select, textarea');
       allInputs.forEach(el => el.addEventListener('change', saveToLocalStorage));
-      // Botones
       document.getElementById('copyUrlBtn').addEventListener('click', copyWidgetUrl);
       document.getElementById('resetBtn').addEventListener('click', resetToDefaults);
-      // Toggles específicos
       document.getElementById('showSponsors').addEventListener('change', () => { toggleSponsorsUI(); saveToLocalStorage(); });
       document.getElementById('showSocials').addEventListener('change', () => { toggleSocialsUI(); saveToLocalStorage(); });
       document.getElementById('showCreatorCode').addEventListener('change', () => { toggleCreatorUI(); saveToLocalStorage(); });
