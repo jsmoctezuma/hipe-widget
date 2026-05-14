@@ -1,3 +1,85 @@
+# 🎮 Hipe Widget – Eventos en pantalla para Streamer.bot
+
+Widget profesional y elegante para mostrar en tu stream (OBS) los eventos de la comunidad: seguidores, suscriptores, raids, bits, donaciones, miembros de YouTube, etc. Incluye un **panel de administración** para que personalices colores, imágenes, sonidos y más, sin tocar código.
+
+## ✨ Características
+
+- **Dos diseños**: Compacto (dos filas) u Horizontal (una fila ancha).
+- **Eventos compatibles**:
+  - Twitch: follows, subs, resubs, gift subs, gift bombs, raids, bits (cheers), canjes de puntos.
+  - YouTube: nuevos miembros, hitos de membresía, superchats.
+  - StreamElements: donaciones (tips).
+- **Meta de suscriptores** con barra de progreso y celebración al alcanzarla.
+- **Patrocinadores**: imágenes o videos que rotan automáticamente.
+- **Redes sociales**: muestra tus cuentas de Twitch, YouTube, Instagram, TikTok, X, Facebook, Discord (rotación).
+- **Código de creador**: texto y logo personalizable.
+- **Sonidos**: activa/desactiva el sonido globalmente o por cada tipo de evento. Ajusta el volumen.
+- **Ticker inteligente**: el tamaño del texto se ajusta automáticamente al espacio disponible (sin desbordes).
+- **Configuración guardada**: el panel recuerda tus ajustes en el navegador (localStorage).
+- **Enlace único**: genera un enlace que pegas en OBS y el widget se carga con tu configuración.
+
+## 📦 Requisitos previos
+
+- Tener instalado **Streamer.bot** (gratuito) y conectado a tus cuentas de Twitch, YouTube y/o StreamElements.
+- Tener **OBS Studio** (gratuito).
+- Una cuenta de **GitHub** (opcional, si quieres alojar los archivos en la nube; también puedes usar un servidor web local).
+
+## 🚀 Instalación y primeros pasos
+
+### 1. Obtén los archivos del widget
+
+Puedes descargarlos de dos formas:
+
+- **Opción A (recomendada)**: Visita el repositorio oficial en GitHub:  
+  `https://github.com/TU_USUARIO/hipe-widget`  
+  Haz clic en el botón verde **"Code"** y luego **"Download ZIP"**. Extrae la carpeta en tu computadora.
+
+- **Opción B (si tienes conocimientos de Git)**: Clona el repositorio con:  
+  `git clone https://github.com/TU_USUARIO/hipe-widget.git`
+
+### 2. Sube los archivos a un servidor web (o usa GitHub Pages)
+
+El widget necesita estar alojado en un servidor web para que OBS pueda cargarlo. La forma más fácil es usar **GitHub Pages** (gratuito):
+
+- Crea un repositorio público en GitHub (por ejemplo, `hipe-widget`).
+- Sube los archivos `admin.html`, `widget.html` y la carpeta `assets` (con sus imágenes y sonido).
+- En la configuración del repositorio, activa **GitHub Pages** (rama `main`, carpeta raíz).
+- Obtendrás una URL como: `https://tuusuario.github.io/hipe-widget/`
+
+También puedes usar cualquier otro hosting estático (Netlify, Vercel, o incluso un servidor local con `http-server`).
+
+### 3. Importa la acción de Streamer.bot
+
+Dentro de la carpeta que descargaste, encontrarás un archivo llamado `Hipe_Widget.sbaction` (o el código Base64 en el README). Sigue estos pasos:
+
+1. Abre **Streamer.bot**.
+2. Ve a la pestaña **Actions** (Acciones).
+3. Haz clic en **Import** (Importar) y selecciona el archivo `Hipe_Widget.sbaction`.
+4. Asegúrate de que la acción aparezca en la lista y esté **habilitada** (ícono verde).
+
+> **Nota**: La acción ya incluye los disparadores para Twitch y StreamElements. Para que funcionen los eventos de **YouTube**, debes añadir manualmente los siguientes triggers:
+> - YouTube → New Member
+> - YouTube → Member Milestone
+> - YouTube → Super Chat
+
+### 4. Configura tu widget
+
+Abre el panel de administración en tu navegador usando la URL que obtuviste en el paso 2. Por ejemplo:
+Verás un formulario con varias secciones:
+
+- **Diseño del Widget**: elige entre Compacto (dos filas) o Horizontal (una fila ancha).
+- **Tu Canal**: ingresa el nombre de tu canal, el puerto de Streamer.bot (normalmente 8080) y las URLs de tu logo e imagen del corazón (puedes dejarlas vacías para usar las imágenes por defecto de la carpeta `assets`).
+- **Meta de Suscriptores**: ajusta los segundos de celebración y cuánto tiempo se ve el cronómetro.
+- **Patrocinadores y tiempo en vivo**: activa/desactiva los patrocinadores y el cronómetro. Puedes añadir patrocinadores con nombre, duración y URL de la imagen (recomendamos usar Imgur).
+- **Redes sociales y código de creador**: activa las redes que quieras, escribe tus usuarios y configura el código de creador (texto, etiqueta y logo).
+- **Mensajes en pantalla (eventos)**: aquí puedes activar el sonido global, elegir qué eventos se muestran y cuáles suenan, y ajustar el volumen.
+- **Colores y forma**: cambia el color de fondo, bordes, color principal (acento) y el redondeo de esquinas.
+
+**Todos los cambios se guardan automáticamente** en tu navegador. Si cierras el panel y vuelves a abrirlo, tus preferencias seguirán ahí.
+
+### 5. Genera el enlace para OBS
+
+Una vez que hayas configurado todo a tu gusto, haz clic en el botón grande verde **"📋 Copiar enlace del widget"** (está justo debajo del título). Se copiará un enlace largo similar a:
 
 Ese enlace contiene **toda tu configuración** (colores, imágenes, eventos, etc.). ¡Guárdalo o pégalo directamente en OBS!
 
