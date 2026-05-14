@@ -8,7 +8,6 @@
     href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap"
     rel="stylesheet">
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
-  <script src="config.js"></script>
   <style>
     /* ========== ESTILOS (exactamente igual que antes, sin cambios) ========== */
     *,
@@ -854,7 +853,22 @@
       completo: { bodyW: 1920, bodyH: 116, gapH: 10, id: 300, goal: 370, sponsor: 300, ticker: 594, social: 300, hasSponsor: true, hasSocial: true }
     };
 
-    const CFG = (typeof CONFIG !== 'undefined' ? CONFIG : {});
+    // ==================== LEER CONFIGURACIÓN DESDE LA URL ====================
+    let CFG = {};
+    const urlParams = new URLSearchParams(window.location.search);
+    const configParam = urlParams.get('config');
+    if (configParam) {
+      try {
+        // El parámetro viene en Base64
+        const decoded = atob(configParam);
+        // decoded es un string JSON (puede venir con caracteres UTF-8)
+        const json = decodeURIComponent(escape(decoded));
+        CFG = JSON.parse(json);
+      } catch (e) {
+        console.warn('Error al leer la configuración de la URL', e);
+      }
+    }
+    // Si no hay parámetro, se usa un objeto vacío (valores por defecto en el widget)
     const T = CFG.theme || {};
     const R = document.documentElement;
 
