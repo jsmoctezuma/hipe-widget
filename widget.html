@@ -501,28 +501,115 @@
     }
 
     /* Badge de eventos (mismo que antes) */
-    .et-sub { background: rgba(145, 70, 255, .25); }
-    .et-sub .ev-label, .et-sub .ev-icon, .et-sub iconify-icon { color: #9146FF; }
-    .et-resub { background: rgba(145, 70, 255, .20); }
-    .et-resub .ev-label, .et-resub .ev-icon, .et-resub iconify-icon { color: #b07dff; }
-    .et-gift { background: rgba(249, 115, 22, .25); }
-    .et-gift .ev-label, .et-gift .ev-icon, .et-gift iconify-icon { color: #F97316; }
-    .et-raid { background: rgba(59, 130, 246, .25); }
-    .et-raid .ev-label, .et-raid .ev-icon, .et-raid iconify-icon { color: #3B82F6; }
-    .et-bits { background: rgba(48, 196, 171, .25); }
-    .et-bits .ev-label, .et-bits .ev-icon, .et-bits iconify-icon { color: #30C4AB; }
-    .et-follow { background: rgba(235, 76, 76, .25); }
-    .et-follow .ev-label, .et-follow .ev-icon, .et-follow iconify-icon { color: #EB4C4C; }
-    .et-donate { background: rgba(23, 155, 215, .25); }
-    .et-donate .ev-label, .et-donate .ev-icon, .et-donate iconify-icon { color: #179BD7; }
-    .et-redeem { background: rgba(245, 158, 11, .25); }
-    .et-redeem .ev-label, .et-redeem .ev-icon, .et-redeem iconify-icon { color: #F59E0B; }
-    .et-member { background: rgba(255, 0, 0, .20); }
-    .et-member .ev-label, .et-member .ev-icon, .et-member iconify-icon { color: #FF6060; }
-    .et-super { background: rgba(6, 182, 212, .25); }
-    .et-super .ev-label, .et-super .ev-icon, .et-super iconify-icon { color: #06B6D4; }
-    .et-ok { background: rgba(74, 222, 128, .15); }
-    .et-ok .ev-label, .et-ok .ev-icon, .et-ok iconify-icon { color: #4ade80; }
+    .et-sub {
+      background: rgba(145, 70, 255, .25);
+    }
+
+    .et-sub .ev-label,
+    .et-sub .ev-icon,
+    .et-sub iconify-icon {
+      color: #9146FF;
+    }
+
+    .et-resub {
+      background: rgba(145, 70, 255, .20);
+    }
+
+    .et-resub .ev-label,
+    .et-resub .ev-icon,
+    .et-resub iconify-icon {
+      color: #b07dff;
+    }
+
+    .et-gift {
+      background: rgba(249, 115, 22, .25);
+    }
+
+    .et-gift .ev-label,
+    .et-gift .ev-icon,
+    .et-gift iconify-icon {
+      color: #F97316;
+    }
+
+    .et-raid {
+      background: rgba(59, 130, 246, .25);
+    }
+
+    .et-raid .ev-label,
+    .et-raid .ev-icon,
+    .et-raid iconify-icon {
+      color: #3B82F6;
+    }
+
+    .et-bits {
+      background: rgba(48, 196, 171, .25);
+    }
+
+    .et-bits .ev-label,
+    .et-bits .ev-icon,
+    .et-bits iconify-icon {
+      color: #30C4AB;
+    }
+
+    .et-follow {
+      background: rgba(235, 76, 76, .25);
+    }
+
+    .et-follow .ev-label,
+    .et-follow .ev-icon,
+    .et-follow iconify-icon {
+      color: #EB4C4C;
+    }
+
+    .et-donate {
+      background: rgba(23, 155, 215, .25);
+    }
+
+    .et-donate .ev-label,
+    .et-donate .ev-icon,
+    .et-donate iconify-icon {
+      color: #179BD7;
+    }
+
+    .et-redeem {
+      background: rgba(245, 158, 11, .25);
+    }
+
+    .et-redeem .ev-label,
+    .et-redeem .ev-icon,
+    .et-redeem iconify-icon {
+      color: #F59E0B;
+    }
+
+    .et-member {
+      background: rgba(255, 0, 0, .20);
+    }
+
+    .et-member .ev-label,
+    .et-member .ev-icon,
+    .et-member iconify-icon {
+      color: #FF6060;
+    }
+
+    .et-super {
+      background: rgba(6, 182, 212, .25);
+    }
+
+    .et-super .ev-label,
+    .et-super .ev-icon,
+    .et-super iconify-icon {
+      color: #06B6D4;
+    }
+
+    .et-ok {
+      background: rgba(74, 222, 128, .15);
+    }
+
+    .et-ok .ev-label,
+    .et-ok .ev-icon,
+    .et-ok iconify-icon {
+      color: #4ade80;
+    }
 
     #tick-user {
       font-size: 36px;
@@ -743,7 +830,9 @@
               <span id="gst-txt">--/--</span>
             </div>
           </div>
-          <div id="gst-track"><div id="gst-fill"></div></div>
+          <div id="gst-track">
+            <div id="gst-fill"></div>
+          </div>
         </div>
         <!-- Meta de bits (se crea siempre, pero se oculta si no está activa) -->
         <div class="gst" id="gst-bits">
@@ -754,7 +843,9 @@
               <span id="gst-bits-txt">--/--</span>
             </div>
           </div>
-          <div id="gst-track-bits"><div id="gst-bits-fill"></div></div>
+          <div id="gst-track-bits">
+            <div id="gst-bits-fill"></div>
+          </div>
           <div class="bits-caption" id="bits-caption"></div>
         </div>
         <!-- Celebración -->
@@ -1048,7 +1139,9 @@
 
     if (isCompleto) {
       if (!showBranding) secId.style.display = 'none';
-      if (!showGoal) secGoal.style.display = 'none';
+      // Mostrar secGoal si al menos una meta está activa (subs o bits)
+      const anyGoalActive = showGoal || bitsActive;
+      if (!anyGoalActive) secGoal.style.display = 'none';
       if (!showTicker) secTicker.style.display = 'none';
       if (!hasSponsorBlock) secSponsor.style.display = 'none';
       if (!hasSocialContent) secSocial.style.display = 'none';
