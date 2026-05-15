@@ -828,6 +828,7 @@
       document.getElementById('bits-caption').textContent = bitsCaption;
       document.getElementById('gst-bits-txt').textContent = `0/${bitsTarget}`;
       document.getElementById('gst-bits-fill').style.width = '0%';
+      bitsSlide.style.display = ''; // asegurar visible
     } else {
       bitsSlide.style.display = 'none';
     }
@@ -907,21 +908,27 @@
       else applyPhase('nosponsor_nosocial');
     }
 
-    // ========== ROTACIÓN DE METAS ==========
+    // ========== ROTACIÓN DE METAS (corregida) ==========
     let goalSlides = [], currentGoalIndex = 0, goalRotationInterval = null;
 
     function initGoalRotation() {
       if (goalRotationInterval) clearInterval(goalRotationInterval);
-      goalSlides = [];
       const subs = document.getElementById('gst-normal');
       const bits = document.getElementById('gst-bits');
       const cel = document.getElementById('gst-cel');
-      // Solo añadir subs si showGoal es true (en horizontal puede ser false)
+      
+      // Eliminar la clase 'on' de TODOS los slides (para evitar superposición)
+      if (subs) subs.classList.remove('on');
+      if (bits) bits.classList.remove('on');
+      if (cel) cel.classList.remove('on');
+      
+      goalSlides = [];
+      // Solo añadir subs si debe mostrarse (en compacto siempre, en horizontal según showGoal)
       if (subs && (isCompacto || showGoal)) goalSlides.push(subs);
       if (bitsActive && bits) goalSlides.push(bits);
       if (cel) goalSlides.push(cel);
+      
       if (goalSlides.length === 0) return;
-      goalSlides.forEach(slide => slide.classList.remove('on'));
       currentGoalIndex = 0;
       goalSlides[currentGoalIndex].classList.add('on');
       if (goalSlides.length > 1) {
@@ -990,7 +997,7 @@
       tickerResizeObserver.observe(container);
     }
 
-    // ========== RESTO DE LÓGICA ==========
+    // ========== RESTO DE LÓGICA (eventos, sponsors, social, websocket) ==========
     let celebrating = false, celTimer = null;
     let uptimeSeconds = 0, uptimeInterval = null, streamLive = false;
 
@@ -1238,11 +1245,7 @@
           if (payload.action === 'goalUpdate') {
             const goalType = payload.type || 'subs';
             if (goalType === 'bits') {
-              // Por ahora solo actualizamos, sin celebración automática para bits
               updateBitsGoal(+payload.current, +payload.target);
-              // Si se quiere celebrar, descomentar:
-              // if (payload.celebrating === true || payload.celebrating === 'true')
-              //   celebrate(+payload.current, +payload.newTarget, payload.lastUser, 'bits');
             } else {
               if (payload.celebrating === true || payload.celebrating === 'true')
                 celebrate(+payload.current, +payload.newTarget, payload.lastUser, 'subs');
