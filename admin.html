@@ -8,7 +8,7 @@
     href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
     rel="stylesheet">
   <style>
-    /* ===== ESTILOS (sin cambios) ===== */
+    /* ===== ESTILOS (sin cambios estructurales) ===== */
     *,
     *::before,
     *::after {
@@ -226,6 +226,21 @@
       height: 46px;
       cursor: pointer;
       width: 100%;
+    }
+
+    /* Nuevos estilos para sliders de opacidad */
+    .range-field {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .range-field input {
+      flex: 1;
+    }
+    .range-field span {
+      min-width: 45px;
+      text-align: right;
+      color: var(--mut);
     }
 
     .r2 {
@@ -769,13 +784,34 @@
       <div class="field" style="margin-top:18px;max-width:220px;"><label>Segundos que dura cada mensaje</label><input type="number" id="tickerSecs" value="8" min="3" max="30" onchange="saveToLocalStorage()"><span class="fhint">Tiempo que se ve cada evento en pantalla.</span></div>
     </div>
 
-    <!-- ========== APARIENCIA ========== -->
+    <!-- ========== APARIENCIA (COLORES, OPACIDAD, TIPOGRAFÍA) ========== -->
     <div class="card">
       <div class="card-title">Colores y forma</div>
       <div class="r3">
         <div class="field"><label>Color de fondo</label><input type="color" id="th-bg" value="#111117" onchange="saveToLocalStorage()"></div>
         <div class="field"><label>Color de los bordes</label><input type="color" id="th-border" value="#22222e" onchange="saveToLocalStorage()"></div>
         <div class="field"><label>Color principal (acento)</label><input type="color" id="th-accent" value="#7c3aed" onchange="saveToLocalStorage()"></div>
+      </div>
+      <div class="field">
+        <label>Opacidad del fondo (%)</label>
+        <div class="range-field">
+          <input type="range" id="bgOpacity" min="0" max="100" step="1" value="100" onchange="saveToLocalStorage()">
+          <span id="bgOpacityLabel">100%</span>
+        </div>
+        <div class="fhint">Define qué tan transparente es el fondo (0% = completamente transparente).</div>
+      </div>
+      <div class="field">
+        <label>Opacidad de los bordes (%)</label>
+        <div class="range-field">
+          <input type="range" id="borderOpacity" min="0" max="100" step="1" value="100" onchange="saveToLocalStorage()">
+          <span id="borderOpacityLabel">100%</span>
+        </div>
+        <div class="fhint">Transparencia del borde alrededor de cada bloque.</div>
+      </div>
+      <div class="field">
+        <label>Tipografía principal</label>
+        <input type="text" id="fontFamily" placeholder="Rajdhani" onchange="saveToLocalStorage()">
+        <div class="fhint">Escribe el nombre de una fuente de Google Fonts (ej. "Poppins", "Montserrat", "Roboto"). Si está vacío, se usará "Rajdhani".</div>
       </div>
       <div class="r2"><div class="field"><label>Redondeo de las esquinas</label><input type="text" id="th-radius" value="6px" placeholder="6px" onchange="saveToLocalStorage()"></div></div>
       <div class="hint">El color principal se usa en la barra de progreso de la meta, el cronómetro y otros detalles.</div>
@@ -819,6 +855,13 @@
     function updateVolumeLabel() {
       const vol = document.getElementById('notificationVolume').value;
       document.getElementById('volumeLabel').textContent = vol + '%';
+    }
+
+    function updateOpacityLabels() {
+      const bgOp = document.getElementById('bgOpacity').value;
+      const brOp = document.getElementById('borderOpacity').value;
+      document.getElementById('bgOpacityLabel').textContent = bgOp + '%';
+      document.getElementById('borderOpacityLabel').textContent = brOp + '%';
     }
 
     function toggleSponsorsUI() {
@@ -973,7 +1016,10 @@
           accentColor: document.getElementById('th-accent').value,
           textPrimary: '#ffffff',
           textSecondary: '#aaaaaa',
-          borderRadius: document.getElementById('th-radius').value
+          borderRadius: document.getElementById('th-radius').value,
+          bgOpacity: parseInt(document.getElementById('bgOpacity').value) / 100,
+          borderOpacity: parseInt(document.getElementById('borderOpacity').value) / 100,
+          fontFamily: document.getElementById('fontFamily').value.trim()
         }
       };
       return cfg;
@@ -1019,7 +1065,12 @@
         document.getElementById('th-border').value = cfg.theme?.borderColor || '#22222e';
         document.getElementById('th-accent').value = cfg.theme?.accentColor || '#7c3aed';
         document.getElementById('th-radius').value = cfg.theme?.borderRadius || '6px';
-
+        const bgOp = cfg.theme?.bgOpacity !== undefined ? Math.round(cfg.theme.bgOpacity * 100) : 100;
+        const brOp = cfg.theme?.borderOpacity !== undefined ? Math.round(cfg.theme.borderOpacity * 100) : 100;
+        document.getElementById('bgOpacity').value = bgOp;
+        document.getElementById('borderOpacity').value = brOp;
+        updateOpacityLabels();
+        document.getElementById('fontFamily').value = cfg.theme?.fontFamily || '';
         if (cfg.socials) {
           cfg.socials.forEach(s => {
             const row = document.querySelector(`.soc-row[data-p="${s.platform}"]`);
@@ -1072,23 +1123,19 @@
       buildEvents();
       const loaded = loadFromLocalStorage();
       if (!loaded) {
-        // PRIMERA VEZ: inicializar eventos y sonidos activados por defecto
         EVTS.forEach(ev => {
           const evCb = document.getElementById(`ev-${ev.k}`);
           if (evCb) evCb.checked = true;
           const soundCb = document.getElementById(`sound-${ev.soundKey}`);
           if (soundCb) soundCb.checked = true;
         });
-        // También aseguramos que el sonido global esté activado
         document.getElementById('enableSounds').checked = true;
-        // Redes sociales activadas por defecto
         document.getElementById('showSocials').checked = true;
         document.getElementById('showCreatorCode').checked = false;
         toggleSocialsUI();
         toggleCreatorUI();
         toggleSoundGlobal();
         applyLayoutModeUI();
-        // Guardar esta configuración inicial para que no vuelva a pasar
         saveToLocalStorage();
       }
       const allInputs = document.querySelectorAll('input, select, textarea');
@@ -1101,6 +1148,8 @@
       document.getElementById('enableSounds').addEventListener('change', () => { toggleSoundGlobal(); saveToLocalStorage(); });
       document.getElementById('layoutMode').addEventListener('change', () => { applyLayoutModeUI(); saveToLocalStorage(); });
       document.getElementById('notificationVolume').addEventListener('input', updateVolumeLabel);
+      document.getElementById('bgOpacity').addEventListener('input', () => { updateOpacityLabels(); saveToLocalStorage(); });
+      document.getElementById('borderOpacity').addEventListener('input', () => { updateOpacityLabels(); saveToLocalStorage(); });
       applyLayoutModeUI();
       toggleSponsorsUI();
       toggleSocialsUI();
