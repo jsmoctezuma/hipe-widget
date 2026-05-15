@@ -9,7 +9,7 @@
     rel="stylesheet">
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
   <style>
-    /* ========== ESTILOS (sin cambios) ========== */
+    /* ========== ESTILOS BASE ========== */
     *,
     *::before,
     *::after {
@@ -37,6 +37,10 @@
     body {
       background: transparent;
       overflow: hidden;
+    }
+
+    /* La fuente se aplicará dinámicamente desde JS, pero dejamos un fallback */
+    body {
       font-family: 'Rajdhani', sans-serif;
     }
 
@@ -773,6 +777,7 @@
       width: 14px;
     }
   </style>
+  <!-- Carga dinámica de fuente adicional si se especifica (no se usa en <style>, se inyecta desde JS) -->
 </head>
 
 <body>
@@ -867,15 +872,11 @@
       }
     }
 
-    // ========== VALORES POR DEFECTO (cuando no vienen en la URL) ==========
-    // Imágenes: usar archivos locales de assets si no se proporciona URL
+    // ========== VALORES POR DEFECTO ==========
     const logoPath = CFG.logoPath || 'assets/logo.png';
     const goalGifPath = CFG.goalGifPath || 'assets/corazon.gif';
-    // Sonido global: activado por defecto
     const enableSounds = CFG.enableSounds === undefined ? true : CFG.enableSounds === true;
-    // Volumen: 80% por defecto
     const notificationVolume = (CFG.notificationVolume !== undefined ? CFG.notificationVolume : 80) / 100;
-    // Eventos del ticker: todos activados por defecto
     const defaultEvents = {
       showSubs: true, showReSubs: true, showGiftSubs: true, showGiftBombs: true,
       showRaids: true, showCheers: true, showFollows: true, showRedemptions: true,
@@ -883,7 +884,6 @@
     };
     const eventsFromCfg = CFG.events || {};
     const events = { ...defaultEvents, ...eventsFromCfg };
-    // Sonidos individuales: todos activados por defecto
     const defaultSoundEvents = {
       soundSubs: true, soundReSubs: true, soundGiftSubs: true, soundGiftBombs: true,
       soundRaids: true, soundCheers: true, soundFollows: true, soundRedemptions: true,
@@ -892,19 +892,16 @@
     const soundEventsFromCfg = CFG.soundEvents || {};
     const soundEvents = { ...defaultSoundEvents, ...soundEventsFromCfg };
 
-    // Actualizar CFG para que el resto del código use estos valores
     CFG.logoPath = logoPath;
     CFG.goalGifPath = goalGifPath;
     CFG.events = events;
     CFG.soundEvents = soundEvents;
     CFG.enableSounds = enableSounds;
-    CFG.notificationVolume = notificationVolume * 100; // para que el slider de volumen (si se usa) lo entienda
+    CFG.notificationVolume = notificationVolume * 100;
 
-    // Para el código de creador, también se usará su propio logo por defecto si no viene
     if (CFG.creatorCode && !CFG.creatorCode.logo) {
       CFG.creatorCode.logo = 'assets/codigo.png';
     } else if (CFG.creatorCode === undefined && (CFG.showCreatorCode === true)) {
-      // Si no existe creatorCode pero está activado, crear uno con valores por defecto
       CFG.creatorCode = {
         active: true,
         label: "CÓDIGO DE CREADOR",
@@ -916,19 +913,11 @@
     const T = CFG.theme || {};
     const R = document.documentElement;
 
-    // Mapeo de tipos de evento a las claves del config
+    // Mapeo de sonidos
     const soundMap = {
-      'sub': 'soundSubs',
-      'resub': 'soundReSubs',
-      'giftsub': 'soundGiftSubs',
-      'giftbomb': 'soundGiftBombs',
-      'raid': 'soundRaids',
-      'bits': 'soundCheers',
-      'follow': 'soundFollows',
-      'redeem': 'soundRedemptions',
-      'member': 'soundYTMembers',
-      'super': 'soundSuperChat',
-      'donate': 'soundDonations'
+      'sub': 'soundSubs', 'resub': 'soundReSubs', 'giftsub': 'soundGiftSubs', 'giftbomb': 'soundGiftBombs',
+      'raid': 'soundRaids', 'bits': 'soundCheers', 'follow': 'soundFollows', 'redeem': 'soundRedemptions',
+      'member': 'soundYTMembers', 'super': 'soundSuperChat', 'donate': 'soundDonations'
     };
 
     function playNotificationSound(eventType) {
@@ -937,7 +926,6 @@
       if (!soundKey) return;
       const allowed = soundEvents[soundKey] === undefined ? true : soundEvents[soundKey];
       if (!allowed) return;
-
       const audio = document.getElementById('notification-sound');
       if (!audio) return;
       if (audio.readyState < 2) {
@@ -953,11 +941,8 @@
       }
     }
 
-    // Configurar volumen del audio
     const audioElem = document.getElementById('notification-sound');
-    if (audioElem) {
-      audioElem.volume = notificationVolume;
-    }
+    if (audioElem) audioElem.volume = notificationVolume;
 
     function normalizeLayout(raw) { return (raw === 'horizontal' || raw === 'completo') ? 'completo' : 'compacto'; }
     const layoutMode = normalizeLayout(CFG.layout);
@@ -971,39 +956,43 @@
       return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
     }
 
-    R.style.setProperty('--bg', T.bgColor || '#111117');
-    R.style.setProperty('--border', T.borderColor || '#22222e');
+    // ===== APLICAR COLORES CON OPACIDAD Y BORDES =====
+    const bgColor = T.bgColor || '#111117';
+    const borderColor = T.borderColor || '#22222e';
+    const bgOpacity = (T.bgOpacity !== undefined ? T.bgOpacity : 1);
+    const borderOpacity = (T.borderOpacity !== undefined ? T.borderOpacity : 1);
+
+    const bgRgb = hexToRgb(bgColor);
+    const borderRgb = hexToRgb(borderColor);
+
+    R.style.setProperty('--bg', `rgba(${bgRgb}, ${bgOpacity})`);
+    R.style.setProperty('--border', `rgba(${borderRgb}, ${borderOpacity})`);
     R.style.setProperty('--accent', T.accentColor || '#7c3aed');
     R.style.setProperty('--accent-rgb', hexToRgb(T.accentColor || '#7c3aed'));
 
-    // ===== CONTRASTE AUTOMÁTICO: ajustar color del texto según luminosidad del fondo =====
+    // ===== CONTRASTE AUTOMÁTICO (según luminosidad del color de fondo original, sin opacidad) =====
     function getLuminance(hex) {
       const rgb = parseInt(hex.slice(1), 16);
       const r = (rgb >> 16) & 0xff;
       const g = (rgb >> 8) & 0xff;
       const b = (rgb >> 0) & 0xff;
-      const rs = r / 255;
-      const gs = g / 255;
-      const bs = b / 255;
+      const rs = r / 255, gs = g / 255, bs = b / 255;
       const gamma = (c) => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
       const lum = 0.2126 * gamma(rs) + 0.7152 * gamma(gs) + 0.0722 * gamma(bs);
       return lum;
     }
-
-    const bgColor = T.bgColor || '#111117';
     const lum = getLuminance(bgColor);
     if (lum > 0.5) {
-      // Fondo claro: texto oscuro
       R.style.setProperty('--text', '#111111');
       R.style.setProperty('--muted', '#555555');
     } else {
-      // Fondo oscuro: texto claro (valores por defecto)
       R.style.setProperty('--text', '#ffffff');
       R.style.setProperty('--muted', '#aaaaaa');
     }
 
     R.style.setProperty('--radius', T.borderRadius || '4px');
 
+    // Gradientes de acento (igual que antes)
     (function () {
       const rgb = hexToRgb(T.accentColor || '#7c3aed').split(',').map(Number);
       const r = rgb[0], g = rgb[1], b = rgb[2];
@@ -1016,6 +1005,20 @@
       R.style.setProperty('--social-soft', `rgba(${r},${g},${b},.24)`);
       R.style.setProperty('--social-soft-2', `rgba(${r},${g},${b},.10)`);
     })();
+
+    // ===== TIPOGRAFÍA (personalizada, excepto cronómetro) =====
+    const customFont = T.fontFamily ? T.fontFamily.trim() : '';
+    if (customFont && customFont !== 'Rajdhani') {
+      // Cargar la fuente desde Google Fonts si no es una de las precargadas
+      const link = document.createElement('link');
+      link.href = `https://fonts.googleapis.com/css2?family=${customFont.replace(/ /g, '+')}:wght@400;500;600;700&display=swap`;
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+      // Aplicar la fuente al body (excepto .sp-utval que ya tiene Barlow Condensed)
+      document.body.style.fontFamily = `'${customFont}', 'Rajdhani', sans-serif`;
+    } else {
+      document.body.style.fontFamily = "'Rajdhani', sans-serif";
+    }
 
     document.getElementById('id-avatar').src = CFG.logoPath || '';
     document.getElementById('id-name').textContent = (CFG.channelName || 'HIPE').toUpperCase();
@@ -1093,34 +1096,25 @@
       else applyPhase('nosponsor_nosocial');
     }
 
-    // ========== TICKER AJUSTE DINÁMICO ==========
+    // ========== TICKER AJUSTE DINÁMICO (sin cambios) ==========
     let tickerResizeObserver = null;
-
     function adjustTickerFontSize() {
       const container = document.getElementById('tick-inner');
       const userSpan = document.getElementById('tick-user');
       const extraSpan = document.getElementById('tick-extra');
       if (!container || !userSpan || !extraSpan) return;
-
       const userText = userSpan.textContent;
       const extraText = extraSpan.textContent;
       if (!userText && !extraText) return;
-
       const containerWidth = container.clientWidth;
-      if (containerWidth === 0) {
-        setTimeout(adjustTickerFontSize, 100);
-        return;
-      }
-
+      if (containerWidth === 0) { setTimeout(adjustTickerFontSize, 100); return; }
       const badge = document.getElementById('tick-badge');
       const badgeWidth = badge ? badge.offsetWidth : 0;
       const gap = parseFloat(getComputedStyle(container).gap) || 8;
       const marginLeftUser = parseFloat(getComputedStyle(userSpan).marginLeft) || 12;
       const marginLeftExtra = parseFloat(getComputedStyle(extraSpan).marginLeft) || 6;
       const availableWidth = containerWidth - badgeWidth - gap - marginLeftUser - marginLeftExtra;
-
       if (availableWidth <= 0) return;
-
       function cloneSpan(span, text, fontSize) {
         const clone = span.cloneNode(true);
         clone.style.position = 'absolute';
@@ -1135,28 +1129,23 @@
         document.body.removeChild(clone);
         return width;
       }
-
       let userSize = 36;
       let extraSize = 34;
       const minSize = 14;
-
       function measure() {
         const userW = cloneSpan(userSpan, userText, userSize);
         const extraW = cloneSpan(extraSpan, extraText, extraSize);
         return userW + extraW;
       }
-
       let totalWidth = measure();
       while (totalWidth > availableWidth && userSize > minSize) {
         userSize -= 2;
         extraSize -= 2;
         totalWidth = measure();
       }
-
       userSpan.style.fontSize = userSize + 'px';
       extraSpan.style.fontSize = extraSize + 'px';
     }
-
     function initTickerResizeObserver() {
       const container = document.getElementById('tick-inner');
       if (!container) return;
