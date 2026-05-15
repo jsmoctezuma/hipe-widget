@@ -828,7 +828,7 @@
       document.getElementById('bits-caption').textContent = bitsCaption;
       document.getElementById('gst-bits-txt').textContent = `0/${bitsTarget}`;
       document.getElementById('gst-bits-fill').style.width = '0%';
-      bitsSlide.style.display = ''; // asegurar visible
+      bitsSlide.style.display = '';
     } else {
       bitsSlide.style.display = 'none';
     }
@@ -892,7 +892,6 @@
     // ===== VISIBILIDAD EN MODO HORIZONTAL =====
     if (isCompleto) {
       if (!showBranding) secId.style.display = 'none';
-      // Mostrar secGoal si al menos una meta está activa (subs o bits)
       const anyGoalActive = showGoal || bitsActive;
       if (!anyGoalActive) secGoal.style.display = 'none';
       if (!showTicker) secTicker.style.display = 'none';
@@ -908,25 +907,22 @@
       else applyPhase('nosponsor_nosocial');
     }
 
-    // ========== ROTACIÓN DE METAS (corregida) ==========
+    // ========== ROTACIÓN DE METAS (sin slide de celebración) ==========
     let goalSlides = [], currentGoalIndex = 0, goalRotationInterval = null;
 
     function initGoalRotation() {
       if (goalRotationInterval) clearInterval(goalRotationInterval);
       const subs = document.getElementById('gst-normal');
       const bits = document.getElementById('gst-bits');
-      const cel = document.getElementById('gst-cel');
-      
-      // Eliminar la clase 'on' de TODOS los slides (para evitar superposición)
+      // Eliminar clase 'on' de todos los slides (incluyendo celebración, aunque no esté en la rotación)
       if (subs) subs.classList.remove('on');
       if (bits) bits.classList.remove('on');
+      const cel = document.getElementById('gst-cel');
       if (cel) cel.classList.remove('on');
       
       goalSlides = [];
-      // Solo añadir subs si debe mostrarse (en compacto siempre, en horizontal según showGoal)
       if (subs && (isCompacto || showGoal)) goalSlides.push(subs);
       if (bitsActive && bits) goalSlides.push(bits);
-      if (cel) goalSlides.push(cel);
       
       if (goalSlides.length === 0) return;
       currentGoalIndex = 0;
@@ -997,7 +993,7 @@
       tickerResizeObserver.observe(container);
     }
 
-    // ========== RESTO DE LÓGICA (eventos, sponsors, social, websocket) ==========
+    // ========== RESTO DE LÓGICA ==========
     let celebrating = false, celTimer = null;
     let uptimeSeconds = 0, uptimeInterval = null, streamLive = false;
 
