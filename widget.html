@@ -9,7 +9,7 @@
     rel="stylesheet">
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
   <style>
-    /* ========== ESTILOS BASE (sin cambios en estructura, solo se añade .gst-bits) ========== */
+    /* ========== ESTILOS BASE ========== */
     *,
     *::before,
     *::after {
@@ -171,7 +171,7 @@
       }
     }
 
-    /* ===== META ROTATIVA (subs + bits) ===== */
+    /* ===== METAS (subs y bits) ===== */
     #sec-goal {
       padding: 0 20px;
       position: relative;
@@ -321,7 +321,6 @@
       pointer-events: none;
     }
 
-    /* Leyenda de bits (debajo de la barra) */
     .bits-caption {
       font-size: 13px;
       font-weight: 600;
@@ -501,7 +500,7 @@
       line-height: 1;
     }
 
-    /* Badge de eventos (igual que antes) */
+    /* Badge de eventos (mismo que antes) */
     .et-sub { background: rgba(145, 70, 255, .25); }
     .et-sub .ev-label, .et-sub .ev-icon, .et-sub iconify-icon { color: #9146FF; }
     .et-resub { background: rgba(145, 70, 255, .20); }
@@ -717,7 +716,7 @@
       width: 14px;
     }
   </style>
-  <!-- Carga dinámica de fuente adicional si se especifica -->
+  <!-- Carga dinámica de fuente adicional (se inyecta desde JS) -->
 </head>
 
 <body>
@@ -735,7 +734,7 @@
       </div>
 
       <div class="sec" id="sec-goal">
-        <!-- Meta de subs (siempre presente, pero puede rotar con bits) -->
+        <!-- Meta de subs -->
         <div class="gst on" id="gst-normal">
           <div id="gst-hdr">
             <span id="gst-lbl">META SUBS</span>
@@ -746,7 +745,7 @@
           </div>
           <div id="gst-track"><div id="gst-fill"></div></div>
         </div>
-        <!-- Meta de bits (solo se creará si está activa en la configuración) -->
+        <!-- Meta de bits (se crea siempre, pero se oculta si no está activa) -->
         <div class="gst" id="gst-bits">
           <div id="gst-hdr">
             <span id="gst-lbl-bits">META BITS</span>
@@ -758,6 +757,7 @@
           <div id="gst-track-bits"><div id="gst-bits-fill"></div></div>
           <div class="bits-caption" id="bits-caption"></div>
         </div>
+        <!-- Celebración -->
         <div class="gst" id="gst-cel">
           <div id="cel-txt">¡META ALCANZADA! 🎉</div>
           <div id="cel-usr"></div>
@@ -843,15 +843,14 @@
     const soundEventsFromCfg = CFG.soundEvents || {};
     const soundEvents = { ...defaultSoundEvents, ...soundEventsFromCfg };
 
-    // Configuración de la meta de bits
+    // Meta de bits
     const goalBits = CFG.goalBits || { active: false };
     const bitsActive = goalBits.active === true;
-    const bitsPeriod = goalBits.period || 'stream'; // 'stream' o 'monthly'
+    const bitsPeriod = goalBits.period || 'stream';
     const bitsTarget = goalBits.target || 0;
     const bitsGif = goalBits.gif || 'assets/bitcoin.gif';
     const bitsCaption = goalBits.caption || '';
 
-    // Actualizar CFG para que el resto del código use estos valores
     CFG.logoPath = logoPath;
     CFG.goalGifPath = goalGifPath;
     CFG.events = events;
@@ -921,10 +920,8 @@
     const borderColor = T.borderColor || '#22222e';
     const bgOpacity = (T.bgOpacity !== undefined ? T.bgOpacity : 1);
     const borderOpacity = (T.borderOpacity !== undefined ? T.borderOpacity : 1);
-
     const bgRgb = hexToRgb(bgColor);
     const borderRgb = hexToRgb(borderColor);
-
     R.style.setProperty('--bg', `rgba(${bgRgb}, ${bgOpacity})`);
     R.style.setProperty('--border', `rgba(${borderRgb}, ${borderOpacity})`);
     R.style.setProperty('--accent', T.accentColor || '#7c3aed');
@@ -949,7 +946,6 @@
       R.style.setProperty('--text', '#ffffff');
       R.style.setProperty('--muted', '#aaaaaa');
     }
-
     R.style.setProperty('--radius', T.borderRadius || '4px');
 
     // Gradientes de acento
@@ -978,25 +974,20 @@
       document.body.style.fontFamily = "'Rajdhani', sans-serif";
     }
 
-    // ===== INICIALIZAR IMÁGENES Y TEXTO DEL CANAL =====
+    // ===== INICIALIZAR ELEMENTOS BÁSICOS =====
     document.getElementById('id-avatar').src = CFG.logoPath || '';
     document.getElementById('id-name').textContent = (CFG.channelName || 'HIPE').toUpperCase();
     document.getElementById('gst-heart').src = CFG.goalGifPath || 'assets/corazon.gif';
 
-    // Inicializar meta de bits si está activa
+    // Configurar meta de bits si está activa
+    const bitsSlide = document.getElementById('gst-bits');
     if (bitsActive) {
-      const bitsSlide = document.getElementById('gst-bits');
-      if (bitsSlide) {
-        document.getElementById('gst-bits-gif').src = bitsGif;
-        document.getElementById('bits-caption').textContent = bitsCaption;
-        // Inicializar valores (por defecto)
-        document.getElementById('gst-bits-txt').textContent = `0/${bitsTarget}`;
-        document.getElementById('gst-bits-fill').style.width = '0%';
-      }
+      document.getElementById('gst-bits-gif').src = bitsGif;
+      document.getElementById('bits-caption').textContent = bitsCaption;
+      document.getElementById('gst-bits-txt').textContent = `0/${bitsTarget}`;
+      document.getElementById('gst-bits-fill').style.width = '0%';
     } else {
-      // Ocultar/eliminar el slide de bits si no está activo
-      const bitsSlide = document.getElementById('gst-bits');
-      if (bitsSlide) bitsSlide.style.display = 'none';
+      bitsSlide.style.display = 'none';
     }
 
     const widgetEl = document.getElementById('widget');
@@ -1077,39 +1068,27 @@
     let goalRotationInterval = null;
 
     function initGoalRotation() {
-      // Detener rotación anterior si existía
       if (goalRotationInterval) clearInterval(goalRotationInterval);
-      
-      // Construir array de slides
       goalSlides = [];
-      const subsSlide = document.getElementById('gst-normal');
-      const bitsSlide = document.getElementById('gst-bits');
-      const celSlide = document.getElementById('gst-cel');
-      
-      if (subsSlide && subsSlide.style.display !== 'none') goalSlides.push(subsSlide);
-      if (bitsActive && bitsSlide && bitsSlide.style.display !== 'none') goalSlides.push(bitsSlide);
-      if (celSlide && celSlide.style.display !== 'none') goalSlides.push(celSlide);
-      
+      const subs = document.getElementById('gst-normal');
+      const bits = document.getElementById('gst-bits');
+      const cel = document.getElementById('gst-cel');
+      if (subs) goalSlides.push(subs);
+      if (bitsActive && bits) goalSlides.push(bits);
+      if (cel) goalSlides.push(cel);
       if (goalSlides.length === 0) return;
-      
-      // Ocultar todos y mostrar el primero
       goalSlides.forEach(slide => slide.classList.remove('on'));
       currentGoalIndex = 0;
       goalSlides[currentGoalIndex].classList.add('on');
-      
-      // Si hay más de un slide, iniciar rotación cada 30 segundos (o el valor configurado)
       if (goalSlides.length > 1) {
-        const rotationSecs = CFG.goalRotationSeconds || 30;
+        const rotSecs = CFG.goalRotationSeconds || 30;
         goalRotationInterval = setInterval(() => {
           goalSlides[currentGoalIndex].classList.remove('on');
           currentGoalIndex = (currentGoalIndex + 1) % goalSlides.length;
           goalSlides[currentGoalIndex].classList.add('on');
-        }, rotationSecs * 1000);
+        }, rotSecs * 1000);
       }
     }
-
-    // Llamar a initGoalRotation después de que el DOM esté listo
-    setTimeout(initGoalRotation, 500);
 
     // ========== TICKER AJUSTE DINÁMICO ==========
     let tickerResizeObserver = null;
@@ -1187,21 +1166,25 @@
       document.getElementById('gst-bits-fill').style.width = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100) + '%';
     }
     function showGst(id) {
-      document.getElementById('gst-normal').classList.toggle('on', id === 'gst-normal');
-      document.getElementById('gst-bits').classList.toggle('on', id === 'gst-bits');
-      document.getElementById('gst-cel').classList.toggle('on', id === 'gst-cel');
+      const subs = document.getElementById('gst-normal');
+      const bits = document.getElementById('gst-bits');
+      const cel = document.getElementById('gst-cel');
+      if (subs) subs.classList.toggle('on', id === 'gst-normal');
+      if (bits && bitsActive) bits.classList.toggle('on', id === 'gst-bits');
+      if (cel) cel.classList.toggle('on', id === 'gst-cel');
     }
     function celebrate(cur, newTgt, user, type = 'subs') {
       celebrating = true;
       document.getElementById('cel-usr').textContent = user ? `¡Gracias ${user}!` : '';
       showGst('gst-cel');
       if (celTimer) clearTimeout(celTimer);
+      const duration = (CFG.goalCelebrationSeconds || 10) * 1000;
       celTimer = setTimeout(() => {
         celebrating = false;
         if (type === 'subs') updateGoal(cur, newTgt);
         else if (type === 'bits') updateBitsGoal(cur, newTgt);
         showGst(type === 'subs' ? 'gst-normal' : 'gst-bits');
-      }, (CFG.goalCelebrationSeconds || 10) * 1000);
+      }, duration);
     }
     function setUptime(s) {
       uptimeSeconds = Math.max(0, Math.floor(s || 0));
@@ -1232,7 +1215,7 @@
       }
     }
 
-    // Sponsors (no cambia)
+    // Sponsors (sin cambios)
     const sponsorSlides = [];
     const sponsorIndicatorsEl = document.getElementById('sponsor-indicators');
     if (hasSponsorBlock && secSponsor.style.display !== 'none') {
@@ -1331,7 +1314,7 @@
       if (rotationItems.length > 1) setTimeout(rotateSocial, rotationItems[0].duration);
     }
 
-    // Ticker eventos (sin cambios)
+    // Ticker eventos
     const EV_DEF = {
       sub: ['et-sub', 'SUB', 'mdi:twitch', '#9146FF'],
       resub: ['et-resub', 'RESUB', 'mdi:twitch', '#b07dff'],
@@ -1369,7 +1352,7 @@
       setTimeout(nextEv, (CFG.tickerDisplaySeconds || 8) * 1000);
     }
 
-    // WebSocket (sin cambios en la lógica de eventos, solo añadir manejo de goalUpdate para bits)
+    // WebSocket
     function tryParse(s) { try { return JSON.parse(s); } catch { return null; } }
     function tierLbl(t) { return t === '1000' ? 'Tier 1' : t === '2000' ? 'Tier 2' : t === '3000' ? 'Tier 3' : t === 'Prime' ? 'Prime' : t || ''; }
 
