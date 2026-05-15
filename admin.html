@@ -234,9 +234,11 @@
       align-items: center;
       gap: 12px;
     }
+
     .range-field input {
       flex: 1;
     }
+
     .range-field span {
       min-width: 45px;
       text-align: right;
@@ -708,18 +710,29 @@
           <option value="horizontal">Horizontal (una fila ancha)</option>
         </select>
       </div>
-      <div id="layout-classic-note" class="hint">En el diseño compacto, la información del canal, la meta de suscriptores y los mensajes en pantalla siempre se muestran. Solo puedes ocultar la sección de patrocinadores y el contador de tiempo en vivo, o la sección de redes sociales / código de creador.</div>
+      <div id="layout-classic-note" class="hint">En el diseño compacto, la información del canal, la meta de
+        suscriptores y los mensajes en pantalla siempre se muestran. Solo puedes ocultar la sección de patrocinadores y
+        el contador de tiempo en vivo, o la sección de redes sociales / código de creador.</div>
       <div id="layout-horizontal-controls" class="subcard" style="display:none;">
         <div class="tog-row" id="tr-showBranding">
-          <div><div class="tog-lbl">Mostrar información del canal</div><div class="tog-sub">Logo, nombre y estado en vivo.</div></div>
+          <div>
+            <div class="tog-lbl">Mostrar información del canal</div>
+            <div class="tog-sub">Logo, nombre y estado en vivo.</div>
+          </div>
           <label class="tog"><input type="checkbox" id="showBranding"><span class="tog-sl"></span></label>
         </div>
         <div class="tog-row" id="tr-showGoal">
-          <div><div class="tog-lbl">Mostrar meta de suscriptores</div><div class="tog-sub">Bloque con la barra de progreso y el corazón.</div></div>
+          <div>
+            <div class="tog-lbl">Mostrar meta de suscriptores</div>
+            <div class="tog-sub">Bloque con la barra de progreso y el corazón.</div>
+          </div>
           <label class="tog"><input type="checkbox" id="showGoal"><span class="tog-sl"></span></label>
         </div>
         <div class="tog-row" id="tr-showTicker">
-          <div><div class="tog-lbl">Mostrar mensajes en pantalla</div><div class="tog-sub">Los eventos como follows, subs, raids, etc.</div></div>
+          <div>
+            <div class="tog-lbl">Mostrar mensajes en pantalla</div>
+            <div class="tog-sub">Los eventos como follows, subs, raids, etc.</div>
+          </div>
           <label class="tog"><input type="checkbox" id="showTicker"><span class="tog-sl"></span></label>
         </div>
       </div>
@@ -729,68 +742,184 @@
     <div class="card">
       <div class="card-title">Tu Canal</div>
       <div class="r2">
-        <div class="field"><label>Nombre del canal o usuario</label><input type="text" id="channelName" placeholder="Ej. MancoSquad" onchange="saveToLocalStorage()"><span class="fhint">Se verá junto a tu foto de perfil en el widget.</span></div>
-        <div class="field"><label>Puerto de conexión con Streamer.bot</label><input type="number" id="sbPort" value="8080" onchange="saveToLocalStorage()"><span class="fhint">Déjalo en 8080 si no lo cambiaste en Streamer.bot.</span></div>
+        <div class="field"><label>Nombre del canal o usuario</label><input type="text" id="channelName"
+            placeholder="Ej. MancoSquad" onchange="saveToLocalStorage()"><span class="fhint">Se verá junto a tu foto de
+            perfil en el widget.</span></div>
+        <div class="field"><label>Puerto de conexión con Streamer.bot</label><input type="number" id="sbPort"
+            value="8080" onchange="saveToLocalStorage()"><span class="fhint">Déjalo en 8080 si no lo cambiaste en
+            Streamer.bot.</span></div>
       </div>
       <div class="r2">
-        <div class="field"><label>URL de la foto de perfil / logo</label><input type="text" id="logoPath" placeholder="https://i.imgur.com/ejemplo.png" onchange="saveToLocalStorage()"><div class="fhint">Pega aquí la URL de tu logo (Imgur, Discord, etc.)</div></div>
-        <div class="field"><label>URL del GIF del corazón (meta de subs)</label><input type="text" id="goalGifPath" placeholder="https://i.imgur.com/corazon.gif" onchange="saveToLocalStorage()"><div class="fhint">Pega la URL de un GIF animado para el corazón.</div></div>
+        <div class="field"><label>URL de la foto de perfil / logo</label><input type="text" id="logoPath"
+            placeholder="https://i.imgur.com/ejemplo.png" onchange="saveToLocalStorage()">
+          <div class="fhint">Pega aquí la URL de tu logo (Imgur, Discord, etc.)</div>
+        </div>
+        <div class="field"><label>URL del GIF del corazón (meta de subs)</label><input type="text" id="goalGifPath"
+            placeholder="https://i.imgur.com/corazon.gif" onchange="saveToLocalStorage()">
+          <div class="fhint">Pega la URL de un GIF animado para el corazón.</div>
+        </div>
       </div>
     </div>
 
-    <!-- ========== META DE SUSCRIPTORES ========== -->
+    <!-- ========== METAS (SUSCRIPTORES Y BITS) ========== -->
     <div class="card">
-      <div class="card-title">Meta de Suscriptores</div>
+      <div class="card-title">Metas</div>
       <div class="r2">
-        <div class="field"><label>Tiempo de celebración (segundos)</label><input type="number" id="goalCelebSecs" value="10" min="5" max="60" onchange="saveToLocalStorage()"><span class="fhint">Cuántos segundos muestra el mensaje "¡META ALCANZADA!".</span></div>
-        <div class="field"><label>Tiempo que se ve el cronómetro (segundos)</label><input type="number" id="goalRotSecs" value="30" min="10" max="120" onchange="saveToLocalStorage()"><span class="fhint">Antes de pasar al siguiente patrocinador.</span></div>
+        <div class="field">
+          <label>Tiempo de celebración (segundos)</label>
+          <input type="number" id="goalCelebSecs" value="10" min="5" max="60" onchange="saveToLocalStorage()">
+          <span class="fhint">Cuántos segundos muestra el mensaje "¡META ALCANZADA!".</span>
+        </div>
+        <div class="field">
+          <label>Tiempo que se ve cada meta (segundos)</label>
+          <input type="number" id="goalRotSecs" value="30" min="10" max="120" onchange="saveToLocalStorage()">
+          <span class="fhint">Cuánto tiempo se muestra una meta antes de cambiar a la siguiente (si hay varias
+            activas).</span>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--bord); margin: 20px 0 16px 0;"></div>
+
+      <div class="card-title" style="margin-bottom: 16px;">Meta de bits</div>
+      <div class="tog-row" id="tr-goalBits">
+        <div>
+          <div class="tog-lbl">Activar meta de bits</div>
+          <div class="tog-sub">Muestra una segunda meta rotando junto con la de suscriptores.</div>
+        </div>
+        <label class="tog">
+          <input type="checkbox" id="goalBitsActive" onchange="toggleGoalBitsUI(); saveToLocalStorage()">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+      <div id="goalBitsContent" style="display: none;">
+        <div class="r2">
+          <div class="field">
+            <label>Período de acumulación</label>
+            <select id="goalBitsPeriod" onchange="saveToLocalStorage()">
+              <option value="stream">Por stream (desde que empieza el directo)</option>
+              <option value="monthly">Mensual (desde el primer día del mes)</option>
+            </select>
+            <span class="fhint">Cómo se cuentan los bits para alcanzar la meta.</span>
+          </div>
+          <div class="field">
+            <label>Objetivo de bits</label>
+            <input type="number" id="goalBitsTarget" value="1000" min="1" step="100" onchange="saveToLocalStorage()">
+            <span class="fhint">Cantidad de bits que quieres alcanzar.</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>URL del GIF/icono (opcional)</label>
+          <input type="text" id="goalBitsGif" placeholder="https://i.imgur.com/bitcoin.gif"
+            onchange="saveToLocalStorage()">
+          <span class="fhint">Pega la URL de un GIF o imagen (por defecto se usa uno genérico).</span>
+        </div>
+        <div class="field">
+          <label>Leyenda (opcional)</label>
+          <input type="text" id="goalBitsCaption" placeholder="Ej. 🎧 Audífonos nuevos" onchange="saveToLocalStorage()">
+          <span class="fhint">Texto corto que aparecerá debajo de la barra de progreso.</span>
+        </div>
       </div>
     </div>
 
     <!-- ========== PATROCINADORES Y CRONÓMETRO ========== -->
     <div class="card">
       <div class="card-title">Patrocinadores y tiempo en vivo</div>
-      <div class="tog-row" id="tr-sponsors"><div><div class="tog-lbl">Activar patrocinadores</div><div class="tog-sub">Muestra logos o vídeos rotando.</div></div><label class="tog"><input type="checkbox" id="showSponsors" checked><span class="tog-sl"></span></label></div>
+      <div class="tog-row" id="tr-sponsors">
+        <div>
+          <div class="tog-lbl">Activar patrocinadores</div>
+          <div class="tog-sub">Muestra logos o vídeos rotando.</div>
+        </div><label class="tog"><input type="checkbox" id="showSponsors" checked><span class="tog-sl"></span></label>
+      </div>
       <div id="sponsors-content">
         <div id="sponsors-list"></div>
         <button type="button" class="btn-add" onclick="addSponsor()">＋ Añadir patrocinador</button>
-        <div class="field" style="margin-top:18px;max-width:320px;"><label>Efecto de cambio entre patrocinadores</label><select id="sponsorTransition" onchange="saveToLocalStorage()"><option value="fade">Desvanecimiento suave</option><option value="slide">Deslizamiento</option><option value="zoom">Zoom</option></select><span class="fhint">Cómo se reemplaza una imagen por la siguiente.</span></div>
+        <div class="field" style="margin-top:18px;max-width:320px;"><label>Efecto de cambio entre
+            patrocinadores</label><select id="sponsorTransition" onchange="saveToLocalStorage()">
+            <option value="fade">Desvanecimiento suave</option>
+            <option value="slide">Deslizamiento</option>
+            <option value="zoom">Zoom</option>
+          </select><span class="fhint">Cómo se reemplaza una imagen por la siguiente.</span></div>
       </div>
-      <div class="tog-row" id="tr-uptime"><div><div class="tog-lbl">Mostrar cronómetro en vivo</div><div class="tog-sub">Contador del tiempo que llevas en directo.</div></div><label class="tog"><input type="checkbox" id="showUptime" checked><span class="tog-sl"></span></label></div>
+      <div class="tog-row" id="tr-uptime">
+        <div>
+          <div class="tog-lbl">Mostrar cronómetro en vivo</div>
+          <div class="tog-sub">Contador del tiempo que llevas en directo.</div>
+        </div><label class="tog"><input type="checkbox" id="showUptime" checked><span class="tog-sl"></span></label>
+      </div>
     </div>
 
     <!-- ========== REDES SOCIALES Y CÓDIGO DE CREADOR ========== -->
     <div class="card">
       <div class="card-title">Redes sociales y código de creador</div>
-      <div class="tog-row" id="tr-showSocials"><div><div class="tog-lbl">Activar redes sociales</div><div class="tog-sub">Muestra tus cuentas rotando.</div></div><label class="tog"><input type="checkbox" id="showSocials" checked><span class="tog-sl"></span></label></div>
+      <div class="tog-row" id="tr-showSocials">
+        <div>
+          <div class="tog-lbl">Activar redes sociales</div>
+          <div class="tog-sub">Muestra tus cuentas rotando.</div>
+        </div><label class="tog"><input type="checkbox" id="showSocials" checked><span class="tog-sl"></span></label>
+      </div>
       <div id="socials-content">
         <div id="socials-list"></div>
-        <div class="field" style="margin-top:18px;max-width:180px;"><label>Segundos que se ve cada red</label><input type="number" id="socialRotSecs" value="5" min="2" max="30" onchange="saveToLocalStorage()"><span class="fhint">Tiempo antes de pasar a la siguiente.</span></div>
-        <div class="field" style="margin-top:18px;max-width:320px;"><label>Efecto de cambio entre redes</label><select id="socialTransition" onchange="saveToLocalStorage()"><option value="fade">Desvanecimiento suave</option><option value="slide">Deslizamiento</option><option value="zoom">Zoom</option></select><span class="fhint">Cómo se reemplaza una red por la siguiente.</span></div>
+        <div class="field" style="margin-top:18px;max-width:180px;"><label>Segundos que se ve cada red</label><input
+            type="number" id="socialRotSecs" value="5" min="2" max="30" onchange="saveToLocalStorage()"><span
+            class="fhint">Tiempo antes de pasar a la siguiente.</span></div>
+        <div class="field" style="margin-top:18px;max-width:320px;"><label>Efecto de cambio entre redes</label><select
+            id="socialTransition" onchange="saveToLocalStorage()">
+            <option value="fade">Desvanecimiento suave</option>
+            <option value="slide">Deslizamiento</option>
+            <option value="zoom">Zoom</option>
+          </select><span class="fhint">Cómo se reemplaza una red por la siguiente.</span></div>
       </div>
-      <div class="tog-row" id="tr-showCreatorCode"><div><div class="tog-lbl">Activar código de creador</div><div class="tog-sub">Muestra tu código promocional y un logo.</div></div><label class="tog"><input type="checkbox" id="showCreatorCode"><span class="tog-sl"></span></label></div>
+      <div class="tog-row" id="tr-showCreatorCode">
+        <div>
+          <div class="tog-lbl">Activar código de creador</div>
+          <div class="tog-sub">Muestra tu código promocional y un logo.</div>
+        </div><label class="tog"><input type="checkbox" id="showCreatorCode"><span class="tog-sl"></span></label>
+      </div>
       <div id="creator-content" class="subcard">
-        <div class="r2"><div class="field"><label>Texto de la etiqueta</label><input type="text" id="creatorLabel" placeholder="CÓDIGO EPIC" onchange="saveToLocalStorage()"></div><div class="field"><label>Código / texto a mostrar</label><input type="text" id="creatorValue" placeholder="JSMOCTEZUMA" onchange="saveToLocalStorage()"></div></div>
-        <div class="field"><label>URL del logo del código de creador</label><input type="text" id="creatorLogoPath" placeholder="https://i.imgur.com/codigo.png" onchange="saveToLocalStorage()"><div class="fhint">Pega la URL de la imagen que quieras.</div></div>
+        <div class="r2">
+          <div class="field"><label>Texto de la etiqueta</label><input type="text" id="creatorLabel"
+              placeholder="CÓDIGO EPIC" onchange="saveToLocalStorage()"></div>
+          <div class="field"><label>Código / texto a mostrar</label><input type="text" id="creatorValue"
+              placeholder="JSMOCTEZUMA" onchange="saveToLocalStorage()"></div>
+        </div>
+        <div class="field"><label>URL del logo del código de creador</label><input type="text" id="creatorLogoPath"
+            placeholder="https://i.imgur.com/codigo.png" onchange="saveToLocalStorage()">
+          <div class="fhint">Pega la URL de la imagen que quieras.</div>
+        </div>
       </div>
     </div>
 
     <!-- ========== MENSAJES EN PANTALLA (TICKER) ========== -->
     <div class="card">
       <div class="card-title">Mensajes en pantalla (eventos)</div>
-      <div class="tog-row" id="tr-enableSounds"><div><div class="tog-lbl">🔊 Activar sonidos para los eventos</div><div class="tog-sub">Control principal. Si lo apagas, no sonará ningún evento.</div></div><label class="tog"><input type="checkbox" id="enableSounds"><span class="tog-sl"></span></label></div>
+      <div class="tog-row" id="tr-enableSounds">
+        <div>
+          <div class="tog-lbl">🔊 Activar sonidos para los eventos</div>
+          <div class="tog-sub">Control principal. Si lo apagas, no sonará ningún evento.</div>
+        </div><label class="tog"><input type="checkbox" id="enableSounds"><span class="tog-sl"></span></label>
+      </div>
       <div class="ev-grid" id="events-grid"></div>
-      <div class="field" style="margin-top:18px;max-width:300px;"><label>Volumen de los sonidos (%)</label><div style="display: flex; align-items: center; gap: 12px;"><input type="range" id="notificationVolume" min="0" max="100" step="10" value="80" onchange="updateVolumeLabel(); saveToLocalStorage()"><span id="volumeLabel">80%</span></div><div class="fhint">Ajusta qué tan fuerte se escuchan (0% = sin sonido).</div></div>
-      <div class="field" style="margin-top:18px;max-width:220px;"><label>Segundos que dura cada mensaje</label><input type="number" id="tickerSecs" value="8" min="3" max="30" onchange="saveToLocalStorage()"><span class="fhint">Tiempo que se ve cada evento en pantalla.</span></div>
+      <div class="field" style="margin-top:18px;max-width:300px;"><label>Volumen de los sonidos (%)</label>
+        <div style="display: flex; align-items: center; gap: 12px;"><input type="range" id="notificationVolume" min="0"
+            max="100" step="10" value="80" onchange="updateVolumeLabel(); saveToLocalStorage()"><span
+            id="volumeLabel">80%</span></div>
+        <div class="fhint">Ajusta qué tan fuerte se escuchan (0% = sin sonido).</div>
+      </div>
+      <div class="field" style="margin-top:18px;max-width:220px;"><label>Segundos que dura cada mensaje</label><input
+          type="number" id="tickerSecs" value="8" min="3" max="30" onchange="saveToLocalStorage()"><span
+          class="fhint">Tiempo que se ve cada evento en pantalla.</span></div>
     </div>
 
     <!-- ========== APARIENCIA (COLORES, OPACIDAD, TIPOGRAFÍA) ========== -->
     <div class="card">
       <div class="card-title">Colores y forma</div>
       <div class="r3">
-        <div class="field"><label>Color de fondo</label><input type="color" id="th-bg" value="#111117" onchange="saveToLocalStorage()"></div>
-        <div class="field"><label>Color de los bordes</label><input type="color" id="th-border" value="#22222e" onchange="saveToLocalStorage()"></div>
-        <div class="field"><label>Color principal (acento)</label><input type="color" id="th-accent" value="#7c3aed" onchange="saveToLocalStorage()"></div>
+        <div class="field"><label>Color de fondo</label><input type="color" id="th-bg" value="#111117"
+            onchange="saveToLocalStorage()"></div>
+        <div class="field"><label>Color de los bordes</label><input type="color" id="th-border" value="#22222e"
+            onchange="saveToLocalStorage()"></div>
+        <div class="field"><label>Color principal (acento)</label><input type="color" id="th-accent" value="#7c3aed"
+            onchange="saveToLocalStorage()"></div>
       </div>
       <div class="field">
         <label>Opacidad del fondo (%)</label>
@@ -811,10 +940,15 @@
       <div class="field">
         <label>Tipografía principal</label>
         <input type="text" id="fontFamily" placeholder="Rajdhani" onchange="saveToLocalStorage()">
-        <div class="fhint">Escribe el nombre de una fuente de Google Fonts (ej. "Poppins", "Montserrat", "Roboto"). Si está vacío, se usará "Rajdhani".</div>
+        <div class="fhint">Escribe el nombre de una fuente de Google Fonts (ej. "Poppins", "Montserrat", "Roboto"). Si
+          está vacío, se usará "Rajdhani".</div>
       </div>
-      <div class="r2"><div class="field"><label>Redondeo de las esquinas</label><input type="text" id="th-radius" value="6px" placeholder="6px" onchange="saveToLocalStorage()"></div></div>
-      <div class="hint">El color principal se usa en la barra de progreso de la meta, el cronómetro y otros detalles.</div>
+      <div class="r2">
+        <div class="field"><label>Redondeo de las esquinas</label><input type="text" id="th-radius" value="6px"
+            placeholder="6px" onchange="saveToLocalStorage()"></div>
+      </div>
+      <div class="hint">El color principal se usa en la barra de progreso de la meta, el cronómetro y otros detalles.
+      </div>
     </div>
   </main>
 
@@ -1010,6 +1144,13 @@
         enableSounds: document.getElementById('enableSounds').checked,
         soundEvents,
         notificationVolume: parseInt(document.getElementById('notificationVolume').value),
+        goalBits: {
+          active: document.getElementById('goalBitsActive').checked,
+          period: document.getElementById('goalBitsPeriod').value,
+          target: parseInt(document.getElementById('goalBitsTarget').value) || 0,
+          gif: document.getElementById('goalBitsGif').value.trim(),
+          caption: document.getElementById('goalBitsCaption').value.trim()
+        },
         theme: {
           bgColor: document.getElementById('th-bg').value,
           borderColor: document.getElementById('th-border').value,
@@ -1025,6 +1166,13 @@
       return cfg;
     }
 
+    function toggleGoalBitsUI() {
+      const isActive = document.getElementById('goalBitsActive').checked;
+      const contentDiv = document.getElementById('goalBitsContent');
+      contentDiv.style.display = isActive ? '' : 'none';
+      document.getElementById('tr-goalBits').classList.toggle('on', isActive);
+    }
+    
     function saveToLocalStorage() {
       const config = collectConfig();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
@@ -1067,6 +1215,14 @@
         document.getElementById('th-radius').value = cfg.theme?.borderRadius || '6px';
         const bgOp = cfg.theme?.bgOpacity !== undefined ? Math.round(cfg.theme.bgOpacity * 100) : 100;
         const brOp = cfg.theme?.borderOpacity !== undefined ? Math.round(cfg.theme.borderOpacity * 100) : 100;
+        // Dentro de loadFromLocalStorage(), después de cargar cfg.theme
+        const goalBits = cfg.goalBits || {};
+        document.getElementById('goalBitsActive').checked = goalBits.active === true;
+        document.getElementById('goalBitsPeriod').value = goalBits.period || 'stream';
+        document.getElementById('goalBitsTarget').value = goalBits.target || 1000;
+        document.getElementById('goalBitsGif').value = goalBits.gif || '';
+        document.getElementById('goalBitsCaption').value = goalBits.caption || '';
+        toggleGoalBitsUI();
         document.getElementById('bgOpacity').value = bgOp;
         document.getElementById('borderOpacity').value = brOp;
         updateOpacityLabels();
@@ -1096,7 +1252,7 @@
         applyLayoutModeUI();
         toggleSoundGlobal();
         return true;
-      } catch(e) { console.warn(e); return false; }
+      } catch (e) { console.warn(e); return false; }
     }
 
     function resetToDefaults() {
