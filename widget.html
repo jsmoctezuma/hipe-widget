@@ -9,7 +9,7 @@
     rel="stylesheet">
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
   <style>
-    /* ========== ESTILOS BASE ========== */
+    /* ========== ESTILOS BASE (sin cambios en estructura, solo se añade .gst-bits) ========== */
     *,
     *::before,
     *::after {
@@ -39,7 +39,6 @@
       overflow: hidden;
     }
 
-    /* La fuente se aplicará dinámicamente desde JS, pero dejamos un fallback */
     body {
       font-family: 'Rajdhani', sans-serif;
     }
@@ -172,6 +171,7 @@
       }
     }
 
+    /* ===== META ROTATIVA (subs + bits) ===== */
     #sec-goal {
       padding: 0 20px;
       position: relative;
@@ -216,7 +216,8 @@
       gap: 10px;
     }
 
-    #gst-lbl {
+    #gst-lbl,
+    #gst-lbl-bits {
       font-size: 24px;
       font-weight: 700;
       color: var(--muted);
@@ -225,11 +226,13 @@
       white-space: nowrap;
     }
 
-    #widget.layout-completo #gst-lbl {
+    #widget.layout-completo #gst-lbl,
+    #widget.layout-completo #gst-lbl-bits {
       font-size: 20px;
     }
 
-    #gst-cnt {
+    #gst-cnt,
+    #gst-cnt-bits {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -239,21 +242,25 @@
       line-height: 1;
     }
 
-    #widget.layout-completo #gst-cnt {
+    #widget.layout-completo #gst-cnt,
+    #widget.layout-completo #gst-cnt-bits {
       font-size: 38px;
       gap: 6px;
     }
 
-    #gst-heart {
+    #gst-heart,
+    #gst-bits-gif {
       height: 60px;
       flex-shrink: 0;
     }
 
-    #widget.layout-completo #gst-heart {
+    #widget.layout-completo #gst-heart,
+    #widget.layout-completo #gst-bits-gif {
       height: 60px;
     }
 
-    #gst-track {
+    #gst-track,
+    #gst-track-bits {
       height: 8px;
       background: rgba(255, 255, 255, .07);
       border-radius: 4px;
@@ -261,11 +268,13 @@
       box-shadow: inset 0 1px 3px rgba(0, 0, 0, .4);
     }
 
-    #widget.layout-completo #gst-track {
+    #widget.layout-completo #gst-track,
+    #widget.layout-completo #gst-track-bits {
       height: 6px;
     }
 
-    #gst-fill {
+    #gst-fill,
+    #gst-bits-fill {
       height: 100%;
       background: linear-gradient(90deg,
           var(--goal-grad-3) 0%,
@@ -282,7 +291,8 @@
       position: relative;
     }
 
-    #gst-fill::after {
+    #gst-fill::after,
+    #gst-bits-fill::after {
       content: '';
       position: absolute;
       top: 0;
@@ -294,7 +304,8 @@
       pointer-events: none;
     }
 
-    #gst-fill::before {
+    #gst-fill::before,
+    #gst-bits-fill::before {
       content: '';
       position: absolute;
       top: 0;
@@ -308,6 +319,18 @@
           rgba(255, 255, 255, 0.15) 100%);
       border-radius: 4px;
       pointer-events: none;
+    }
+
+    /* Leyenda de bits (debajo de la barra) */
+    .bits-caption {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     #gst-cel {
@@ -351,6 +374,7 @@
       }
     }
 
+    /* ===== SPONSORS ===== */
     #sec-sponsor {
       position: relative;
       justify-content: center;
@@ -404,7 +428,7 @@
     }
 
     #sp-utval {
-    /* font-family: 'Barlow Condensed', sans-serif;  ← elimina o comenta esta línea */
+      font-family: 'Barlow Condensed', sans-serif;
       font-size: 44px;
       font-weight: 700;
       color: var(--text);
@@ -426,6 +450,7 @@
       font-style: italic;
     }
 
+    /* ===== TICKER ===== */
     #sec-ticker {
       padding: 0 14px;
       position: relative;
@@ -476,115 +501,29 @@
       line-height: 1;
     }
 
-    .et-sub {
-      background: rgba(145, 70, 255, .25);
-    }
-
-    .et-sub .ev-label,
-    .et-sub .ev-icon,
-    .et-sub iconify-icon {
-      color: #9146FF;
-    }
-
-    .et-resub {
-      background: rgba(145, 70, 255, .20);
-    }
-
-    .et-resub .ev-label,
-    .et-resub .ev-icon,
-    .et-resub iconify-icon {
-      color: #b07dff;
-    }
-
-    .et-gift {
-      background: rgba(249, 115, 22, .25);
-    }
-
-    .et-gift .ev-label,
-    .et-gift .ev-icon,
-    .et-gift iconify-icon {
-      color: #F97316;
-    }
-
-    .et-raid {
-      background: rgba(59, 130, 246, .25);
-    }
-
-    .et-raid .ev-label,
-    .et-raid .ev-icon,
-    .et-raid iconify-icon {
-      color: #3B82F6;
-    }
-
-    .et-bits {
-      background: rgba(48, 196, 171, .25);
-    }
-
-    .et-bits .ev-label,
-    .et-bits .ev-icon,
-    .et-bits iconify-icon {
-      color: #30C4AB;
-    }
-
-    .et-follow {
-      background: rgba(235, 76, 76, .25);
-    }
-
-    .et-follow .ev-label,
-    .et-follow .ev-icon,
-    .et-follow iconify-icon {
-      color: #EB4C4C;
-    }
-
-    .et-donate {
-      background: rgba(23, 155, 215, .25);
-    }
-
-    .et-donate .ev-label,
-    .et-donate .ev-icon,
-    .et-donate iconify-icon {
-      color: #179BD7;
-    }
-
-    .et-redeem {
-      background: rgba(245, 158, 11, .25);
-    }
-
-    .et-redeem .ev-label,
-    .et-redeem .ev-icon,
-    .et-redeem iconify-icon {
-      color: #F59E0B;
-    }
-
-    .et-member {
-      background: rgba(255, 0, 0, .20);
-    }
-
-    .et-member .ev-label,
-    .et-member .ev-icon,
-    .et-member iconify-icon {
-      color: #FF6060;
-    }
-
-    .et-super {
-      background: rgba(6, 182, 212, .25);
-    }
-
-    .et-super .ev-label,
-    .et-super .ev-icon,
-    .et-super iconify-icon {
-      color: #06B6D4;
-    }
-
-    .et-ok {
-      background: rgba(74, 222, 128, .15);
-    }
-
-    .et-ok .ev-label,
-    .et-ok .ev-icon,
-    .et-ok iconify-icon {
-      color: #4ade80;
-    }
+    /* Badge de eventos (igual que antes) */
+    .et-sub { background: rgba(145, 70, 255, .25); }
+    .et-sub .ev-label, .et-sub .ev-icon, .et-sub iconify-icon { color: #9146FF; }
+    .et-resub { background: rgba(145, 70, 255, .20); }
+    .et-resub .ev-label, .et-resub .ev-icon, .et-resub iconify-icon { color: #b07dff; }
+    .et-gift { background: rgba(249, 115, 22, .25); }
+    .et-gift .ev-label, .et-gift .ev-icon, .et-gift iconify-icon { color: #F97316; }
+    .et-raid { background: rgba(59, 130, 246, .25); }
+    .et-raid .ev-label, .et-raid .ev-icon, .et-raid iconify-icon { color: #3B82F6; }
+    .et-bits { background: rgba(48, 196, 171, .25); }
+    .et-bits .ev-label, .et-bits .ev-icon, .et-bits iconify-icon { color: #30C4AB; }
+    .et-follow { background: rgba(235, 76, 76, .25); }
+    .et-follow .ev-label, .et-follow .ev-icon, .et-follow iconify-icon { color: #EB4C4C; }
+    .et-donate { background: rgba(23, 155, 215, .25); }
+    .et-donate .ev-label, .et-donate .ev-icon, .et-donate iconify-icon { color: #179BD7; }
+    .et-redeem { background: rgba(245, 158, 11, .25); }
+    .et-redeem .ev-label, .et-redeem .ev-icon, .et-redeem iconify-icon { color: #F59E0B; }
+    .et-member { background: rgba(255, 0, 0, .20); }
+    .et-member .ev-label, .et-member .ev-icon, .et-member iconify-icon { color: #FF6060; }
+    .et-super { background: rgba(6, 182, 212, .25); }
+    .et-super .ev-label, .et-super .ev-icon, .et-super iconify-icon { color: #06B6D4; }
+    .et-ok { background: rgba(74, 222, 128, .15); }
+    .et-ok .ev-label, .et-ok .ev-icon, .et-ok iconify-icon { color: #4ade80; }
 
     #tick-user {
       font-size: 36px;
@@ -620,6 +559,7 @@
       border-radius: 0 2px 2px 0;
     }
 
+    /* ===== SOCIAL ===== */
     #sec-social {
       position: relative;
       justify-content: center;
@@ -777,7 +717,7 @@
       width: 14px;
     }
   </style>
-  <!-- Carga dinámica de fuente adicional si se especifica (no se usa en <style>, se inyecta desde JS) -->
+  <!-- Carga dinámica de fuente adicional si se especifica -->
 </head>
 
 <body>
@@ -795,6 +735,7 @@
       </div>
 
       <div class="sec" id="sec-goal">
+        <!-- Meta de subs (siempre presente, pero puede rotar con bits) -->
         <div class="gst on" id="gst-normal">
           <div id="gst-hdr">
             <span id="gst-lbl">META SUBS</span>
@@ -803,9 +744,19 @@
               <span id="gst-txt">--/--</span>
             </div>
           </div>
-          <div id="gst-track">
-            <div id="gst-fill"></div>
+          <div id="gst-track"><div id="gst-fill"></div></div>
+        </div>
+        <!-- Meta de bits (solo se creará si está activa en la configuración) -->
+        <div class="gst" id="gst-bits">
+          <div id="gst-hdr">
+            <span id="gst-lbl-bits">META BITS</span>
+            <div id="gst-cnt-bits">
+              <img id="gst-bits-gif" src="" alt="⭐">
+              <span id="gst-bits-txt">--/--</span>
+            </div>
           </div>
+          <div id="gst-track-bits"><div id="gst-bits-fill"></div></div>
+          <div class="bits-caption" id="bits-caption"></div>
         </div>
         <div class="gst" id="gst-cel">
           <div id="cel-txt">¡META ALCANZADA! 🎉</div>
@@ -892,6 +843,15 @@
     const soundEventsFromCfg = CFG.soundEvents || {};
     const soundEvents = { ...defaultSoundEvents, ...soundEventsFromCfg };
 
+    // Configuración de la meta de bits
+    const goalBits = CFG.goalBits || { active: false };
+    const bitsActive = goalBits.active === true;
+    const bitsPeriod = goalBits.period || 'stream'; // 'stream' o 'monthly'
+    const bitsTarget = goalBits.target || 0;
+    const bitsGif = goalBits.gif || 'assets/bitcoin.gif';
+    const bitsCaption = goalBits.caption || '';
+
+    // Actualizar CFG para que el resto del código use estos valores
     CFG.logoPath = logoPath;
     CFG.goalGifPath = goalGifPath;
     CFG.events = events;
@@ -970,7 +930,7 @@
     R.style.setProperty('--accent', T.accentColor || '#7c3aed');
     R.style.setProperty('--accent-rgb', hexToRgb(T.accentColor || '#7c3aed'));
 
-    // ===== CONTRASTE AUTOMÁTICO (según luminosidad del color de fondo original, sin opacidad) =====
+    // ===== CONTRASTE AUTOMÁTICO =====
     function getLuminance(hex) {
       const rgb = parseInt(hex.slice(1), 16);
       const r = (rgb >> 16) & 0xff;
@@ -992,7 +952,7 @@
 
     R.style.setProperty('--radius', T.borderRadius || '4px');
 
-    // Gradientes de acento (igual que antes)
+    // Gradientes de acento
     (function () {
       const rgb = hexToRgb(T.accentColor || '#7c3aed').split(',').map(Number);
       const r = rgb[0], g = rgb[1], b = rgb[2];
@@ -1006,23 +966,38 @@
       R.style.setProperty('--social-soft-2', `rgba(${r},${g},${b},.10)`);
     })();
 
-    // ===== TIPOGRAFÍA (personalizada, excepto cronómetro) =====
+    // ===== TIPOGRAFÍA =====
     const customFont = T.fontFamily ? T.fontFamily.trim() : '';
     if (customFont && customFont !== 'Rajdhani') {
-      // Cargar la fuente desde Google Fonts si no es una de las precargadas
       const link = document.createElement('link');
       link.href = `https://fonts.googleapis.com/css2?family=${customFont.replace(/ /g, '+')}:wght@400;500;600;700&display=swap`;
       link.rel = 'stylesheet';
       document.head.appendChild(link);
-      // Aplicar la fuente al body (excepto .sp-utval que ya tiene Barlow Condensed)
       document.body.style.fontFamily = `'${customFont}', 'Rajdhani', sans-serif`;
     } else {
       document.body.style.fontFamily = "'Rajdhani', sans-serif";
     }
 
+    // ===== INICIALIZAR IMÁGENES Y TEXTO DEL CANAL =====
     document.getElementById('id-avatar').src = CFG.logoPath || '';
     document.getElementById('id-name').textContent = (CFG.channelName || 'HIPE').toUpperCase();
-    document.getElementById('gst-heart').src = CFG.goalGifPath || '';
+    document.getElementById('gst-heart').src = CFG.goalGifPath || 'assets/corazon.gif';
+
+    // Inicializar meta de bits si está activa
+    if (bitsActive) {
+      const bitsSlide = document.getElementById('gst-bits');
+      if (bitsSlide) {
+        document.getElementById('gst-bits-gif').src = bitsGif;
+        document.getElementById('bits-caption').textContent = bitsCaption;
+        // Inicializar valores (por defecto)
+        document.getElementById('gst-bits-txt').textContent = `0/${bitsTarget}`;
+        document.getElementById('gst-bits-fill').style.width = '0%';
+      }
+    } else {
+      // Ocultar/eliminar el slide de bits si no está activo
+      const bitsSlide = document.getElementById('gst-bits');
+      if (bitsSlide) bitsSlide.style.display = 'none';
+    }
 
     const widgetEl = document.getElementById('widget');
     const secId = document.getElementById('sec-id');
@@ -1096,7 +1071,47 @@
       else applyPhase('nosponsor_nosocial');
     }
 
-    // ========== TICKER AJUSTE DINÁMICO (sin cambios) ==========
+    // ========== ROTACIÓN DE METAS (subs y bits) ==========
+    let goalSlides = [];
+    let currentGoalIndex = 0;
+    let goalRotationInterval = null;
+
+    function initGoalRotation() {
+      // Detener rotación anterior si existía
+      if (goalRotationInterval) clearInterval(goalRotationInterval);
+      
+      // Construir array de slides
+      goalSlides = [];
+      const subsSlide = document.getElementById('gst-normal');
+      const bitsSlide = document.getElementById('gst-bits');
+      const celSlide = document.getElementById('gst-cel');
+      
+      if (subsSlide && subsSlide.style.display !== 'none') goalSlides.push(subsSlide);
+      if (bitsActive && bitsSlide && bitsSlide.style.display !== 'none') goalSlides.push(bitsSlide);
+      if (celSlide && celSlide.style.display !== 'none') goalSlides.push(celSlide);
+      
+      if (goalSlides.length === 0) return;
+      
+      // Ocultar todos y mostrar el primero
+      goalSlides.forEach(slide => slide.classList.remove('on'));
+      currentGoalIndex = 0;
+      goalSlides[currentGoalIndex].classList.add('on');
+      
+      // Si hay más de un slide, iniciar rotación cada 30 segundos (o el valor configurado)
+      if (goalSlides.length > 1) {
+        const rotationSecs = CFG.goalRotationSeconds || 30;
+        goalRotationInterval = setInterval(() => {
+          goalSlides[currentGoalIndex].classList.remove('on');
+          currentGoalIndex = (currentGoalIndex + 1) % goalSlides.length;
+          goalSlides[currentGoalIndex].classList.add('on');
+        }, rotationSecs * 1000);
+      }
+    }
+
+    // Llamar a initGoalRotation después de que el DOM esté listo
+    setTimeout(initGoalRotation, 500);
+
+    // ========== TICKER AJUSTE DINÁMICO ==========
     let tickerResizeObserver = null;
     function adjustTickerFontSize() {
       const container = document.getElementById('tick-inner');
@@ -1166,19 +1181,26 @@
       document.getElementById('gst-txt').textContent = `${cur}/${tgt}`;
       document.getElementById('gst-fill').style.width = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100) + '%';
     }
+    function updateBitsGoal(cur, tgt) {
+      if (!bitsActive) return;
+      document.getElementById('gst-bits-txt').textContent = `${cur}/${tgt}`;
+      document.getElementById('gst-bits-fill').style.width = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100) + '%';
+    }
     function showGst(id) {
       document.getElementById('gst-normal').classList.toggle('on', id === 'gst-normal');
+      document.getElementById('gst-bits').classList.toggle('on', id === 'gst-bits');
       document.getElementById('gst-cel').classList.toggle('on', id === 'gst-cel');
     }
-    function celebrate(cur, newTgt, user) {
+    function celebrate(cur, newTgt, user, type = 'subs') {
       celebrating = true;
       document.getElementById('cel-usr').textContent = user ? `¡Gracias ${user}!` : '';
       showGst('gst-cel');
       if (celTimer) clearTimeout(celTimer);
       celTimer = setTimeout(() => {
         celebrating = false;
-        updateGoal(cur, newTgt);
-        showGst('gst-normal');
+        if (type === 'subs') updateGoal(cur, newTgt);
+        else if (type === 'bits') updateBitsGoal(cur, newTgt);
+        showGst(type === 'subs' ? 'gst-normal' : 'gst-bits');
       }, (CFG.goalCelebrationSeconds || 10) * 1000);
     }
     function setUptime(s) {
@@ -1210,7 +1232,7 @@
       }
     }
 
-    // Sponsors
+    // Sponsors (no cambia)
     const sponsorSlides = [];
     const sponsorIndicatorsEl = document.getElementById('sponsor-indicators');
     if (hasSponsorBlock && secSponsor.style.display !== 'none') {
@@ -1250,7 +1272,7 @@
       }
     }
 
-    // Socials
+    // Socials (sin cambios)
     const SOC_ICONS = {
       twitch: { icon: 'mdi:twitch', color: '#9147ff' },
       youtube: { icon: 'mdi:youtube', color: '#ff0000' },
@@ -1309,7 +1331,7 @@
       if (rotationItems.length > 1) setTimeout(rotateSocial, rotationItems[0].duration);
     }
 
-    // Ticker eventos
+    // Ticker eventos (sin cambios)
     const EV_DEF = {
       sub: ['et-sub', 'SUB', 'mdi:twitch', '#9146FF'],
       resub: ['et-resub', 'RESUB', 'mdi:twitch', '#b07dff'],
@@ -1347,7 +1369,7 @@
       setTimeout(nextEv, (CFG.tickerDisplaySeconds || 8) * 1000);
     }
 
-    // WebSocket
+    // WebSocket (sin cambios en la lógica de eventos, solo añadir manejo de goalUpdate para bits)
     function tryParse(s) { try { return JSON.parse(s); } catch { return null; } }
     function tierLbl(t) { return t === '1000' ? 'Tier 1' : t === '2000' ? 'Tier 2' : t === '3000' ? 'Tier 3' : t === 'Prime' ? 'Prime' : t || ''; }
 
@@ -1394,8 +1416,18 @@
             return;
           }
           if (payload.action === 'goalUpdate') {
-            if (payload.celebrating === true || payload.celebrating === 'true') celebrate(+payload.current, +payload.newTarget, payload.lastUser);
-            else if (!celebrating) updateGoal(+payload.current, +payload.target);
+            const goalType = payload.type || 'subs';
+            if (goalType === 'bits') {
+              if (payload.celebrating === true || payload.celebrating === 'true')
+                celebrate(+payload.current, +payload.newTarget, payload.lastUser, 'bits');
+              else if (!celebrating)
+                updateBitsGoal(+payload.current, +payload.target);
+            } else {
+              if (payload.celebrating === true || payload.celebrating === 'true')
+                celebrate(+payload.current, +payload.newTarget, payload.lastUser, 'subs');
+              else if (!celebrating)
+                updateGoal(+payload.current, +payload.target);
+            }
           }
           return;
         }
@@ -1448,13 +1480,12 @@
     window.addEventListener('load', () => {
       connect();
       const audio = document.getElementById('notification-sound');
-      if (audio && audio.load) {
-        audio.load();
-      }
+      if (audio && audio.load) audio.load();
       setTimeout(() => {
         widgetEl.classList.add('ready');
         initTickerResizeObserver();
         adjustTickerFontSize();
+        initGoalRotation();
       }, 300);
     });
     setTimeout(() => {
