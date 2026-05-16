@@ -921,17 +921,18 @@
     const soundEventsFromCfg = CFG.soundEvents || {};
     const soundEvents = { ...defaultSoundEvents, ...soundEventsFromCfg };
 
-    // Meta de bits
+    // Meta de bits (leer también el valor inicial si viene en la configuración)
     const goalBits = CFG.goalBits || { active: false };
     const bitsActive = goalBits.active === true;
     const bitsPeriod = goalBits.period || 'stream';
     const bitsTarget = goalBits.target || 0;
     const bitsGif = goalBits.gif || 'assets/bitcoin.gif';
     const bitsCaption = goalBits.caption || '';
+    const bitsCurrentFromCfg = goalBits.current || 0;  // <-- NUEVO: valor inicial desde admin
 
-    // Variables globales para bits (adicionales)
-    let currentBits = 0;
-    let ws = null;  // para poder usar el WebSocket desde otras funciones
+    // Variables globales para bits
+    let currentBits = bitsCurrentFromCfg;
+    let ws = null;
 
     CFG.logoPath = logoPath;
     CFG.goalGifPath = goalGifPath;
@@ -1044,8 +1045,11 @@
     if (bitsActive) {
       document.getElementById('gst-bits-gif').src = bitsGif;
       document.getElementById('bits-caption').textContent = bitsCaption;
-      document.getElementById('gst-bits-txt').textContent = `0/${bitsTarget}`;
-      document.getElementById('gst-bits-fill').style.width = '0%';
+      // Usar el valor inicial desde la configuración
+      document.getElementById('gst-bits-txt').textContent = `${bitsCurrentFromCfg}/${bitsTarget}`;
+      const percent = Math.min(bitsCurrentFromCfg / Math.max(bitsTarget, 1) * 100, 100);
+      document.getElementById('gst-bits-fill').style.width = percent + '%';
+      currentBits = bitsCurrentFromCfg;
       bitsSlide.style.display = '';
     } else {
       bitsSlide.style.display = 'none';
@@ -1125,14 +1129,13 @@
       else applyPhase('nosponsor_nosocial');
     }
 
-    // ========== ROTACIÓN DE METAS (sin slide de celebración) ==========
+    // ========== ROTACIÓN DE METAS ==========
     let goalSlides = [], currentGoalIndex = 0, goalRotationInterval = null;
 
     function initGoalRotation() {
       if (goalRotationInterval) clearInterval(goalRotationInterval);
       const subs = document.getElementById('gst-normal');
       const bits = document.getElementById('gst-bits');
-      // Eliminar clase 'on' de todos los slides (incluyendo celebración, aunque no esté en la rotación)
       if (subs) subs.classList.remove('on');
       if (bits) bits.classList.remove('on');
       const cel = document.getElementById('gst-cel');
@@ -1223,14 +1226,12 @@
       document.getElementById('gst-txt').textContent = `${cur}/${tgt}`;
       document.getElementById('gst-fill').style.width = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100) + '%';
     }
-    // Función mejorada de bits con celebración automática
     function updateBitsGoal(cur, tgt) {
       if (!bitsActive) return;
       currentBits = cur;
       document.getElementById('gst-bits-txt').textContent = `${cur}/${tgt}`;
       const percent = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100);
       document.getElementById('gst-bits-fill').style.width = percent + '%';
-      // Celebración automática si se alcanza o supera la meta y no estamos ya celebrando
       if (!celebrating && cur >= tgt && tgt > 0) {
         celebrate(cur, tgt, '', 'bits');
       }
@@ -1384,7 +1385,7 @@
       if (rotationItems.length > 1) setTimeout(rotateSocial, rotationItems[0].duration);
     }
 
-    // Ticker eventos (sin cambios)
+    // Ticker eventos
     const EV_DEF = {
       sub: ['et-sub', 'SUB', 'mdi:twitch', '#9146FF'], resub: ['et-resub', 'RESUB', 'mdi:twitch', '#b07dff'],
       giftsub: ['et-gift', 'GIFT', 'mdi:gift', '#F97316'], giftbomb: ['et-gift', 'GIFT ×', 'mdi:gift-open', '#F97316'],
@@ -1417,7 +1418,7 @@
       setTimeout(nextEv, (CFG.tickerDisplaySeconds || 8) * 1000);
     }
 
-    // ========== FUNCIONES PARA BITS (solicitar estado, reinicio) ==========
+    // ========== FUNCIONES PARA BITS ==========
     function requestBitsState() {
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({
@@ -1427,19 +1428,7 @@
         }));
       }
     }
-    // Enviar la configuración de bits al bot
-    if (bitsActive) {
-      ws.send(JSON.stringify({
-        request: "SendCustom",
-        id: "syncBitsConfig",
-        data: {
-          action: "syncBitsConfig",
-          period: bitsPeriod,
-          target: bitsTarget,
-          current: currentBits  // ya sea desde CFG o 0
-        }
-      }));
-    }
+
     function resetStreamBits() {
       if (bitsPeriod !== 'stream') return;
       if (ws && ws.readyState === WebSocket.OPEN) {
@@ -1449,7 +1438,6 @@
           data: { action: "resetStreamBits" }
         }));
       }
-      // Reinicio visual inmediato mientras el bot responde
       updateBitsGoal(0, bitsTarget);
     }
 
@@ -1474,6 +1462,19 @@
         ws.send(JSON.stringify({ request: 'GetChannelInfo', id: 'hipe-livecheck' }));
         // Solicitar el estado actual de bits al conectar
         requestBitsState();
+        // Sincronizar configuración de bits con el bot (si la meta está activa)
+        if (bitsActive) {
+          ws.send(JSON.stringify({
+            request: "SendCustom",
+            id: "syncBitsConfig",
+            data: {
+              action: "syncBitsConfig",
+              period: bitsPeriod,
+              target: bitsTarget,
+              current: currentBits
+            }
+          }));
+        }
       };
       ws.onmessage = (msg) => {
         let d; try { d = JSON.parse(msg.data); } catch { return; }
@@ -1489,7 +1490,6 @@
           const was = streamLive; setLive(true);
           if (!was) {
             startUptime(true);
-            // Reiniciar bits si el período es por stream
             if (bitsPeriod === 'stream') {
               resetStreamBits();
             }
@@ -1506,7 +1506,6 @@
             const isLive = payload.live === true, was = streamLive;
             setLive(isLive);
             if (isLive && !was) {
-              // Si el widget recibe uptime en segundos, lo usa
               const uptimeSecs = payload.uptime || 0;
               if (uptimeSecs > 0) {
                 uptimeSeconds = uptimeSecs;
@@ -1534,12 +1533,10 @@
             }
             return;
           }
-          // Respuesta del bot al pedir estado de bits
           if (payload.action === 'bitsState') {
             updateBitsGoal(payload.current, payload.target);
             return;
           }
-          // Actualización de bits sin celebración
           if (payload.action === 'bitsUpdate') {
             updateBitsGoal(payload.current, payload.target);
             return;
