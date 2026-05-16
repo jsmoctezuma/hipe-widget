@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Hipe Widget — Panel de Control</title>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <style>
     /* ===== ESTILOS (sin cambios estructurales) ===== */
     *,
@@ -1277,20 +1279,31 @@
     function sendConfigToBot(config) {
       const sbHost = config.sbHost || '127.0.0.1';
       const sbPort = config.sbPort || 8080;
+
       const ws = new WebSocket(`ws://${sbHost}:${sbPort}/`);
+
       ws.onopen = () => {
+        // Usamos DoAction en lugar de SendCustom para que Streamer.Bot
+        // ejecute la acción y el Execute() del C# reciba los args correctamente.
         const payload = {
-          request: "SendCustom",
+          request: "DoAction",
           id: "adminSync",
-          data: {
-            action: "adminSyncConfig",
-            goalBits: config.goalBits
+          action: { name: "Hipe Widget" },   // <-- nombre exacto de tu acción en Streamer.Bot
+          args: {
+            adminAction: "adminSyncConfig",
+            bitsActive: String(config.goalBits?.active ?? false),
+            bitsPeriod: config.goalBits?.period || "stream",
+            bitsTarget: String(config.goalBits?.target ?? 0),
+            bitsCurrent: String(config.goalBits?.current ?? 0)
           }
         };
         ws.send(JSON.stringify(payload));
-        setTimeout(() => ws.close(), 500);
+        setTimeout(() => ws.close(), 600);
       };
-      ws.onerror = () => console.log('No se pudo conectar al bot');
+
+      ws.onerror = () => {
+        console.warn('[HipeWidget] No se pudo conectar al bot para sincronizar configuración.');
+      };
     }
 
     // MODIFICADA: copiar enlace y enviar configuración al bot
