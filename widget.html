@@ -422,7 +422,6 @@
     }
 
     #sp-utval {
-      /* font-family: 'Barlow Condensed', sans-serif;  ← elimina esto */
       font-size: 44px;
       font-weight: 700;
       color: var(--text);
@@ -930,6 +929,10 @@
     const bitsGif = goalBits.gif || 'assets/bitcoin.gif';
     const bitsCaption = goalBits.caption || '';
 
+    // Variables globales para bits (adicionales)
+    let currentBits = 0;
+    let ws = null;  // para poder usar el WebSocket desde otras funciones
+
     CFG.logoPath = logoPath;
     CFG.goalGifPath = goalGifPath;
     CFG.events = events;
@@ -1220,10 +1223,17 @@
       document.getElementById('gst-txt').textContent = `${cur}/${tgt}`;
       document.getElementById('gst-fill').style.width = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100) + '%';
     }
+    // Función mejorada de bits con celebración automática
     function updateBitsGoal(cur, tgt) {
       if (!bitsActive) return;
+      currentBits = cur;
       document.getElementById('gst-bits-txt').textContent = `${cur}/${tgt}`;
-      document.getElementById('gst-bits-fill').style.width = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100) + '%';
+      const percent = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100);
+      document.getElementById('gst-bits-fill').style.width = percent + '%';
+      // Celebración automática si se alcanza o supera la meta y no estamos ya celebrando
+      if (!celebrating && cur >= tgt && tgt > 0) {
+        celebrate(cur, tgt, '', 'bits');
+      }
     }
     function showGst(id) {
       const subs = document.getElementById('gst-normal');
@@ -1407,12 +1417,36 @@
       setTimeout(nextEv, (CFG.tickerDisplaySeconds || 8) * 1000);
     }
 
+    // ========== FUNCIONES PARA BITS (solicitar estado, reinicio) ==========
+    function requestBitsState() {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          request: "SendCustom",
+          id: "getBitsState",
+          data: { action: "getBitsState" }
+        }));
+      }
+    }
+
+    function resetStreamBits() {
+      if (bitsPeriod !== 'stream') return;
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          request: "SendCustom",
+          id: "resetStreamBits",
+          data: { action: "resetStreamBits" }
+        }));
+      }
+      // Reinicio visual inmediato mientras el bot responde
+      updateBitsGoal(0, bitsTarget);
+    }
+
     // WebSocket
     function tryParse(s) { try { return JSON.parse(s); } catch { return null; } }
     function tierLbl(t) { return t === '1000' ? 'Tier 1' : t === '2000' ? 'Tier 2' : t === '3000' ? 'Tier 3' : t === 'Prime' ? 'Prime' : t || ''; }
 
     function connect() {
-      const ws = new WebSocket(`ws://${CFG.sbHost || '127.0.0.1'}:${CFG.sbPort || 8080}/`);
+      ws = new WebSocket(`ws://${CFG.sbHost || '127.0.0.1'}:${CFG.sbPort || 8080}/`);
       ws.onopen = () => {
         document.getElementById('tick-user').textContent = 'Bienvenido ✓  —  Sistema en línea';
         setTimeout(adjustTickerFontSize, 0);
@@ -1426,6 +1460,8 @@
           }
         }));
         ws.send(JSON.stringify({ request: 'GetChannelInfo', id: 'hipe-livecheck' }));
+        // Solicitar el estado actual de bits al conectar
+        requestBitsState();
       };
       ws.onmessage = (msg) => {
         let d; try { d = JSON.parse(msg.data); } catch { return; }
@@ -1438,7 +1474,15 @@
         const dd = d.data || {};
         const E = CFG.events || {};
         if (src === 'twitch' && (type === 'streamonline' || type === 'online')) {
-          const was = streamLive; setLive(true); if (!was) startUptime(true); return;
+          const was = streamLive; setLive(true);
+          if (!was) {
+            startUptime(true);
+            // Reiniciar bits si el período es por stream
+            if (bitsPeriod === 'stream') {
+              resetStreamBits();
+            }
+          }
+          return;
         }
         if (src === 'twitch' && (type === 'streamoffline' || type === 'offline')) {
           const was = streamLive; setLive(false); if (was) stopUptime(); return;
@@ -1449,8 +1493,12 @@
           if (payload.action === 'streamState') {
             const isLive = payload.live === true, was = streamLive;
             setLive(isLive);
-            if (isLive && !was) startUptime(true);
-            else if (!isLive && was) stopUptime();
+            if (isLive && !was) {
+              startUptime(true);
+              if (bitsPeriod === 'stream') {
+                resetStreamBits();
+              }
+            } else if (!isLive && was) stopUptime();
             return;
           }
           if (payload.action === 'goalUpdate') {
@@ -1463,8 +1511,18 @@
               else if (!celebrating)
                 updateGoal(+payload.current, +payload.target);
             }
+            return;
           }
-          return;
+          // Respuesta del bot al pedir estado de bits
+          if (payload.action === 'bitsState') {
+            updateBitsGoal(payload.current, payload.target);
+            return;
+          }
+          // Actualización de bits sin celebración
+          if (payload.action === 'bitsUpdate') {
+            updateBitsGoal(payload.current, payload.target);
+            return;
+          }
         }
         function getUsername(data) {
           const candidates = [
