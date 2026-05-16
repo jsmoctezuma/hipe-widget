@@ -3,1348 +3,1580 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Hipe Widget — Panel de Control</title>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Hipe Widget</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
   <style>
-    /* ===== ESTILOS (sin cambios estructurales) ===== */
+    /* ========== ESTILOS BASE (igual que antes) ========== */
     *,
     *::before,
     *::after {
-      box-sizing: border-box;
       margin: 0;
-      padding: 0
+      padding: 0;
+      box-sizing: border-box;
     }
 
     :root {
-      --bg: #0b0b10;
-      --surf: #13131a;
-      --card: #1a1a24;
-      --bord: #27273a;
-      --acc: #7c3aed;
-      --acc2: #a78bfa;
-      --grn: #4ade80;
-      --red: #f87171;
-      --txt: #f4f4f8;
-      --mut: #8888aa;
-      --rad: 8px;
+      --bg: #111117;
+      --border: #22222e;
+      --accent: #7c3aed;
+      --accent-rgb: 124, 58, 237;
+      --text: #ffffff;
+      --muted: #aaaaaa;
+      --radius: 4px;
+      --goal-grad-1: #7c3aed;
+      --goal-grad-2: #9d5ff5;
+      --goal-grad-3: #5a1fc8;
+      --social-soft: rgba(124, 58, 237, .24);
+      --social-soft-2: rgba(124, 58, 237, .10);
+    }
+
+    html,
+    body {
+      background: transparent;
+      overflow: hidden;
     }
 
     body {
-      background: var(--bg);
-      color: var(--txt);
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      min-height: 100vh;
-      padding-bottom: 80px;
-    }
-
-    header {
-      background: var(--surf);
-      border-bottom: 1px solid var(--bord);
-      padding: 18px 36px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
       font-family: 'Rajdhani', sans-serif;
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: .07em;
-      text-transform: uppercase;
     }
 
-    .logo img {
-      height: 48px;
-      width: auto;
-    }
-
-    .logo span {
-      color: var(--txt);
-    }
-
-    .logo span span {
-      color: var(--acc2);
-    }
-
-    .logo em {
-      font-style: normal;
-      font-size: 13px;
-      color: var(--mut);
-      background: var(--bord);
-      padding: 3px 10px;
-      border-radius: 20px;
-      letter-spacing: .05em;
-    }
-
-    .action-bar {
-      background: var(--surf);
-      border-bottom: 1px solid var(--bord);
-      padding: 16px 36px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .btn-copy {
-      background: var(--grn);
-      color: #000;
-      border: none;
-      padding: 14px 28px;
-      border-radius: var(--rad);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: .07em;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      transition: background .2s, transform .1s;
-      flex: 1;
-      justify-content: center;
-    }
-
-    .btn-copy:hover {
-      background: #5aee9e;
-      transform: scale(1.02);
-    }
-
-    .btn-reset {
-      background: #2a2a3a;
-      color: #fff;
-      border: none;
-      padding: 14px 28px;
-      border-radius: var(--rad);
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: .07em;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: background .2s;
-    }
-
-    .btn-reset:hover {
-      background: var(--red);
-    }
-
-    main {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 32px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--bord);
-      border-radius: 12px;
-      padding: 28px;
-    }
-
-    .card-title {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--acc2);
-      margin-bottom: 22px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card-title::before {
-      content: '';
-      width: 4px;
-      height: 20px;
-      background: var(--acc);
-      border-radius: 2px;
-      display: block;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-
-    .field:last-child {
-      margin-bottom: 0;
-    }
-
-    label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--mut);
-      text-transform: uppercase;
-      letter-spacing: .07em;
-    }
-
-    input[type=text],
-    input[type=number],
-    select {
-      background: var(--surf);
-      border: 1px solid var(--bord);
-      border-radius: var(--rad);
-      color: var(--txt);
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      padding: 12px 15px;
-      outline: none;
-      width: 100%;
-      transition: border-color .2s;
-    }
-
-    input:focus,
-    select:focus {
-      border-color: var(--acc);
-    }
-
-    input[type=color] {
-      padding: 4px 6px;
-      height: 46px;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .range-field {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .range-field input {
-      flex: 1;
-    }
-
-    .range-field span {
-      min-width: 45px;
-      text-align: right;
-      color: var(--mut);
-    }
-
-    .r2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .r3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 18px;
-    }
-
-    .fhint {
-      font-size: 13px;
-      color: var(--mut);
-      margin-top: 5px;
-      line-height: 1.5;
-    }
-
-    .tog-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      background: var(--surf);
-      border: 1px solid var(--bord);
-      border-radius: var(--rad);
-      margin-bottom: 9px;
-      transition: border-color .2s;
-      gap: 12px;
-    }
-
-    .tog-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .tog-row.on {
-      border-color: var(--acc);
-    }
-
-    .tog-lbl {
-      font-size: 17px;
-      font-weight: 500;
-      color: var(--txt);
-    }
-
-    .tog-sub {
-      font-size: 14px;
-      color: var(--mut);
-      margin-top: 3px;
-    }
-
-    .tog {
-      position: relative;
-      width: 46px;
-      height: 26px;
-      flex-shrink: 0;
-    }
-
-    .tog input {
+    #widget {
       opacity: 0;
-      width: 0;
-      height: 0;
+      transition: opacity .5s ease;
+      filter: drop-shadow(0 0 12px rgba(0, 0, 0, .35)) drop-shadow(0 0 4px rgba(0, 0, 0, .6));
     }
 
-    .tog-sl {
-      position: absolute;
-      inset: 0;
-      background: var(--bord);
-      border-radius: 26px;
-      cursor: pointer;
-      transition: background .2s;
+    #widget.ready {
+      opacity: 1;
     }
 
-    .tog-sl::before {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      left: 3px;
-      top: 3px;
-      background: var(--mut);
-      border-radius: 50%;
-      transition: transform .2s, background .2s;
-    }
-
-    .tog input:checked+.tog-sl {
-      background: var(--acc);
-    }
-
-    .tog input:checked+.tog-sl::before {
-      transform: translateX(20px);
-      background: #fff;
-    }
-
-    .tog-small {
-      width: 36px;
-      height: 22px;
-    }
-
-    .tog-small .tog-sl::before {
-      width: 16px;
-      height: 16px;
-      left: 3px;
-      top: 3px;
-    }
-
-    .tog-small input:checked+.tog-sl::before {
-      transform: translateX(14px);
-    }
-
-    .soc-row {
+    #widget.layout-compacto {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      background: var(--surf);
-      border: 1px solid var(--bord);
-      border-radius: var(--rad);
-      margin-bottom: 9px;
-      transition: border-color .2s;
+      flex-direction: column;
+      padding: 8px;
+      gap: 8px;
     }
 
-    .soc-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .soc-row.on {
-      border-color: var(--acc);
-    }
-
-    .soc-icon-box {
-      width: 34px;
-      height: 34px;
-      border-radius: 8px;
+    #row-top {
       display: flex;
-      align-items: center;
-      justify-content: center;
+      height: 100px;
       flex-shrink: 0;
     }
 
-    .soc-icon-box svg {
-      width: 19px;
-      height: 19px;
-    }
-
-    .soc-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--txt);
-      min-width: 96px;
-    }
-
-    .soc-inp {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--bord);
-      border-radius: var(--rad);
-      color: var(--txt);
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      padding: 9px 13px;
-      outline: none;
-      transition: border-color .2s;
-    }
-
-    .soc-inp:focus {
-      border-color: var(--acc);
-    }
-
-    .soc-inp:disabled {
-      opacity: .3;
-      pointer-events: none;
-    }
-
-    #socials-content {
-      margin-left: 24px;
-      border-left: 2px solid var(--bord);
-      padding-left: 16px;
-      margin-top: 12px;
-    }
-
-    .sp-row {
+    #row-bottom {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 16px;
-      background: var(--surf);
-      border: 1px solid var(--bord);
-      border-radius: var(--rad);
-      margin-bottom: 9px;
-      flex-wrap: wrap;
+      height: 80px;
+      flex-shrink: 0;
     }
 
-    .sp-row input {
-      background: var(--bg);
-      border: 1px solid var(--bord);
-      border-radius: var(--rad);
-      color: var(--txt);
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      padding: 9px 13px;
-      outline: none;
-      transition: border-color .2s;
-    }
-
-    .sp-row input:focus {
-      border-color: var(--acc);
-    }
-
-    .sp-name {
-      flex: 1.5;
-    }
-
-    .sp-path {
-      flex: 2;
-    }
-
-    .sp-dur {
-      width: 100%;
-    }
-
-    .sp-grid {
-      display: grid;
-      grid-template-columns: minmax(150px, 1.15fr) minmax(130px, 145px) auto auto;
-      gap: 14px 12px;
-      width: 100%;
-      align-items: end;
-    }
-
-    .sp-grid>* {
-      min-width: 0;
-    }
-
-    .sp-name,
-    .sp-path,
-    .sp-dur {
-      min-width: 0;
-      width: 100%;
-    }
-
-    .sp-field {
+    #widget.layout-completo {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-width: 0;
-    }
-
-    .sp-field.full {
-      grid-column: 1 / -1;
-    }
-
-    .sp-inline {
-      display: flex;
-      gap: 8px;
+      flex-direction: row;
+      padding: 8px;
+      gap: 10px;
       align-items: stretch;
     }
 
-    .sp-inline .sp-path {
-      flex: 1;
+    #widget.layout-completo #row-top,
+    #widget.layout-completo #row-bottom {
+      display: contents;
     }
 
-    .sp-field label {
-      font-size: 12px;
+    .sec {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    /* Branding */
+    #sec-id {
+      width: 300px;
+      padding: 0 16px;
+      gap: 10px;
+    }
+
+    #widget.layout-completo #sec-id {
+      height: 100px;
+    }
+
+    #id-avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    #id-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    #id-name {
+      font-size: 22px;
       font-weight: 700;
-      color: var(--mut);
+      color: var(--text);
       text-transform: uppercase;
-      letter-spacing: .06em;
+      letter-spacing: .05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1;
     }
 
-    .sp-mini {
-      font-size: 12px;
-      color: var(--mut);
-      line-height: 1.35;
-      margin-top: 2px;
-    }
-
-    .btn-sp-browse {
-      background: transparent;
-      border: 1px solid var(--bord);
-      border-radius: 6px;
-      color: var(--acc2);
-      cursor: pointer;
+    #id-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       font-size: 14px;
       font-weight: 600;
-      padding: 0 14px;
-      height: 40px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    #live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2e2e3a;
       flex-shrink: 0;
+      transition: background .4s;
+    }
+
+    #live-dot.live {
+      background: #ff2d2d;
+      animation: pdot 1.4s ease-in-out infinite;
+    }
+
+    @keyframes pdot {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 45, 45, .6);
+      }
+
+      50% {
+        box-shadow: 0 0 0 5px rgba(255, 45, 45, 0);
+      }
+    }
+
+    /* Metas */
+    #sec-goal {
+      padding: 0 20px;
+      position: relative;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    #widget.layout-completo #sec-goal {
+      height: 100px;
+      padding: 0 16px;
+    }
+
+    .gst {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity .35s, transform .35s;
+      pointer-events: none;
+    }
+
+    #widget.layout-completo .gst {
+      left: 16px;
+      right: 16px;
+      gap: 4px;
+    }
+
+    .gst.on {
+      opacity: 1;
+      transform: translateY(0px);
+      pointer-events: auto;
+    }
+
+    #gst-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    #gst-lbl,
+    #gst-lbl-bits {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .11em;
+      white-space: nowrap;
+    }
+
+    #widget.layout-completo #gst-lbl,
+    #widget.layout-completo #gst-lbl-bits {
+      font-size: 20px;
+    }
+
+    #gst-cnt,
+    #gst-cnt-bits {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    #widget.layout-completo #gst-cnt,
+    #widget.layout-completo #gst-cnt-bits {
+      font-size: 38px;
+      gap: 6px;
+    }
+
+    #gst-heart,
+    #gst-bits-gif {
+      height: 60px;
+      flex-shrink: 0;
+    }
+
+    #widget.layout-completo #gst-heart,
+    #widget.layout-completo #gst-bits-gif {
+      height: 60px;
+    }
+
+    #gst-track,
+    #gst-track-bits {
+      height: 8px;
+      background: rgba(255, 255, 255, .07);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, .4);
+    }
+
+    #widget.layout-completo #gst-track,
+    #widget.layout-completo #gst-track-bits {
+      height: 6px;
+    }
+
+    #gst-fill,
+    #gst-bits-fill {
+      height: 100%;
+      background: linear-gradient(90deg,
+          var(--goal-grad-3) 0%,
+          var(--goal-grad-1) 30%,
+          var(--goal-grad-2) 50%,
+          var(--goal-grad-1) 70%,
+          var(--goal-grad-3) 100%);
+      border-radius: 4px;
+      box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: width .8s cubic-bezier(.4, 0, .2, 1);
+      width: 0%;
+      position: relative;
+    }
+
+    #gst-fill::after,
+    #gst-bits-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent);
+      border-radius: 4px 4px 0 0;
+      pointer-events: none;
+    }
+
+    #gst-fill::before,
+    #gst-bits-fill::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.15) 100%);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .bits-caption {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #gst-cel {
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    #cel-txt {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffd700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      text-align: center;
+      line-height: 1.2;
+      animation: cglow 1s ease-in-out infinite alternate;
+    }
+
+    #widget.layout-completo #cel-txt {
+      font-size: 14px;
+    }
+
+    #cel-usr {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    #widget.layout-completo #cel-usr {
+      font-size: 11px;
+    }
+
+    @keyframes cglow {
+      from {
+        text-shadow: 0 0 8px rgba(255, 215, 0, .4);
+      }
+
+      to {
+        text-shadow: 0 0 20px rgba(255, 215, 0, .9), 0 0 40px rgba(255, 215, 0, .3);
+      }
+    }
+
+    /* Sponsors */
+    #sec-sponsor {
+      position: relative;
+      justify-content: center;
+      padding-bottom: 18px;
+      flex-shrink: 0;
+    }
+
+    #widget.layout-completo #sec-sponsor {
+      height: 100px;
+    }
+
+    .sp-slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity .45s ease;
+      pointer-events: none;
+      padding-bottom: 12px;
+    }
+
+    .sp-slide.on {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #sp-uptime {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    #sp-ut-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    #sp-utlbl {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      text-shadow: 0 0 4px rgba(var(--accent-rgb), 0.4);
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      line-height: 1;
+    }
+
+    #sp-utval {
+      font-size: 44px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: .03em;
+    }
+
+    .sp-slide img,
+    .sp-slide video {
+      max-height: calc(100% - 16px);
+      max-width: calc(100% - 24px);
+      object-fit: contain;
+    }
+
+    #sp-empty {
+      font-size: 13px;
+      color: var(--muted);
+      opacity: .35;
+      font-style: italic;
+    }
+
+    /* Ticker */
+    #sec-ticker {
+      padding: 0 14px;
+      position: relative;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    #widget.layout-completo #sec-ticker {
+      height: 100px;
+      padding: 0 16px;
+    }
+
+    #tick-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .ev-badge {
       display: flex;
       align-items: center;
       gap: 5px;
-      transition: border-color .2s, color .2s;
+      padding: 8px 13px 8px 10px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
 
-    .btn-sp-browse:hover {
-      border-color: var(--acc);
-    }
-
-    .btn-rm {
-      background: transparent;
-      border: 1px solid var(--bord);
-      border-radius: 6px;
-      color: var(--red);
-      cursor: pointer;
-      font-size: 20px;
-      width: 36px;
-      height: 36px;
+    .ev-badge .ev-icon {
+      width: 22px;
+      height: 22px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background .2s, border-color .2s;
     }
 
-    .btn-rm:hover {
-      background: rgba(248, 113, 113, .1);
-      border-color: var(--red);
+    .ev-badge .ev-label {
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      line-height: 1;
     }
 
-    .btn-add {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: transparent;
-      border: 1px dashed var(--bord);
-      border-radius: var(--rad);
-      color: var(--mut);
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
+    /* Badge classes (idénticas) */
+    .et-sub {
+      background: rgba(145, 70, 255, .25);
+    }
+
+    .et-sub .ev-label,
+    .et-sub .ev-icon,
+    .et-sub iconify-icon {
+      color: #9146FF;
+    }
+
+    .et-resub {
+      background: rgba(145, 70, 255, .20);
+    }
+
+    .et-resub .ev-label,
+    .et-resub .ev-icon,
+    .et-resub iconify-icon {
+      color: #b07dff;
+    }
+
+    .et-gift {
+      background: rgba(249, 115, 22, .25);
+    }
+
+    .et-gift .ev-label,
+    .et-gift .ev-icon,
+    .et-gift iconify-icon {
+      color: #F97316;
+    }
+
+    .et-raid {
+      background: rgba(59, 130, 246, .25);
+    }
+
+    .et-raid .ev-label,
+    .et-raid .ev-icon,
+    .et-raid iconify-icon {
+      color: #3B82F6;
+    }
+
+    .et-bits {
+      background: rgba(48, 196, 171, .25);
+    }
+
+    .et-bits .ev-label,
+    .et-bits .ev-icon,
+    .et-bits iconify-icon {
+      color: #30C4AB;
+    }
+
+    .et-follow {
+      background: rgba(235, 76, 76, .25);
+    }
+
+    .et-follow .ev-label,
+    .et-follow .ev-icon,
+    .et-follow iconify-icon {
+      color: #EB4C4C;
+    }
+
+    .et-donate {
+      background: rgba(23, 155, 215, .25);
+    }
+
+    .et-donate .ev-label,
+    .et-donate .ev-icon,
+    .et-donate iconify-icon {
+      color: #179BD7;
+    }
+
+    .et-redeem {
+      background: rgba(245, 158, 11, .25);
+    }
+
+    .et-redeem .ev-label,
+    .et-redeem .ev-icon,
+    .et-redeem iconify-icon {
+      color: #F59E0B;
+    }
+
+    .et-member {
+      background: rgba(255, 0, 0, .20);
+    }
+
+    .et-member .ev-label,
+    .et-member .ev-icon,
+    .et-member iconify-icon {
+      color: #FF6060;
+    }
+
+    .et-super {
+      background: rgba(6, 182, 212, .25);
+    }
+
+    .et-super .ev-label,
+    .et-super .ev-icon,
+    .et-super iconify-icon {
+      color: #06B6D4;
+    }
+
+    .et-ok {
+      background: rgba(74, 222, 128, .15);
+    }
+
+    .et-ok .ev-label,
+    .et-ok .ev-icon,
+    .et-ok iconify-icon {
+      color: #4ade80;
+    }
+
+    #tick-user {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 0 1 auto;
+      min-width: 0;
+      letter-spacing: 0.02em;
+      margin-left: 12px;
+    }
+
+    #tick-extra {
+      font-size: 34px;
       font-weight: 600;
-      padding: 13px 18px;
-      width: 100%;
-      margin-top: 9px;
-      transition: border-color .2s, color .2s;
+      color: var(--muted);
+      white-space: nowrap;
+      flex: 0 0 auto;
+      margin-left: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
     }
 
-    .btn-add:hover {
-      border-color: var(--acc);
-      color: var(--acc2);
+    #tick-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 6px;
+      width: 0%;
+      border-radius: 0 2px 2px 0;
     }
 
-    .ev-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-    }
-
-    .event-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      background: var(--surf);
-      border: 1px solid var(--bord);
-      border-radius: var(--rad);
-      transition: border-color .2s;
-      gap: 12px;
-    }
-
-    .event-row.on {
-      border-color: var(--acc);
-    }
-
-    .event-row .tog-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    /* Social */
+    #sec-social {
+      position: relative;
+      justify-content: center;
       flex-shrink: 0;
     }
 
-    .event-row .tog-group .sound-tog {
+    #widget.layout-completo #sec-social {
+      height: 100px;
+    }
+
+    .social-stage {
+      position: absolute;
+      inset: 0;
+      padding: 0 8px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      overflow: hidden;
     }
 
-    .sound-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--mut);
-      margin-right: 4px;
-    }
-
-    .hint {
-      font-size: 14px;
-      color: var(--mut);
-      line-height: 1.6;
-      margin-top: 12px;
-      padding: 12px 16px;
-      background: var(--surf);
-      border-radius: var(--rad);
-      border-left: 3px solid var(--acc);
-    }
-
-    .subcard {
-      margin-top: 16px;
-      padding: 14px;
-      background: rgba(255, 255, 255, .02);
-      border: 1px dashed var(--bord);
-      border-radius: var(--rad);
-    }
-
-    #toast {
-      position: fixed;
-      bottom: 28px;
+    .social-card {
+      position: absolute;
       left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--acc);
-      color: #fff;
-      padding: 14px 28px;
-      border-radius: var(--rad);
-      font-weight: 700;
-      font-size: 16px;
-      letter-spacing: .04em;
+      top: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      max-width: calc(100% - 12px);
+      min-width: 0;
       opacity: 0;
-      transition: opacity .3s, transform .3s;
       pointer-events: none;
-      z-index: 999;
-      max-width: 540px;
-      text-align: center;
-      white-space: pre-line;
+      transform: translate(-50%, -50%);
+      transition: opacity .4s ease, transform .4s ease;
     }
 
-    #toast.show {
+    .social-card.on {
       opacity: 1;
-      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
     }
 
-    #sponsors-content {
-      margin-left: 24px;
-      border-left: 2px solid var(--bord);
-      padding-left: 16px;
-      margin-top: 12px;
-      transition: all 0.2s;
+    .soc-icon-wrap {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 4px;
+      margin-bottom: 2px;
+    }
+
+    .soc-icon-wrap iconify-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .soc-hnd {
+      font-size: 34px;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+      max-width: 220px;
+      line-height: 1;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, .4);
+    }
+
+    .creator-badge {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .creator-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .creator-label {
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: .16em;
+      color: var(--muted);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .logo-wrapper {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 4px;
+      margin-bottom: 2px;
+    }
+
+    .creator-logo {
+      height: 52px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .creator-code {
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 700;
+      white-space: nowrap;
+      text-transform: uppercase;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 260px;
+      color: var(--text);
+    }
+
+    .rot-ind {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      z-index: 10;
+      min-width: max-content;
+      pointer-events: none;
+    }
+
+    .rot-ind .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .22);
+      transition: width .25s ease, background .25s ease;
+      flex: 0 0 auto;
+    }
+
+    .rot-ind .dot.active {
+      width: 14px;
     }
   </style>
 </head>
 
 <body>
+  <div id="widget">
+    <div id="row-top">
+      <div class="sec" id="sec-id">
+        <img id="id-avatar" src="" alt="">
+        <div id="id-info">
+          <div id="id-name">HIPE</div>
+          <div id="id-status">
+            <div id="live-dot"></div>
+            <span id="live-txt">OFFLINE</span>
+          </div>
+        </div>
+      </div>
 
-  <header>
-    <div class="logo">
-      <img src="assets/mc.png" alt="MC Logo" onerror="this.style.display='none'">
-      <span>HIPE <span>Widget</span></span>
-      <em>Panel de Control</em>
+      <div class="sec" id="sec-goal">
+        <div class="gst on" id="gst-normal">
+          <div id="gst-hdr">
+            <span id="gst-lbl">META SUBS</span>
+            <div id="gst-cnt">
+              <img id="gst-heart" src="" alt="♥">
+              <span id="gst-txt">--/--</span>
+            </div>
+          </div>
+          <div id="gst-track">
+            <div id="gst-fill"></div>
+          </div>
+        </div>
+        <div class="gst" id="gst-bits">
+          <div id="gst-hdr">
+            <span id="gst-lbl-bits">META BITS</span>
+            <div id="gst-cnt-bits">
+              <img id="gst-bits-gif" src="" alt="⭐">
+              <span id="gst-bits-txt">--/--</span>
+            </div>
+          </div>
+          <div id="gst-track-bits">
+            <div id="gst-bits-fill"></div>
+          </div>
+          <div class="bits-caption" id="bits-caption"></div>
+        </div>
+        <div class="gst" id="gst-cel">
+          <div id="cel-txt">¡META ALCANZADA! 🎉</div>
+          <div id="cel-usr"></div>
+        </div>
+      </div>
+
+      <div class="sec" id="sec-sponsor">
+        <span id="sp-empty">Sin sponsor</span>
+        <div class="sp-slide" id="sp-uptime">
+          <div id="sp-ut-wrap">
+            <div id="sp-utlbl">EN VIVO</div>
+            <div id="sp-utval">00:00:00</div>
+          </div>
+        </div>
+        <div class="rot-ind" id="sponsor-indicators"></div>
+      </div>
     </div>
-  </header>
 
-  <div class="action-bar">
-    <button class="btn-copy" id="copyUrlBtn">📋 Copiar enlace del widget</button>
-    <button class="btn-reset" id="resetBtn">⟳ Restaurar valores</button>
+    <div id="row-bottom">
+      <div class="sec" id="sec-ticker">
+        <div id="tick-inner">
+          <div class="ev-badge et-ok" id="tick-badge">
+            <span class="ev-icon"><iconify-icon icon="mdi:check-circle" width="16"></iconify-icon></span>
+            <span class="ev-label">HIPE</span>
+          </div>
+          <span id="tick-user">Conectando con Streamer.bot...</span>
+          <span id="tick-extra"></span>
+        </div>
+        <div id="tick-bar"></div>
+      </div>
+
+      <div class="sec" id="sec-social">
+        <div class="social-stage" id="social-stage"></div>
+        <div class="rot-ind" id="social-indicators"></div>
+      </div>
+    </div>
   </div>
 
-  <main>
-    <!-- ========== CONFIGURACIÓN GENERAL DEL WIDGET ========== -->
-    <div class="card">
-      <div class="card-title">Diseño del Widget</div>
-      <div class="field" style="max-width:320px;">
-        <label for="layoutMode">Elige el estilo</label>
-        <select id="layoutMode" onchange="saveToLocalStorage()">
-          <option value="classic">Compacto (dos filas)</option>
-          <option value="horizontal">Horizontal (una fila ancha)</option>
-        </select>
-      </div>
-      <div id="layout-classic-note" class="hint">En el diseño compacto, la información del canal, la meta de
-        suscriptores y los mensajes en pantalla siempre se muestran. Solo puedes ocultar la sección de patrocinadores y
-        el contador de tiempo en vivo, o la sección de redes sociales / código de creador.</div>
-      <div id="layout-horizontal-controls" class="subcard" style="display:none;">
-        <div class="tog-row" id="tr-showBranding">
-          <div>
-            <div class="tog-lbl">Mostrar información del canal</div>
-            <div class="tog-sub">Logo, nombre y estado en vivo.</div>
-          </div>
-          <label class="tog"><input type="checkbox" id="showBranding"><span class="tog-sl"></span></label>
-        </div>
-        <div class="tog-row" id="tr-showGoal">
-          <div>
-            <div class="tog-lbl">Mostrar meta de suscriptores</div>
-            <div class="tog-sub">Bloque con la barra de progreso y el corazón.</div>
-          </div>
-          <label class="tog"><input type="checkbox" id="showGoal"><span class="tog-sl"></span></label>
-        </div>
-        <div class="tog-row" id="tr-showTicker">
-          <div>
-            <div class="tog-lbl">Mostrar mensajes en pantalla</div>
-            <div class="tog-sub">Los eventos como follows, subs, raids, etc.</div>
-          </div>
-          <label class="tog"><input type="checkbox" id="showTicker"><span class="tog-sl"></span></label>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========== DATOS DEL CANAL ========== -->
-    <div class="card">
-      <div class="card-title">Tu Canal</div>
-      <div class="r2">
-        <div class="field"><label>Nombre del canal o usuario</label><input type="text" id="channelName"
-            placeholder="Ej. MancoSquad" onchange="saveToLocalStorage()"><span class="fhint">Se verá junto a tu foto de
-            perfil en el widget.</span></div>
-        <div class="field"><label>Puerto de conexión con Streamer.bot</label><input type="number" id="sbPort"
-            value="8080" onchange="saveToLocalStorage()"><span class="fhint">Déjalo en 8080 si no lo cambiaste en
-            Streamer.bot.</span></div>
-      </div>
-      <div class="r2">
-        <div class="field"><label>URL de la foto de perfil / logo</label><input type="text" id="logoPath"
-            placeholder="https://i.imgur.com/ejemplo.png" onchange="saveToLocalStorage()">
-          <div class="fhint">Pega aquí la URL de tu logo (Imgur, Discord, etc.)</div>
-        </div>
-        <div class="field"><label>URL del GIF del corazón (meta de subs)</label><input type="text" id="goalGifPath"
-            placeholder="https://i.imgur.com/corazon.gif" onchange="saveToLocalStorage()">
-          <div class="fhint">Pega la URL de un GIF animado para el corazón.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========== METAS (SUSCRIPTORES Y BITS) ========== -->
-    <div class="card">
-      <div class="card-title">Metas</div>
-      <div class="r2">
-        <div class="field">
-          <label>Tiempo de celebración (segundos)</label>
-          <input type="number" id="goalCelebSecs" value="10" min="5" max="60" onchange="saveToLocalStorage()">
-          <span class="fhint">Cuántos segundos muestra el mensaje "¡META ALCANZADA!".</span>
-        </div>
-        <div class="field">
-          <label>Tiempo que se ve cada meta (segundos)</label>
-          <input type="number" id="goalRotSecs" value="30" min="10" max="120" onchange="saveToLocalStorage()">
-          <span class="fhint">Cuánto tiempo se muestra una meta antes de cambiar a la siguiente (si hay varias
-            activas).</span>
-        </div>
-      </div>
-
-      <div style="border-top: 1px solid var(--bord); margin: 20px 0 16px 0;"></div>
-
-      <div class="card-title" style="margin-bottom: 16px;">Meta de bits</div>
-      <div class="tog-row" id="tr-goalBits">
-        <div>
-          <div class="tog-lbl">Activar meta de bits</div>
-          <div class="tog-sub">Muestra una segunda meta rotando junto con la de suscriptores.</div>
-        </div>
-        <label class="tog">
-          <input type="checkbox" id="goalBitsActive" onchange="toggleGoalBitsUI(); saveToLocalStorage()">
-          <span class="tog-sl"></span>
-        </label>
-      </div>
-      <div id="goalBitsContent" style="display: none;">
-        <div class="r2">
-          <div class="field">
-            <label>Período de acumulación</label>
-            <select id="goalBitsPeriod" onchange="saveToLocalStorage()">
-              <option value="stream">Por stream (desde que empieza el directo)</option>
-              <option value="monthly">Mensual (desde el primer día del mes)</option>
-            </select>
-            <span class="fhint">Cómo se cuentan los bits para alcanzar la meta.</span>
-          </div>
-          <div class="field">
-            <label>Objetivo de bits</label>
-            <input type="number" id="goalBitsTarget" value="1000" min="1" step="100" onchange="saveToLocalStorage()">
-            <span class="fhint">Cantidad de bits que quieres alcanzar.</span>
-          </div>
-        </div>
-        <div class="field">
-          <label>Bits actuales (opcional)</label>
-          <input type="number" id="goalBitsCurrent" value="0" min="0" step="100" onchange="saveToLocalStorage()">
-          <span class="fhint">Si ya llevas bits acumulados, escribe aquí la cantidad actual. De lo contrario, déjalo
-            en 0.</span>
-        </div>
-        <div class="field">
-          <label>URL del GIF/icono (opcional)</label>
-          <input type="text" id="goalBitsGif" placeholder="https://i.imgur.com/bitcoin.gif"
-            onchange="saveToLocalStorage()">
-          <span class="fhint">Pega la URL de un GIF o imagen (por defecto se usa uno genérico).</span>
-        </div>
-        <div class="field">
-          <label>Leyenda (opcional)</label>
-          <input type="text" id="goalBitsCaption" placeholder="Ej. 🎧 Audífonos nuevos" onchange="saveToLocalStorage()">
-          <span class="fhint">Texto corto que aparecerá debajo de la barra de progreso.</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========== PATROCINADORES Y CRONÓMETRO ========== -->
-    <div class="card">
-      <div class="card-title">Patrocinadores y tiempo en vivo</div>
-      <div class="tog-row" id="tr-sponsors">
-        <div>
-          <div class="tog-lbl">Activar patrocinadores</div>
-          <div class="tog-sub">Muestra logos o vídeos rotando.</div>
-        </div><label class="tog"><input type="checkbox" id="showSponsors" checked><span class="tog-sl"></span></label>
-      </div>
-      <div id="sponsors-content">
-        <div id="sponsors-list"></div>
-        <button type="button" class="btn-add" onclick="addSponsor()">＋ Añadir patrocinador</button>
-        <div class="field" style="margin-top:18px;max-width:320px;"><label>Efecto de cambio entre
-            patrocinadores</label><select id="sponsorTransition" onchange="saveToLocalStorage()">
-            <option value="fade">Desvanecimiento suave</option>
-            <option value="slide">Deslizamiento</option>
-            <option value="zoom">Zoom</option>
-          </select><span class="fhint">Cómo se reemplaza una imagen por la siguiente.</span></div>
-      </div>
-      <div class="tog-row" id="tr-uptime">
-        <div>
-          <div class="tog-lbl">Mostrar cronómetro en vivo</div>
-          <div class="tog-sub">Contador del tiempo que llevas en directo.</div>
-        </div><label class="tog"><input type="checkbox" id="showUptime" checked><span class="tog-sl"></span></label>
-      </div>
-    </div>
-
-    <!-- ========== REDES SOCIALES Y CÓDIGO DE CREADOR ========== -->
-    <div class="card">
-      <div class="card-title">Redes sociales y código de creador</div>
-      <div class="tog-row" id="tr-showSocials">
-        <div>
-          <div class="tog-lbl">Activar redes sociales</div>
-          <div class="tog-sub">Muestra tus cuentas rotando.</div>
-        </div><label class="tog"><input type="checkbox" id="showSocials" checked><span class="tog-sl"></span></label>
-      </div>
-      <div id="socials-content">
-        <div id="socials-list"></div>
-        <div class="field" style="margin-top:18px;max-width:180px;"><label>Segundos que se ve cada red</label><input
-            type="number" id="socialRotSecs" value="5" min="2" max="30" onchange="saveToLocalStorage()"><span
-            class="fhint">Tiempo antes de pasar a la siguiente.</span></div>
-        <div class="field" style="margin-top:18px;max-width:320px;"><label>Efecto de cambio entre redes</label><select
-            id="socialTransition" onchange="saveToLocalStorage()">
-            <option value="fade">Desvanecimiento suave</option>
-            <option value="slide">Deslizamiento</option>
-            <option value="zoom">Zoom</option>
-          </select><span class="fhint">Cómo se reemplaza una red por la siguiente.</span></div>
-      </div>
-      <div class="tog-row" id="tr-showCreatorCode">
-        <div>
-          <div class="tog-lbl">Activar código de creador</div>
-          <div class="tog-sub">Muestra tu código promocional y un logo.</div>
-        </div><label class="tog"><input type="checkbox" id="showCreatorCode"><span class="tog-sl"></span></label>
-      </div>
-      <div id="creator-content" class="subcard">
-        <div class="r2">
-          <div class="field"><label>Texto de la etiqueta</label><input type="text" id="creatorLabel"
-              placeholder="CÓDIGO EPIC" onchange="saveToLocalStorage()"></div>
-          <div class="field"><label>Código / texto a mostrar</label><input type="text" id="creatorValue"
-              placeholder="JSMOCTEZUMA" onchange="saveToLocalStorage()"></div>
-        </div>
-        <div class="field"><label>URL del logo del código de creador</label><input type="text" id="creatorLogoPath"
-            placeholder="https://i.imgur.com/codigo.png" onchange="saveToLocalStorage()">
-          <div class="fhint">Pega la URL de la imagen que quieras.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========== MENSAJES EN PANTALLA (TICKER) ========== -->
-    <div class="card">
-      <div class="card-title">Mensajes en pantalla (eventos)</div>
-      <div class="tog-row" id="tr-enableSounds">
-        <div>
-          <div class="tog-lbl">🔊 Activar sonidos para los eventos</div>
-          <div class="tog-sub">Control principal. Si lo apagas, no sonará ningún evento.</div>
-        </div><label class="tog"><input type="checkbox" id="enableSounds"><span class="tog-sl"></span></label>
-      </div>
-      <div class="ev-grid" id="events-grid"></div>
-      <div class="field" style="margin-top:18px;max-width:300px;"><label>Volumen de los sonidos (%)</label>
-        <div style="display: flex; align-items: center; gap: 12px;"><input type="range" id="notificationVolume" min="0"
-            max="100" step="10" value="80" onchange="updateVolumeLabel(); saveToLocalStorage()"><span
-            id="volumeLabel">80%</span></div>
-        <div class="fhint">Ajusta qué tan fuerte se escuchan (0% = sin sonido).</div>
-      </div>
-      <div class="field" style="margin-top:18px;max-width:220px;"><label>Segundos que dura cada mensaje</label><input
-          type="number" id="tickerSecs" value="8" min="3" max="30" onchange="saveToLocalStorage()"><span
-          class="fhint">Tiempo que se ve cada evento en pantalla.</span></div>
-    </div>
-
-    <!-- ========== APARIENCIA (COLORES, OPACIDAD, TIPOGRAFÍA) ========== -->
-    <div class="card">
-      <div class="card-title">Colores y forma</div>
-      <div class="r3">
-        <div class="field"><label>Color de fondo</label><input type="color" id="th-bg" value="#111117"
-            onchange="saveToLocalStorage()"></div>
-        <div class="field"><label>Color de los bordes</label><input type="color" id="th-border" value="#22222e"
-            onchange="saveToLocalStorage()"></div>
-        <div class="field"><label>Color principal (acento)</label><input type="color" id="th-accent" value="#7c3aed"
-            onchange="saveToLocalStorage()"></div>
-      </div>
-      <div class="field">
-        <label>Opacidad del fondo (%)</label>
-        <div class="range-field">
-          <input type="range" id="bgOpacity" min="0" max="100" step="1" value="100" onchange="saveToLocalStorage()">
-          <span id="bgOpacityLabel">100%</span>
-        </div>
-        <div class="fhint">Define qué tan transparente es el fondo (0% = completamente transparente).</div>
-      </div>
-      <div class="field">
-        <label>Opacidad de los bordes (%)</label>
-        <div class="range-field">
-          <input type="range" id="borderOpacity" min="0" max="100" step="1" value="100" onchange="saveToLocalStorage()">
-          <span id="borderOpacityLabel">100%</span>
-        </div>
-        <div class="fhint">Transparencia del borde alrededor de cada bloque.</div>
-      </div>
-      <div class="field">
-        <label>Tipografía principal</label>
-        <input type="text" id="fontFamily" placeholder="Rajdhani" onchange="saveToLocalStorage()">
-        <div class="fhint">Escribe el nombre de una fuente de Google Fonts (ej. "Poppins", "Montserrat", "Roboto"). Si
-          está vacío, se usará "Rajdhani".</div>
-      </div>
-      <div class="r2">
-        <div class="field"><label>Redondeo de las esquinas</label><input type="text" id="th-radius" value="6px"
-            placeholder="6px" onchange="saveToLocalStorage()"></div>
-      </div>
-      <div class="hint">El color principal se usa en la barra de progreso de la meta, el cronómetro y otros detalles.
-      </div>
-    </div>
-  </main>
-
-  <div id="toast"></div>
+  <audio id="notification-sound" preload="auto" src="assets/notification.mp3" style="display: none;"></audio>
 
   <script>
-    // ==================== DEFINICIONES GLOBALES ====================
-    const PLATS = [
-      { k: 'twitch', n: 'Twitch', c: '#9147ff', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>` },
-      { k: 'youtube', n: 'YouTube', c: '#ff0000', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>` },
-      { k: 'instagram', n: 'Instagram', c: '#e1306c', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>` },
-      { k: 'tiktok', n: 'TikTok', c: '#ffffff', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>` },
-      { k: 'x', n: 'X', c: '#ffffff', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>` },
-      { k: 'facebook', n: 'Facebook', c: '#1877f2', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>` },
-      { k: 'discord', n: 'Discord', c: '#5865f2', svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.042.03.052a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>` },
-    ];
+    // ================== FASES ==================
+    const FASES = {
+      sponsor_social: { bodyW: 1200, bodyH: 204, gapH: 12, id: 300, goal: 470, sponsor: 390, ticker: 872, social: 300, hasSponsor: true, hasSocial: true },
+      sponsor_nosocial: { bodyW: 1200, bodyH: 204, gapH: 12, id: 300, goal: 470, sponsor: 390, ticker: 1184, social: 0, hasSponsor: true, hasSocial: false },
+      nosponsor_social: { bodyW: 800, bodyH: 204, gapH: 14, id: 300, goal: 470, sponsor: 0, ticker: 470, social: 300, hasSponsor: false, hasSocial: true },
+      nosponsor_nosocial: { bodyW: 800, bodyH: 204, gapH: 14, id: 300, goal: 470, sponsor: 0, ticker: 784, social: 0, hasSponsor: false, hasSocial: false },
+      completo: { bodyW: 1920, bodyH: 116, gapH: 10, id: 300, goal: 370, sponsor: 300, ticker: 594, social: 300, hasSponsor: true, hasSocial: true }
+    };
 
-    const EVTS = [
-      { k: 'showSubs', l: 'Suscripciones de Twitch', d: true, soundKey: 'soundSubs', eventType: 'sub' },
-      { k: 'showReSubs', l: 'Renovaciones de suscripción', d: true, soundKey: 'soundReSubs', eventType: 'resub' },
-      { k: 'showGiftSubs', l: 'Regalos de suscripción', d: true, soundKey: 'soundGiftSubs', eventType: 'giftsub' },
-      { k: 'showGiftBombs', l: 'Ráfagas de regalos (gift bombs)', d: true, soundKey: 'soundGiftBombs', eventType: 'giftbomb' },
-      { k: 'showRaids', l: 'Raids (llegada de espectadores)', d: true, soundKey: 'soundRaids', eventType: 'raid' },
-      { k: 'showCheers', l: 'Bits / Cheers', d: true, soundKey: 'soundCheers', eventType: 'bits' },
-      { k: 'showFollows', l: 'Nuevos seguidores', d: false, soundKey: 'soundFollows', eventType: 'follow' },
-      { k: 'showRedemptions', l: 'Canjes de puntos de la comunidad', d: true, soundKey: 'soundRedemptions', eventType: 'redeem' },
-      { k: 'showYTMembers', l: 'Miembros de YouTube', d: true, soundKey: 'soundYTMembers', eventType: 'member' },
-      { k: 'showSuperChat', l: 'Superchats de YouTube', d: true, soundKey: 'soundSuperChat', eventType: 'super' },
-      { k: 'showDonations', l: 'Donaciones (StreamElements)', d: true, soundKey: 'soundDonations', eventType: 'donate' },
-    ];
-
-    function toast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function updateVolumeLabel() {
-      const vol = document.getElementById('notificationVolume').value;
-      document.getElementById('volumeLabel').textContent = vol + '%';
-    }
-
-    function updateOpacityLabels() {
-      const bgOp = document.getElementById('bgOpacity').value;
-      const brOp = document.getElementById('borderOpacity').value;
-      document.getElementById('bgOpacityLabel').textContent = bgOp + '%';
-      document.getElementById('borderOpacityLabel').textContent = brOp + '%';
-    }
-
-    function toggleSponsorsUI() {
-      const on = document.getElementById('showSponsors').checked;
-      document.getElementById('sponsors-content').style.display = on ? '' : 'none';
-      document.getElementById('tr-sponsors').classList.toggle('on', on);
-    }
-    function toggleSocialsUI() {
-      const on = document.getElementById('showSocials').checked;
-      document.getElementById('socials-content').style.display = on ? '' : 'none';
-      document.getElementById('tr-showSocials').classList.toggle('on', on);
-    }
-    function toggleCreatorUI() {
-      const on = document.getElementById('showCreatorCode').checked;
-      document.getElementById('creator-content').style.display = on ? '' : 'none';
-      document.getElementById('tr-showCreatorCode').classList.toggle('on', on);
-    }
-    function toggleSoundGlobal() {
-      const isGlobalOn = document.getElementById('enableSounds').checked;
-      const soundCheckboxes = document.querySelectorAll('.event-row input[id^="sound-"]');
-      soundCheckboxes.forEach(cb => {
-        cb.disabled = !isGlobalOn;
-        cb.closest('.sound-tog').style.opacity = isGlobalOn ? '1' : '0.5';
-      });
-    }
-
-    function applyLayoutModeUI() {
-      const mode = document.getElementById('layoutMode').value;
-      const horizontal = mode === 'horizontal';
-      document.getElementById('layout-horizontal-controls').style.display = horizontal ? '' : 'none';
-      document.getElementById('layout-classic-note').style.display = horizontal ? 'none' : '';
-      if (!horizontal) {
-        document.getElementById('showBranding').checked = true;
-        document.getElementById('showGoal').checked = true;
-        document.getElementById('showTicker').checked = true;
-      }
-    }
-
-    function buildSocials() {
-      const c = document.getElementById('socials-list'); c.innerHTML = '';
-      PLATS.forEach(p => {
-        const row = document.createElement('div');
-        row.className = 'soc-row'; row.dataset.p = p.k;
-        row.innerHTML = `
-          <div class="soc-icon-box" style="background:${p.c}22;color:${p.c}">${p.svg}</div>
-          <span class="soc-name">${p.n}</span>
-          <input class="soc-inp" type="text" placeholder="tu_usuario" value="" data-p="${p.k}">
-          <label class="tog"><input type="checkbox"><span class="tog-sl"></span></label>`;
-        c.appendChild(row);
-      });
-    }
-
-    function addSponsor() { addSponsorRow({}); }
-    function addSponsorRow(sp = {}) {
-      const l = document.getElementById('sponsors-list');
-      const d = document.createElement('div'); d.className = 'sp-row';
-      const uid = 'sp_' + Math.random().toString(36).slice(2, 8);
-      const durSecs = Math.max(1, Math.round((sp.duration || 8000) / 1000));
-      d.innerHTML = `
-        <div class="sp-grid">
-          <div class="sp-field"><label for="${uid}_name">Nombre (solo para ti)</label><input id="${uid}_name" class="sp-name" type="text" placeholder="Ej. Red Bull" value="${sp.name || ''}"><div class="sp-mini">No se muestra en el widget.</div></div>
-          <div class="sp-field"><label for="${uid}_dur">Segundos visibles</label><input id="${uid}_dur" class="sp-dur" type="number" placeholder="8" value="${durSecs}" min="1" step="1"></div>
-          <div class="sp-field"><label>Activo</label><label class="tog"><input id="${uid}_active" data-role="sp-active" type="checkbox" ${sp.active !== false ? 'checked' : ''}><span class="tog-sl"></span></label></div>
-          <div class="sp-field"><label>Eliminar</label><button type="button" class="btn-rm" onclick="this.closest('.sp-row').remove()">×</button></div>
-          <div class="sp-field full"><label for="${uid}_path">URL de la imagen/vídeo</label><input id="${uid}_path" class="sp-path" type="text" placeholder="https://i.imgur.com/patrocinador.png" value="${sp.imagePath || ''}"><div class="sp-mini">Pega la URL del archivo (imagen o .mp4/.webm).</div></div>
-        </div>`;
-      l.appendChild(d);
-      attachSponsorEvents(d);
-    }
-    function attachSponsorEvents(row) {
-      const inputs = row.querySelectorAll('input, button:not(.btn-rm)');
-      inputs.forEach(inp => inp.addEventListener('change', saveToLocalStorage));
-      row.querySelector('.btn-rm')?.addEventListener('click', saveToLocalStorage);
-    }
-
-    function buildEvents() {
-      const container = document.getElementById('events-grid');
-      container.innerHTML = '';
-      EVTS.forEach(ev => {
-        const row = document.createElement('div');
-        row.className = 'event-row';
-        row.innerHTML = `
-          <div class="tog-lbl">${ev.l}</div>
-          <div class="tog-group">
-            <label class="tog"><input type="checkbox" id="ev-${ev.k}"><span class="tog-sl"></span></label>
-            <div class="sound-tog"><span class="sound-label">🔊</span><label class="tog tog-small"><input type="checkbox" id="sound-${ev.soundKey}"><span class="tog-sl"></span></label></div>
-          </div>`;
-        container.appendChild(row);
-      });
-    }
-
-    // ==================== LOCALSTORAGE Y GENERACIÓN DE URL ====================
-    const STORAGE_KEY = 'hipe_widget_config';
-
-    function collectConfig() {
-      const socials = PLATS.map(p => {
-        const row = document.querySelector(`.soc-row[data-p="${p.k}"]`);
-        if (!row) return { platform: p.k, handle: '', active: false };
-        const handle = row.querySelector('.soc-inp').value;
-        const active = row.querySelector('input[type="checkbox"]').checked;
-        return { platform: p.k, handle, active };
-      });
-      const spRows = document.querySelectorAll('.sp-row');
-      const sponsors = Array.from(spRows).map(r => ({
-        name: r.querySelector('.sp-name').value,
-        imagePath: r.querySelector('.sp-path').value,
-        duration: (parseInt(r.querySelector('.sp-dur').value) || 8) * 1000,
-        active: r.querySelector('[data-role="sp-active"]').checked
-      })).filter(sp => sp.imagePath.trim() !== '');
-      const events = {};
-      const soundEvents = {};
-      EVTS.forEach(ev => {
-        events[ev.k] = document.getElementById(`ev-${ev.k}`).checked;
-        const soundCb = document.getElementById(`sound-${ev.soundKey}`);
-        soundEvents[ev.soundKey] = soundCb ? soundCb.checked : true;
-      });
-      const layout = document.getElementById('layoutMode').value;
-      const cfg = {
-        channelName: document.getElementById('channelName').value,
-        logoPath: document.getElementById('logoPath').value,
-        sbPort: parseInt(document.getElementById('sbPort').value) || 8080,
-        goalGifPath: document.getElementById('goalGifPath').value,
-        layout,
-        showBranding: layout === 'horizontal' ? document.getElementById('showBranding').checked : true,
-        showGoal: layout === 'horizontal' ? document.getElementById('showGoal').checked : true,
-        showTicker: layout === 'horizontal' ? document.getElementById('showTicker').checked : true,
-        goalCelebrationSeconds: parseInt(document.getElementById('goalCelebSecs').value) || 10,
-        showSponsors: document.getElementById('showSponsors').checked,
-        showUptime: document.getElementById('showUptime').checked,
-        goalRotationSeconds: parseInt(document.getElementById('goalRotSecs').value) || 30,
-        sponsors,
-        sponsorTransition: document.getElementById('sponsorTransition').value,
-        showSocials: document.getElementById('showSocials').checked,
-        showCreatorCode: document.getElementById('showCreatorCode').checked,
-        creatorCode: {
-          active: document.getElementById('showCreatorCode').checked,
-          label: document.getElementById('creatorLabel').value,
-          value: document.getElementById('creatorValue').value,
-          logo: document.getElementById('creatorLogoPath').value
-        },
-        socials,
-        socialRotationSeconds: parseInt(document.getElementById('socialRotSecs').value) || 5,
-        socialTransition: document.getElementById('socialTransition').value,
-        events,
-        tickerDisplaySeconds: parseInt(document.getElementById('tickerSecs').value) || 8,
-        enableSounds: document.getElementById('enableSounds').checked,
-        soundEvents,
-        notificationVolume: parseInt(document.getElementById('notificationVolume').value),
-        goalBits: {
-          active: document.getElementById('goalBitsActive').checked,
-          period: document.getElementById('goalBitsPeriod').value,
-          target: parseInt(document.getElementById('goalBitsTarget').value) || 0,
-          current: parseInt(document.getElementById('goalBitsCurrent').value) || 0,
-          gif: document.getElementById('goalBitsGif').value.trim(),
-          caption: document.getElementById('goalBitsCaption').value.trim()
-        },
-        theme: {
-          bgColor: document.getElementById('th-bg').value,
-          borderColor: document.getElementById('th-border').value,
-          accentColor: document.getElementById('th-accent').value,
-          textPrimary: '#ffffff',
-          textSecondary: '#aaaaaa',
-          borderRadius: document.getElementById('th-radius').value,
-          bgOpacity: parseInt(document.getElementById('bgOpacity').value) / 100,
-          borderOpacity: parseInt(document.getElementById('borderOpacity').value) / 100,
-          fontFamily: document.getElementById('fontFamily').value.trim()
-        }
-      };
-      return cfg;
-    }
-
-    function toggleGoalBitsUI() {
-      const isActive = document.getElementById('goalBitsActive').checked;
-      const contentDiv = document.getElementById('goalBitsContent');
-      contentDiv.style.display = isActive ? '' : 'none';
-      document.getElementById('tr-goalBits').classList.toggle('on', isActive);
-    }
-
-    function saveToLocalStorage() {
-      const config = collectConfig();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-    }
-
-    function loadFromLocalStorage() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) return false;
+    // ========== LEER CONFIGURACIÓN ==========
+    let CFG = {};
+    const urlParams = new URLSearchParams(window.location.search);
+    const configParam = urlParams.get('config');
+    if (configParam) {
       try {
-        const cfg = JSON.parse(saved);
-        document.getElementById('channelName').value = cfg.channelName || '';
-        document.getElementById('logoPath').value = cfg.logoPath || '';
-        document.getElementById('sbPort').value = cfg.sbPort || 8080;
-        document.getElementById('goalGifPath').value = cfg.goalGifPath || '';
-        document.getElementById('layoutMode').value = cfg.layout || 'classic';
-        if (cfg.layout === 'horizontal') {
-          document.getElementById('showBranding').checked = cfg.showBranding === true;
-          document.getElementById('showGoal').checked = cfg.showGoal === true;
-          document.getElementById('showTicker').checked = cfg.showTicker === true;
-        }
-        document.getElementById('goalCelebSecs').value = cfg.goalCelebrationSeconds || 10;
-        document.getElementById('showSponsors').checked = cfg.showSponsors !== false;
-        document.getElementById('showUptime').checked = cfg.showUptime !== false;
-        document.getElementById('goalRotSecs').value = cfg.goalRotationSeconds || 30;
-        document.getElementById('sponsorTransition').value = cfg.sponsorTransition || 'fade';
-        document.getElementById('showSocials').checked = cfg.showSocials !== false;
-        document.getElementById('showCreatorCode').checked = cfg.showCreatorCode === true;
-        document.getElementById('creatorLabel').value = cfg.creatorCode?.label || '';
-        document.getElementById('creatorValue').value = cfg.creatorCode?.value || '';
-        document.getElementById('creatorLogoPath').value = cfg.creatorCode?.logo || '';
-        document.getElementById('socialRotSecs').value = cfg.socialRotationSeconds || 5;
-        document.getElementById('socialTransition').value = cfg.socialTransition || 'fade';
-        document.getElementById('tickerSecs').value = cfg.tickerDisplaySeconds || 8;
-        document.getElementById('enableSounds').checked = cfg.enableSounds === true;
-        document.getElementById('notificationVolume').value = cfg.notificationVolume || 80;
-        updateVolumeLabel();
-        document.getElementById('th-bg').value = cfg.theme?.bgColor || '#111117';
-        document.getElementById('th-border').value = cfg.theme?.borderColor || '#22222e';
-        document.getElementById('th-accent').value = cfg.theme?.accentColor || '#7c3aed';
-        document.getElementById('th-radius').value = cfg.theme?.borderRadius || '6px';
-        const bgOp = cfg.theme?.bgOpacity !== undefined ? Math.round(cfg.theme.bgOpacity * 100) : 100;
-        const brOp = cfg.theme?.borderOpacity !== undefined ? Math.round(cfg.theme.borderOpacity * 100) : 100;
-        const goalBits = cfg.goalBits || {};
-        document.getElementById('goalBitsActive').checked = goalBits.active === true;
-        document.getElementById('goalBitsPeriod').value = goalBits.period || 'stream';
-        document.getElementById('goalBitsTarget').value = goalBits.target || 1000;
-        document.getElementById('goalBitsCurrent').value = goalBits.current || 0;
-        document.getElementById('goalBitsGif').value = goalBits.gif || '';
-        document.getElementById('goalBitsCaption').value = goalBits.caption || '';
-        toggleGoalBitsUI();
-        document.getElementById('bgOpacity').value = bgOp;
-        document.getElementById('borderOpacity').value = brOp;
-        updateOpacityLabels();
-        document.getElementById('fontFamily').value = cfg.theme?.fontFamily || '';
-        if (cfg.socials) {
-          cfg.socials.forEach(s => {
-            const row = document.querySelector(`.soc-row[data-p="${s.platform}"]`);
-            if (row) {
-              row.querySelector('.soc-inp').value = s.handle || '';
-              row.querySelector('input[type="checkbox"]').checked = s.active === true;
-              row.classList.toggle('on', s.active === true);
-            }
-          });
-        }
-        const sponsorsList = document.getElementById('sponsors-list');
-        sponsorsList.innerHTML = '';
-        (cfg.sponsors || []).forEach(sp => addSponsorRow(sp));
-        EVTS.forEach(ev => {
-          const evCb = document.getElementById(`ev-${ev.k}`);
-          if (evCb) evCb.checked = cfg.events?.[ev.k] === true;
-          const soundCb = document.getElementById(`sound-${ev.soundKey}`);
-          if (soundCb) soundCb.checked = cfg.soundEvents?.[ev.soundKey] === true;
-        });
-        toggleSponsorsUI();
-        toggleSocialsUI();
-        toggleCreatorUI();
-        applyLayoutModeUI();
-        toggleSoundGlobal();
-        return true;
-      } catch (e) { console.warn(e); return false; }
+        const decoded = atob(configParam);
+        const json = decodeURIComponent(escape(decoded));
+        CFG = JSON.parse(json);
+      } catch (e) { console.warn('Error al leer la configuración de la URL', e); }
     }
 
-    function resetToDefaults() {
-      localStorage.removeItem(STORAGE_KEY);
-      location.reload();
+    // ========== VALORES POR DEFECTO ==========
+    const logoPath = CFG.logoPath || 'assets/logo.png';
+    const goalGifPath = CFG.goalGifPath || 'assets/corazon.gif';
+    const enableSounds = CFG.enableSounds === undefined ? true : CFG.enableSounds === true;
+    const notificationVolume = (CFG.notificationVolume !== undefined ? CFG.notificationVolume : 80) / 100;
+    const defaultEvents = {
+      showSubs: true, showReSubs: true, showGiftSubs: true, showGiftBombs: true,
+      showRaids: true, showCheers: true, showFollows: true, showRedemptions: true,
+      showYTMembers: true, showSuperChat: true, showDonations: true
+    };
+    const eventsFromCfg = CFG.events || {};
+    const events = { ...defaultEvents, ...eventsFromCfg };
+    const defaultSoundEvents = {
+      soundSubs: true, soundReSubs: true, soundGiftSubs: true, soundGiftBombs: true,
+      soundRaids: true, soundCheers: true, soundFollows: true, soundRedemptions: true,
+      soundYTMembers: true, soundSuperChat: true, soundDonations: true
+    };
+    const soundEventsFromCfg = CFG.soundEvents || {};
+    const soundEvents = { ...defaultSoundEvents, ...soundEventsFromCfg };
+
+    // Meta de bits
+    const goalBits = CFG.goalBits || { active: false };
+    const bitsActive = goalBits.active === true;
+    const bitsPeriod = goalBits.period || 'stream';
+    const bitsTarget = goalBits.target || 0;
+    const bitsGif = goalBits.gif || 'assets/bitcoin.gif';
+    const bitsCaption = goalBits.caption || '';
+    const bitsCurrentFromCfg = goalBits.current || 0;
+
+    // Variables globales para bits
+    let currentBits = bitsCurrentFromCfg;
+    let ws = null;
+
+    CFG.logoPath = logoPath;
+    CFG.goalGifPath = goalGifPath;
+    CFG.events = events;
+    CFG.soundEvents = soundEvents;
+    CFG.enableSounds = enableSounds;
+    CFG.notificationVolume = notificationVolume * 100;
+
+    if (CFG.creatorCode && !CFG.creatorCode.logo) CFG.creatorCode.logo = 'assets/codigo.png';
+    else if (CFG.creatorCode === undefined && CFG.showCreatorCode === true) {
+      CFG.creatorCode = { active: true, label: "CÓDIGO DE CREADOR", value: "CÓDIGО", logo: "assets/codigo.png" };
     }
 
-    function generateWidgetUrl() {
-      const config = collectConfig();
-      const jsonStr = JSON.stringify(config);
-      const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
-      const baseUrl = window.location.href.replace(/admin\.html.*$/, 'widget.html');
-      const url = `${baseUrl}?config=${encodeURIComponent(base64)}`;
-      return url;
+    const T = CFG.theme || {};
+    const R = document.documentElement;
+
+    // ========== SONIDOS ==========
+    const soundMap = {
+      'sub': 'soundSubs', 'resub': 'soundReSubs', 'giftsub': 'soundGiftSubs', 'giftbomb': 'soundGiftBombs',
+      'raid': 'soundRaids', 'bits': 'soundCheers', 'follow': 'soundFollows', 'redeem': 'soundRedemptions',
+      'member': 'soundYTMembers', 'super': 'soundSuperChat', 'donate': 'soundDonations'
+    };
+    function playNotificationSound(eventType) {
+      if (!enableSounds) return;
+      const soundKey = soundMap[eventType];
+      if (!soundKey) return;
+      const allowed = soundEvents[soundKey] === undefined ? true : soundEvents[soundKey];
+      if (!allowed) return;
+      const audio = document.getElementById('notification-sound');
+      if (!audio) return;
+      if (audio.readyState < 2) { setTimeout(() => playNotificationSound(eventType), 200); return; }
+      try { audio.pause(); audio.currentTime = 0; audio.play().catch(e => console.warn(e)); } catch (e) { console.warn(e); }
+    }
+    const audioElem = document.getElementById('notification-sound');
+    if (audioElem) audioElem.volume = notificationVolume;
+
+    function normalizeLayout(raw) { return (raw === 'horizontal' || raw === 'completo') ? 'completo' : 'compacto'; }
+    const layoutMode = normalizeLayout(CFG.layout);
+    const isCompacto = layoutMode === 'compacto';
+    const isCompleto = layoutMode === 'completo';
+
+    function hexToRgb(hex) {
+      const h = (hex || '').replace('#', '').trim();
+      if (h.length !== 6) return '124,58,237';
+      const n = parseInt(h, 16);
+      return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
     }
 
-    // NUEVA FUNCIÓN: enviar configuración al bot
-    function sendConfigToBot(config) {
-      const sbHost = config.sbHost || '127.0.0.1';
-      const sbPort = config.sbPort || 8080;
-      const ws = new WebSocket(`ws://${sbHost}:${sbPort}/`);
-      ws.onopen = () => {
-        const payload = {
-          request: "SendCustom",
-          id: "adminSync",
-          data: {
-            action: "adminSyncConfig",
-            goalBits: config.goalBits
-          }
-        };
-        ws.send(JSON.stringify(payload));
-        setTimeout(() => ws.close(), 500);
-      };
-      ws.onerror = () => console.log('No se pudo conectar al bot');
+    // ===== APLICAR COLORES Y OPACIDAD =====
+    const bgColor = T.bgColor || '#111117';
+    const borderColor = T.borderColor || '#22222e';
+    const bgOpacity = (T.bgOpacity !== undefined ? T.bgOpacity : 1);
+    const borderOpacity = (T.borderOpacity !== undefined ? T.borderOpacity : 1);
+    const bgRgb = hexToRgb(bgColor);
+    const borderRgb = hexToRgb(borderColor);
+    R.style.setProperty('--bg', `rgba(${bgRgb}, ${bgOpacity})`);
+    R.style.setProperty('--border', `rgba(${borderRgb}, ${borderOpacity})`);
+    R.style.setProperty('--accent', T.accentColor || '#7c3aed');
+    R.style.setProperty('--accent-rgb', hexToRgb(T.accentColor || '#7c3aed'));
+
+    // ===== CONTRASTE AUTOMÁTICO =====
+    function getLuminance(hex) {
+      const rgb = parseInt(hex.slice(1), 16);
+      const r = (rgb >> 16) & 0xff, g = (rgb >> 8) & 0xff, b = rgb & 0xff;
+      const rs = r / 255, gs = g / 255, bs = b / 255;
+      const gamma = c => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      return 0.2126 * gamma(rs) + 0.7152 * gamma(gs) + 0.0722 * gamma(bs);
+    }
+    const lum = getLuminance(bgColor);
+    if (lum > 0.5) {
+      R.style.setProperty('--text', '#111111');
+      R.style.setProperty('--muted', '#555555');
+    } else {
+      R.style.setProperty('--text', '#ffffff');
+      R.style.setProperty('--muted', '#aaaaaa');
+    }
+    R.style.setProperty('--radius', T.borderRadius || '4px');
+
+    // Gradientes
+    (function () {
+      const rgb = hexToRgb(T.accentColor || '#7c3aed').split(',').map(Number);
+      const [r, g, b] = rgb;
+      const g1r = Math.round(r + (255 - r) * 0.28), g1g = Math.round(g + (255 - g) * 0.28), g1b = Math.round(b + (255 - b) * 0.28);
+      const g3r = Math.round(r * 0.70), g3g = Math.round(g * 0.70), g3b = Math.round(b * 0.70);
+      R.style.setProperty('--goal-grad-1', `rgb(${g1r},${g1g},${g1b})`);
+      R.style.setProperty('--goal-grad-2', `rgb(${r},${g},${b})`);
+      R.style.setProperty('--goal-grad-3', `rgb(${g3r},${g3g},${g3b})`);
+      R.style.setProperty('--social-soft', `rgba(${r},${g},${b},.24)`);
+      R.style.setProperty('--social-soft-2', `rgba(${r},${g},${b},.10)`);
+    })();
+
+    // Tipografía
+    const customFont = T.fontFamily ? T.fontFamily.trim() : '';
+    if (customFont && customFont !== 'Rajdhani') {
+      const link = document.createElement('link');
+      link.href = `https://fonts.googleapis.com/css2?family=${customFont.replace(/ /g, '+')}:wght@400;500;600;700&display=swap`;
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+      document.body.style.fontFamily = `'${customFont}', 'Rajdhani', sans-serif`;
+    } else {
+      document.body.style.fontFamily = "'Rajdhani', sans-serif";
     }
 
-    // MODIFICADA: copiar enlace y enviar configuración al bot
-    function copyWidgetUrl() {
-      const config = collectConfig();
-      const jsonStr = JSON.stringify(config);
-      const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
-      const baseUrl = window.location.href.replace(/admin\.html.*$/, 'widget.html');
-      const url = `${baseUrl}?config=${encodeURIComponent(base64)}`;
-      navigator.clipboard.writeText(url).then(() => {
-        toast('✅ Enlace copiado al portapapeles. Pégarlo en OBS como Browser Source.');
-        sendConfigToBot(config);
-      }).catch(() => toast('❌ No se pudo copiar.'));
+    // ===== INICIALIZAR =====
+    document.getElementById('id-avatar').src = CFG.logoPath || '';
+    document.getElementById('id-name').textContent = (CFG.channelName || 'HIPE').toUpperCase();
+    document.getElementById('gst-heart').src = CFG.goalGifPath || 'assets/corazon.gif';
+
+    const bitsSlide = document.getElementById('gst-bits');
+    if (bitsActive) {
+      document.getElementById('gst-bits-gif').src = bitsGif;
+      document.getElementById('bits-caption').textContent = bitsCaption;
+      document.getElementById('gst-bits-txt').textContent = `${bitsCurrentFromCfg}/${bitsTarget}`;
+      const percent = Math.min(bitsCurrentFromCfg / Math.max(bitsTarget, 1) * 100, 100);
+      document.getElementById('gst-bits-fill').style.width = percent + '%';
+      currentBits = bitsCurrentFromCfg;
+      bitsSlide.style.display = '';
+    } else {
+      bitsSlide.style.display = 'none';
     }
 
-    function init() {
-      buildSocials();
-      buildEvents();
-      const loaded = loadFromLocalStorage();
-      if (!loaded) {
-        EVTS.forEach(ev => {
-          const evCb = document.getElementById(`ev-${ev.k}`);
-          if (evCb) evCb.checked = true;
-          const soundCb = document.getElementById(`sound-${ev.soundKey}`);
-          if (soundCb) soundCb.checked = true;
-        });
-        document.getElementById('enableSounds').checked = true;
-        document.getElementById('showSocials').checked = true;
-        document.getElementById('showCreatorCode').checked = false;
-        toggleSocialsUI();
-        toggleCreatorUI();
-        toggleSoundGlobal();
-        applyLayoutModeUI();
-        saveToLocalStorage();
+    const widgetEl = document.getElementById('widget');
+    const secId = document.getElementById('sec-id');
+    const secGoal = document.getElementById('sec-goal');
+    const secSponsor = document.getElementById('sec-sponsor');
+    const secTicker = document.getElementById('sec-ticker');
+    const secSocial = document.getElementById('sec-social');
+    const rowTop = document.getElementById('row-top');
+    const rowBottom = document.getElementById('row-bottom');
+
+    const showBranding = isCompacto ? true : (CFG.showBranding !== false);
+    const showGoal = isCompacto ? true : (CFG.showGoal !== false);
+    const showTicker = isCompacto ? true : (CFG.showTicker !== false);
+    const showSponsors = CFG.showSponsors !== false;
+    const showUptime = CFG.showUptime !== false;
+    const showSocials = CFG.showSocials !== false;
+    const showCreatorCode = !!(CFG.showCreatorCode ?? CFG.creatorCode?.active ?? false);
+    const hasSponsorBlock = showSponsors || showUptime;
+
+    function setW(el, px) {
+      el.style.width = px + 'px';
+      el.style.minWidth = px + 'px';
+      el.style.maxWidth = px + 'px';
+      el.style.flex = `0 0 ${px}px`;
+    }
+
+    function applyPhase(faseKey) {
+      const f = FASES[faseKey];
+      document.body.style.width = f.bodyW + 'px';
+      document.body.style.height = f.bodyH + 'px';
+      widgetEl.style.width = f.bodyW + 'px';
+      widgetEl.style.height = f.bodyH + 'px';
+      rowTop.style.gap = f.gapH + 'px';
+      rowBottom.style.gap = f.gapH + 'px';
+      setW(secId, f.id);
+      setW(secGoal, f.goal);
+      if (faseKey === 'completo') {
+        if (secSponsor.style.display !== 'none') setW(secSponsor, f.sponsor);
+      } else {
+        if (f.hasSponsor) { secSponsor.style.display = ''; setW(secSponsor, f.sponsor); }
+        else secSponsor.style.display = 'none';
       }
-      const allInputs = document.querySelectorAll('input, select, textarea');
-      allInputs.forEach(el => el.addEventListener('change', saveToLocalStorage));
-      document.getElementById('copyUrlBtn').addEventListener('click', copyWidgetUrl);
-      document.getElementById('resetBtn').addEventListener('click', resetToDefaults);
-      document.getElementById('showSponsors').addEventListener('change', () => { toggleSponsorsUI(); saveToLocalStorage(); });
-      document.getElementById('showSocials').addEventListener('change', () => { toggleSocialsUI(); saveToLocalStorage(); });
-      document.getElementById('showCreatorCode').addEventListener('change', () => { toggleCreatorUI(); saveToLocalStorage(); });
-      document.getElementById('enableSounds').addEventListener('change', () => { toggleSoundGlobal(); saveToLocalStorage(); });
-      document.getElementById('layoutMode').addEventListener('change', () => { applyLayoutModeUI(); saveToLocalStorage(); });
-      document.getElementById('notificationVolume').addEventListener('input', updateVolumeLabel);
-      document.getElementById('bgOpacity').addEventListener('input', () => { updateOpacityLabels(); saveToLocalStorage(); });
-      document.getElementById('borderOpacity').addEventListener('input', () => { updateOpacityLabels(); saveToLocalStorage(); });
-      applyLayoutModeUI();
-      toggleSponsorsUI();
-      toggleSocialsUI();
-      toggleCreatorUI();
-      toggleSoundGlobal();
+      setW(secTicker, f.ticker);
+      if (faseKey === 'completo') {
+        if (secSocial.style.display !== 'none') setW(secSocial, f.social);
+      } else {
+        if (f.hasSocial) { secSocial.style.display = ''; setW(secSocial, f.social); }
+        else secSocial.style.display = 'none';
+      }
     }
-    init();
+
+    document.body.classList.add(`layout-${layoutMode}`);
+    widgetEl.classList.add(`layout-${layoutMode}`);
+
+    const hasSocialContent = (showSocials && (CFG.socials || []).some(s => s.active && s.handle)) ||
+      !!(showCreatorCode && CFG.creatorCode?.value);
+
+    // ===== VISIBILIDAD EN MODO HORIZONTAL =====
+    if (isCompleto) {
+      if (!showBranding) secId.style.display = 'none';
+      const anyGoalActive = showGoal || bitsActive;
+      if (!anyGoalActive) secGoal.style.display = 'none';
+      if (!showTicker) secTicker.style.display = 'none';
+      if (!hasSponsorBlock) secSponsor.style.display = 'none';
+      if (!hasSocialContent) secSocial.style.display = 'none';
+    }
+
+    if (isCompleto) applyPhase('completo');
+    else {
+      if (hasSponsorBlock && hasSocialContent) applyPhase('sponsor_social');
+      else if (hasSponsorBlock && !hasSocialContent) applyPhase('sponsor_nosocial');
+      else if (!hasSponsorBlock && hasSocialContent) applyPhase('nosponsor_social');
+      else applyPhase('nosponsor_nosocial');
+    }
+
+    // ========== ROTACIÓN DE METAS ==========
+    let goalSlides = [], currentGoalIndex = 0, goalRotationInterval = null;
+
+    function initGoalRotation() {
+      if (goalRotationInterval) clearInterval(goalRotationInterval);
+      const subs = document.getElementById('gst-normal');
+      const bits = document.getElementById('gst-bits');
+      if (subs) subs.classList.remove('on');
+      if (bits) bits.classList.remove('on');
+      const cel = document.getElementById('gst-cel');
+      if (cel) cel.classList.remove('on');
+
+      goalSlides = [];
+      if (subs && (isCompacto || showGoal)) goalSlides.push(subs);
+      if (bitsActive && bits) goalSlides.push(bits);
+
+      if (goalSlides.length === 0) return;
+      currentGoalIndex = 0;
+      goalSlides[currentGoalIndex].classList.add('on');
+      if (goalSlides.length > 1) {
+        const rotSecs = CFG.goalRotationSeconds || 30;
+        goalRotationInterval = setInterval(() => {
+          goalSlides[currentGoalIndex].classList.remove('on');
+          currentGoalIndex = (currentGoalIndex + 1) % goalSlides.length;
+          goalSlides[currentGoalIndex].classList.add('on');
+        }, rotSecs * 1000);
+      }
+    }
+
+    // ========== TICKER AJUSTE DINÁMICO ==========
+    let tickerResizeObserver = null;
+    function adjustTickerFontSize() {
+      const container = document.getElementById('tick-inner');
+      const userSpan = document.getElementById('tick-user');
+      const extraSpan = document.getElementById('tick-extra');
+      if (!container || !userSpan || !extraSpan) return;
+      const userText = userSpan.textContent;
+      const extraText = extraSpan.textContent;
+      if (!userText && !extraText) return;
+      const containerWidth = container.clientWidth;
+      if (containerWidth === 0) { setTimeout(adjustTickerFontSize, 100); return; }
+      const badge = document.getElementById('tick-badge');
+      const badgeWidth = badge ? badge.offsetWidth : 0;
+      const gap = parseFloat(getComputedStyle(container).gap) || 8;
+      const marginLeftUser = parseFloat(getComputedStyle(userSpan).marginLeft) || 12;
+      const marginLeftExtra = parseFloat(getComputedStyle(extraSpan).marginLeft) || 6;
+      const availableWidth = containerWidth - badgeWidth - gap - marginLeftUser - marginLeftExtra;
+      if (availableWidth <= 0) return;
+      function cloneSpan(span, text, fontSize) {
+        const clone = span.cloneNode(true);
+        clone.style.position = 'absolute';
+        clone.style.visibility = 'hidden';
+        clone.style.top = '-9999px';
+        clone.style.left = '-9999px';
+        clone.style.whiteSpace = 'nowrap';
+        clone.style.fontSize = fontSize + 'px';
+        clone.textContent = text;
+        document.body.appendChild(clone);
+        const width = clone.offsetWidth;
+        document.body.removeChild(clone);
+        return width;
+      }
+      let userSize = 36;
+      let extraSize = 34;
+      const minSize = 14;
+      function measure() {
+        return cloneSpan(userSpan, userText, userSize) + cloneSpan(extraSpan, extraText, extraSize);
+      }
+      let totalWidth = measure();
+      while (totalWidth > availableWidth && userSize > minSize) {
+        userSize -= 2;
+        extraSize -= 2;
+        totalWidth = measure();
+      }
+      userSpan.style.fontSize = userSize + 'px';
+      extraSpan.style.fontSize = extraSize + 'px';
+    }
+    function initTickerResizeObserver() {
+      const container = document.getElementById('tick-inner');
+      if (!container) return;
+      if (tickerResizeObserver) tickerResizeObserver.disconnect();
+      tickerResizeObserver = new ResizeObserver(() => adjustTickerFontSize());
+      tickerResizeObserver.observe(container);
+    }
+
+    // ========== RESTO DE LÓGICA ==========
+    let celebrating = false, celTimer = null;
+    let uptimeSeconds = 0, uptimeInterval = null, streamLive = false;
+
+    function setLive(on) {
+      document.getElementById('live-dot').classList.toggle('live', on);
+      document.getElementById('live-txt').textContent = on ? 'EN VIVO' : 'OFFLINE';
+    }
+    function updateGoal(cur, tgt) {
+      document.getElementById('gst-txt').textContent = `${cur}/${tgt}`;
+      document.getElementById('gst-fill').style.width = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100) + '%';
+    }
+    function updateBitsGoal(cur, tgt) {
+      if (!bitsActive) return;
+      currentBits = cur;
+      document.getElementById('gst-bits-txt').textContent = `${cur}/${tgt}`;
+      const percent = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100);
+      document.getElementById('gst-bits-fill').style.width = percent + '%';
+      if (!celebrating && cur >= tgt && tgt > 0) {
+        celebrate(cur, tgt, '', 'bits');
+      }
+    }
+    function showGst(id) {
+      const subs = document.getElementById('gst-normal');
+      const bits = document.getElementById('gst-bits');
+      const cel = document.getElementById('gst-cel');
+      if (subs) subs.classList.toggle('on', id === 'gst-normal');
+      if (bits && bitsActive) bits.classList.toggle('on', id === 'gst-bits');
+      if (cel) cel.classList.toggle('on', id === 'gst-cel');
+    }
+    function celebrate(cur, newTgt, user, type = 'subs') {
+      celebrating = true;
+      document.getElementById('cel-usr').textContent = user ? `¡Gracias ${user}!` : '';
+      showGst('gst-cel');
+      if (celTimer) clearTimeout(celTimer);
+      const duration = (CFG.goalCelebrationSeconds || 10) * 1000;
+      celTimer = setTimeout(() => {
+        celebrating = false;
+        if (type === 'subs') updateGoal(cur, newTgt);
+        else if (type === 'bits') updateBitsGoal(cur, newTgt);
+        showGst(type === 'subs' ? 'gst-normal' : 'gst-bits');
+      }, duration);
+    }
+    function setUptime(s) {
+      uptimeSeconds = Math.max(0, Math.floor(s || 0));
+      const h = String(Math.floor(uptimeSeconds / 3600)).padStart(2, '0');
+      const m = String(Math.floor((uptimeSeconds % 3600) / 60)).padStart(2, '0');
+      const sec = String(uptimeSeconds % 60).padStart(2, '0');
+      document.getElementById('sp-utval').textContent = `${h}:${m}:${sec}`;
+    }
+    function startUptime(reset = false) {
+      streamLive = true;
+      if (reset) setUptime(0);
+      if (uptimeInterval) clearInterval(uptimeInterval);
+      uptimeInterval = setInterval(() => { if (streamLive) setUptime(uptimeSeconds + 1); }, 1000);
+    }
+    function stopUptime() {
+      streamLive = false;
+      if (uptimeInterval) { clearInterval(uptimeInterval); uptimeInterval = null; }
+    }
+
+    function renderIndicators(container, count, activeIdx, activeColor) {
+      container.innerHTML = '';
+      if (count < 2) return;
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('span');
+        el.className = 'dot' + (i === activeIdx ? ' active' : '');
+        el.style.background = i === activeIdx ? (activeColor || 'var(--accent)') : 'rgba(255,255,255,.22)';
+        container.appendChild(el);
+      }
+    }
+
+    // Sponsors (sin cambios)
+    const sponsorSlides = [];
+    const sponsorIndicatorsEl = document.getElementById('sponsor-indicators');
+    if (hasSponsorBlock && secSponsor.style.display !== 'none') {
+      const activeSp = showSponsors ? (CFG.sponsors || []).filter(s => s.active) : [];
+      if (activeSp.length > 0 || showUptime) document.getElementById('sp-empty').style.display = 'none';
+      activeSp.forEach(sp => {
+        const div = document.createElement('div');
+        div.className = 'sp-slide';
+        const isVid = /\.(mp4|webm)$/i.test(sp.imagePath || '');
+        if (isVid) {
+          const v = document.createElement('video');
+          v.src = sp.imagePath; v.autoplay = true; v.loop = true; v.muted = true;
+          div.appendChild(v);
+        } else {
+          const img = document.createElement('img');
+          img.src = sp.imagePath || ''; img.alt = sp.name || '';
+          div.appendChild(img);
+        }
+        secSponsor.appendChild(div);
+        sponsorSlides.push({ el: div, duration: sp.duration || 8000 });
+      });
+      if (showUptime) sponsorSlides.push({ el: document.getElementById('sp-uptime'), duration: (CFG.goalRotationSeconds || 30) * 1000 });
+      if (sponsorSlides.length > 0) {
+        let si = 0;
+        sponsorSlides[0].el.classList.add('on');
+        renderIndicators(sponsorIndicatorsEl, sponsorSlides.length, 0, '#4ade80');
+        if (sponsorSlides.length > 1) {
+          const rotSp = () => {
+            sponsorSlides[si].el.classList.remove('on');
+            si = (si + 1) % sponsorSlides.length;
+            sponsorSlides[si].el.classList.add('on');
+            renderIndicators(sponsorIndicatorsEl, sponsorSlides.length, si, '#4ade80');
+            setTimeout(rotSp, sponsorSlides[si].duration);
+          };
+          setTimeout(rotSp, sponsorSlides[0].duration);
+        }
+      }
+    }
+
+    // Socials (sin cambios)
+    const SOC_ICONS = {
+      twitch: { icon: 'mdi:twitch', color: '#9147ff' },
+      youtube: { icon: 'mdi:youtube', color: '#ff0000' },
+      instagram: { icon: 'mdi:instagram', color: '#e1306c' },
+      tiktok: { icon: 'ic:baseline-tiktok', color: '#ffffff' },
+      x: { icon: 'ri:twitter-x-fill', color: '#ffffff' },
+      facebook: { icon: 'mdi:facebook', color: '#1877f2' },
+      discord: { icon: 'mdi:discord', color: '#5865f2' },
+    };
+    const rotationItems = [];
+    const activeSocials = showSocials ? (CFG.socials || []).filter(s => s.active && s.handle) : [];
+    const creatorEnabled = !!(showCreatorCode && CFG.creatorCode?.value);
+    activeSocials.forEach(s => {
+      const si = SOC_ICONS[s.platform] || { icon: 'mdi:web', color: '#aaa' };
+      rotationItems.push({
+        type: 'social', color: si.color, duration: (CFG.socialRotationSeconds || 5) * 1000,
+        html: `<div class="soc-icon-wrap"><iconify-icon icon="${si.icon}" width="26" style="color:${si.color}"></iconify-icon></div><span class="soc-hnd" style="color:${si.color}">${s.handle}</span>`
+      });
+    });
+    if (creatorEnabled) {
+      const accentColor = T.accentColor || '#7c3aed';
+      const creatorLabel = CFG.creatorCode?.label || "CÓDIGO DE CREADOR";
+      const creatorValue = CFG.creatorCode?.value || "CÓDIGO";
+      const creatorLogo = CFG.creatorCode?.logo || "assets/codigo.png";
+      rotationItems.push({
+        type: 'creator', color: accentColor, duration: (CFG.socialRotationSeconds || 5) * 1000,
+        html: `<div class="creator-badge"><span class="logo-wrapper"><img class="creator-logo" src="${creatorLogo}" alt="creator" onerror="this.style.display='none'"></span><div class="creator-info"><div class="creator-label">${creatorLabel}</div><div class="creator-code" style="color:${accentColor}">${creatorValue}</div></div></div>`
+      });
+    }
+    if (rotationItems.length > 0 && secSocial.style.display !== 'none') {
+      const socialStage = document.getElementById('social-stage');
+      const socialIndicatorsEl = document.getElementById('social-indicators');
+      rotationItems.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'social-card' + (i === 0 ? ' on' : '');
+        div.dataset.color = item.color;
+        div.dataset.type = item.type;
+        div.innerHTML = item.html;
+        socialStage.appendChild(div);
+      });
+      let currentIndex = 0;
+      function updateIndicators() {
+        const currentItem = rotationItems[currentIndex];
+        if (currentItem.type === 'creator') socialIndicatorsEl.style.display = 'none';
+        else { socialIndicatorsEl.style.display = 'flex'; renderIndicators(socialIndicatorsEl, rotationItems.length, currentIndex, currentItem.color); }
+      }
+      function rotateSocial() {
+        const items = socialStage.querySelectorAll('.social-card');
+        items[currentIndex].classList.remove('on');
+        currentIndex = (currentIndex + 1) % rotationItems.length;
+        items[currentIndex].classList.add('on');
+        updateIndicators();
+        setTimeout(rotateSocial, rotationItems[currentIndex].duration);
+      }
+      updateIndicators();
+      if (rotationItems.length > 1) setTimeout(rotateSocial, rotationItems[0].duration);
+    }
+
+    // Ticker eventos
+    const EV_DEF = {
+      sub: ['et-sub', 'SUB', 'mdi:twitch', '#9146FF'], resub: ['et-resub', 'RESUB', 'mdi:twitch', '#b07dff'],
+      giftsub: ['et-gift', 'GIFT', 'mdi:gift', '#F97316'], giftbomb: ['et-gift', 'GIFT ×', 'mdi:gift-open', '#F97316'],
+      raid: ['et-raid', 'RAID', 'ion:ios-people', '#3B82F6'], bits: ['et-bits', 'BITS', 'material-symbols:diamond-rounded', '#30C4AB'],
+      follow: ['et-follow', 'FOLLOW', 'material-symbols-light:favorite-rounded', '#EB4C4C'],
+      donate: ['et-donate', 'DONACIÓN', 'tdesign:money-filled', '#179BD7'], redeem: ['et-redeem', 'CANJE', 'bx:coin-stack', '#F59E0B'],
+      member: ['et-member', 'MIEMBRO', 'mdi:youtube', '#FF6060'], super: ['et-super', 'SUPERCHAT', 'mdi:youtube', '#06B6D4']
+    };
+    const queue = []; let busy = false;
+    function pushEvent(ev) { queue.push(ev); if (!busy) nextEv(); }
+    function nextEv() {
+      if (!queue.length) { busy = false; return; }
+      busy = true;
+      const ev = queue.shift();
+      const [cls, label, icon, barColor] = EV_DEF[ev.type] || ['et-ok', ev.type.toUpperCase(), 'mdi:bell', '#4ade80'];
+      const badge = document.getElementById('tick-badge');
+      badge.className = 'ev-badge ' + cls;
+      badge.innerHTML = `<span class="ev-icon"><iconify-icon icon="${icon}" width="22"></iconify-icon></span><span class="ev-label">${label}</span>`;
+      document.getElementById('tick-user').textContent = ev.user || '';
+      document.getElementById('tick-extra').textContent = ev.extra || '';
+      playNotificationSound(ev.type);
+      setTimeout(adjustTickerFontSize, 0);
+      const bar = document.getElementById('tick-bar');
+      bar.style.transition = 'none';
+      bar.style.background = `linear-gradient(90deg,${barColor},${barColor}CC,${barColor})`;
+      bar.style.width = '0%';
+      void bar.offsetWidth;
+      bar.style.transition = `width ${CFG.tickerDisplaySeconds || 8}s linear`;
+      bar.style.width = '100%';
+      setTimeout(nextEv, (CFG.tickerDisplaySeconds || 8) * 1000);
+    }
+
+    // ========== FUNCIONES PARA BITS ==========
+    function requestBitsState() {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          request: "SendCustom",
+          id: "getBitsState",
+          data: { action: "getBitsState" }
+        }));
+      }
+    }
+
+    // WebSocket
+    function tryParse(s) { try { return JSON.parse(s); } catch { return null; } }
+    function tierLbl(t) { return t === '1000' ? 'Tier 1' : t === '2000' ? 'Tier 2' : t === '3000' ? 'Tier 3' : t === 'Prime' ? 'Prime' : t || ''; }
+
+    function connect() {
+      ws = new WebSocket(`ws://${CFG.sbHost || '127.0.0.1'}:${CFG.sbPort || 8080}/`);
+      ws.onopen = () => {
+        document.getElementById('tick-user').textContent = 'Bienvenido ✓  —  Sistema en línea';
+        setTimeout(adjustTickerFontSize, 0);
+        ws.send(JSON.stringify({
+          request: 'Subscribe', id: 'hipe',
+          events: {
+            Twitch: ['Follow', 'Sub', 'ReSub', 'GiftSub', 'GiftBomb', 'Raid', 'Cheer', 'RewardRedemption', 'StreamOnline', 'StreamOffline'],
+            YouTube: ['NewMember', 'MemberMilestone', 'SuperChat'],
+            StreamElements: ['Donation'],
+            General: ['Custom']
+          }
+        }));
+        ws.send(JSON.stringify({ request: 'GetChannelInfo', id: 'hipe-livecheck' }));
+
+        // Solo pedir el estado actual al bot (el admin ya envió la configuración)
+        requestBitsState();
+      };
+      ws.onmessage = (msg) => {
+        let d; try { d = JSON.parse(msg.data); } catch { return; }
+        if (d.id === 'hipe-livecheck') {
+          const isLive = d.response?.isLive || d.data?.isLive || false;
+          setLive(isLive); if (!isLive) stopUptime(); return;
+        }
+        const src = (d.event?.source || '').toLowerCase();
+        const type = (d.event?.type || d.data?.type || d.data?.event || d.data?.eventType || d.data?.subscription?.type || '').toLowerCase();
+        const dd = d.data || {};
+        const E = CFG.events || {};
+        if (src === 'twitch' && (type === 'streamonline' || type === 'online')) {
+          const was = streamLive; setLive(true);
+          if (!was) {
+            startUptime(true);
+          }
+          return;
+        }
+        if (src === 'twitch' && (type === 'streamoffline' || type === 'offline')) {
+          const was = streamLive; setLive(false); if (was) stopUptime(); return;
+        }
+        if (src === 'general' && type === 'custom') {
+          const payload = (typeof dd === 'object' && dd.action) ? dd : (typeof dd.message === 'string') ? tryParse(dd.message) : tryParse(JSON.stringify(dd));
+          if (!payload) return;
+          if (payload.action === 'streamState') {
+            const isLive = payload.live === true, was = streamLive;
+            setLive(isLive);
+            if (isLive && !was) {
+              const uptimeSecs = payload.uptime || 0;
+              if (uptimeSecs > 0) {
+                uptimeSeconds = uptimeSecs;
+                setUptime(uptimeSecs);
+              } else {
+                startUptime(true);
+              }
+              if (bitsPeriod === 'stream') {
+                requestBitsState(); // Pedir estado actual
+              }
+            } else if (!isLive && was) {
+              stopUptime();
+            }
+            return;
+          }
+          if (payload.action === 'goalUpdate') {
+            const goalType = payload.type || 'subs';
+            if (goalType === 'bits') {
+              updateBitsGoal(+payload.current, +payload.target);
+            } else {
+              if (payload.celebrating === true || payload.celebrating === 'true')
+                celebrate(+payload.current, +payload.newTarget, payload.lastUser, 'subs');
+              else if (!celebrating)
+                updateGoal(+payload.current, +payload.target);
+            }
+            return;
+          }
+          if (payload.action === 'bitsState') {
+            updateBitsGoal(payload.current, payload.target);
+            return;
+          }
+          if (payload.action === 'bitsUpdate') {
+            updateBitsGoal(payload.current, payload.target);
+            return;
+          }
+        }
+        function getUsername(data) {
+          const candidates = [
+            data?.user?.displayName, data?.user?.name, data?.user?.login, data?.displayName, data?.userName, data?.username,
+            data?.login, data?.name, data?.user, data?.from_broadcaster_user_name, data?.from_broadcaster_user_login,
+            data?.from_user_name, data?.from_user_login, data?.to_broadcaster_user_name, data?.raider?.displayName,
+            data?.raider?.name, data?.raider_name, data?.gifter?.displayName, data?.gifter?.name, data?.gifter_name,
+            data?.from_user?.displayName, data?.from_user?.name, data?.donor, data?.donation?.donor,
+            data?.event?.user?.displayName, data?.event?.user?.name, data?.event?.user_name, data?.event?.user_login,
+            data?.event?.displayName, data?.event?.username, data?.event?.from_broadcaster_user_name,
+            data?.user_name, data?.user_login, data?.display_name, data?.redemption?.user?.displayName, data?.redemption?.user?.name,
+            typeof data === 'string' ? data : null
+          ];
+          for (let c of candidates) if (c && typeof c === 'string' && c.trim() !== '') return c.trim();
+          console.warn('No se pudo extraer nombre del evento:', data);
+          return 'Alguien';
+        }
+        if (src === 'twitch') {
+          const u = getUsername(dd);
+          if (type === 'sub' && E.showSubs) pushEvent({ type: 'sub', user: u, extra: `se suscribió ${tierLbl(dd.subTier) || ''}` });
+          if (type === 'resub' && E.showReSubs) pushEvent({ type: 'resub', user: u, extra: `renovó ${dd.cumulativeMonths || dd.months || 1} meses` });
+          if (type === 'giftsub' && E.showGiftSubs) pushEvent({ type: 'giftsub', user: u, extra: `regaló sub a ${dd.recipient?.displayName || dd.recipientDisplayName || 'alguien'}` });
+          if (type === 'giftbomb' && E.showGiftBombs) pushEvent({ type: 'giftbomb', user: u, extra: `regaló ${dd.gifts || dd.giftCount || 1} subs 🎁` });
+          if (type === 'raid' && E.showRaids) pushEvent({ type: 'raid', user: u, extra: `con ${dd.viewers || dd.viewerCount || 0} espectadores` });
+          if (type === 'cheer' && E.showCheers) pushEvent({ type: 'bits', user: u, extra: `donó ${dd.bits || dd.bitsAmount || 0} bits` });
+          if (type === 'follow' && E.showFollows) pushEvent({ type: 'follow', user: u, extra: `comenzó a seguir` });
+          if (type === 'rewardredemption' && E.showRedemptions) pushEvent({ type: 'redeem', user: u, extra: `canjeó "${dd.rewardTitle || dd.reward?.title || 'recompensa'}"` });
+        }
+        if (src === 'youtube') {
+          const u = dd.user?.displayName || dd.displayName || 'Alguien';
+          if ((type === 'newmember' || type === 'membermilestone') && E.showYTMembers) pushEvent({ type: 'member', user: u, extra: `se unió como miembro ${dd.tier || ''}` });
+          if (type === 'superchat' && E.showSuperChat) pushEvent({ type: 'super', user: u, extra: `envió $${dd.amount || ''} en Super Chat` });
+        }
+        if (src === 'streamelements' && type === 'donation' && E.showDonations) {
+          const u = dd.donor || dd.name || dd.username || 'Anónimo';
+          pushEvent({ type: 'donate', user: u, extra: `donó $${dd.amount || ''}` });
+        }
+      };
+      ws.onclose = () => {
+        setLive(false);
+        document.getElementById('tick-user').textContent = '⚠  Señal perdida — reconectando...';
+        setTimeout(connect, 5000);
+      };
+      ws.onerror = () => ws.close();
+    }
+
+    // Inicialización
+    window.addEventListener('load', () => {
+      connect();
+      const audio = document.getElementById('notification-sound');
+      if (audio && audio.load) audio.load();
+      setTimeout(() => {
+        widgetEl.classList.add('ready');
+        initTickerResizeObserver();
+        adjustTickerFontSize();
+        initGoalRotation();
+      }, 300);
+    });
+    setTimeout(() => {
+      if (document.getElementById('tick-inner')) {
+        adjustTickerFontSize();
+        initTickerResizeObserver();
+      }
+    }, 500);
   </script>
 </body>
 
