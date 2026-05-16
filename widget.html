@@ -1494,11 +1494,20 @@
             const isLive = payload.live === true, was = streamLive;
             setLive(isLive);
             if (isLive && !was) {
-              startUptime(true);
+              // Si el widget recibe uptime en segundos, lo usa
+              const uptimeSecs = payload.uptime || 0;
+              if (uptimeSecs > 0) {
+                uptimeSeconds = uptimeSecs;
+                setUptime(uptimeSecs);
+              } else {
+                startUptime(true);
+              }
               if (bitsPeriod === 'stream') {
                 resetStreamBits();
               }
-            } else if (!isLive && was) stopUptime();
+            } else if (!isLive && was) {
+              stopUptime();
+            }
             return;
           }
           if (payload.action === 'goalUpdate') {
