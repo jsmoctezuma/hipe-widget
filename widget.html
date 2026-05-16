@@ -1427,7 +1427,19 @@
         }));
       }
     }
-
+    // Enviar la configuración de bits al bot
+    if (bitsActive) {
+      ws.send(JSON.stringify({
+        request: "SendCustom",
+        id: "syncBitsConfig",
+        data: {
+          action: "syncBitsConfig",
+          period: bitsPeriod,
+          target: bitsTarget,
+          current: currentBits  // ya sea desde CFG o 0
+        }
+      }));
+    }
     function resetStreamBits() {
       if (bitsPeriod !== 'stream') return;
       if (ws && ws.readyState === WebSocket.OPEN) {
