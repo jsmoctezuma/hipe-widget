@@ -802,11 +802,16 @@
             <span class="fhint">Cómo se cuentan los bits para alcanzar la meta.</span>
           </div>
           <div class="field">
-            <label>Bits actuales (opcional)</label>
-            <input type="number" id="goalBitsCurrent" value="0" min="0" step="100" onchange="saveToLocalStorage()">
-            <span class="fhint">Si ya llevas bits acumulados, escribe aquí la cantidad actual. De lo contrario, déjalo
-              en 0.</span>
+            <label>Objetivo de bits</label>
+            <input type="number" id="goalBitsTarget" value="1000" min="1" step="100" onchange="saveToLocalStorage()">
+            <span class="fhint">Cantidad de bits que quieres alcanzar.</span>
           </div>
+        </div>
+        <div class="field">
+          <label>Bits actuales (opcional)</label>
+          <input type="number" id="goalBitsCurrent" value="0" min="0" step="100" onchange="saveToLocalStorage()">
+          <span class="fhint">Si ya llevas bits acumulados, escribe aquí la cantidad actual. De lo contrario, déjalo
+            en 0.</span>
         </div>
         <div class="field">
           <label>URL del GIF/icono (opcional)</label>
@@ -1146,10 +1151,10 @@
         soundEvents,
         notificationVolume: parseInt(document.getElementById('notificationVolume').value),
         goalBits: {
-          current: parseInt(document.getElementById('goalBitsCurrent').value) || 0,
           active: document.getElementById('goalBitsActive').checked,
           period: document.getElementById('goalBitsPeriod').value,
           target: parseInt(document.getElementById('goalBitsTarget').value) || 0,
+          current: parseInt(document.getElementById('goalBitsCurrent').value) || 0,
           gif: document.getElementById('goalBitsGif').value.trim(),
           caption: document.getElementById('goalBitsCaption').value.trim()
         },
@@ -1217,14 +1222,13 @@
         document.getElementById('th-radius').value = cfg.theme?.borderRadius || '6px';
         const bgOp = cfg.theme?.bgOpacity !== undefined ? Math.round(cfg.theme.bgOpacity * 100) : 100;
         const brOp = cfg.theme?.borderOpacity !== undefined ? Math.round(cfg.theme.borderOpacity * 100) : 100;
-        // Dentro de loadFromLocalStorage(), después de cargar cfg.theme
         const goalBits = cfg.goalBits || {};
         document.getElementById('goalBitsActive').checked = goalBits.active === true;
         document.getElementById('goalBitsPeriod').value = goalBits.period || 'stream';
         document.getElementById('goalBitsTarget').value = goalBits.target || 1000;
+        document.getElementById('goalBitsCurrent').value = goalBits.current || 0;
         document.getElementById('goalBitsGif').value = goalBits.gif || '';
         document.getElementById('goalBitsCaption').value = goalBits.caption || '';
-        document.getElementById('goalBitsCurrent').value = goalBits.current || 0;
         toggleGoalBitsUI();
         document.getElementById('bgOpacity').value = bgOp;
         document.getElementById('borderOpacity').value = brOp;
