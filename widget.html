@@ -9,7 +9,7 @@
     rel="stylesheet">
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
   <style>
-    /* ========== ESTILOS BASE ========== */
+    /* ========== ESTILOS BASE (igual que antes, sin cambios) ========== */
     *,
     *::before,
     *::after {
@@ -921,18 +921,19 @@
     const soundEventsFromCfg = CFG.soundEvents || {};
     const soundEvents = { ...defaultSoundEvents, ...soundEventsFromCfg };
 
-    // Meta de bits (leer también el valor inicial si viene en la configuración)
+    // Meta de bits
     const goalBits = CFG.goalBits || { active: false };
     const bitsActive = goalBits.active === true;
     const bitsPeriod = goalBits.period || 'stream';
     const bitsTarget = goalBits.target || 0;
     const bitsGif = goalBits.gif || 'assets/bitcoin.gif';
     const bitsCaption = goalBits.caption || '';
-    const bitsCurrentFromCfg = goalBits.current || 0;  // <-- NUEVO: valor inicial desde admin
+    const bitsCurrentFromCfg = goalBits.current || 0;
 
     // Variables globales para bits
     let currentBits = bitsCurrentFromCfg;
     let ws = null;
+    let initialSyncDone = false; // <-- NUEVA: bandera para ignorar mensajes del bot durante la sincronización inicial
 
     CFG.logoPath = logoPath;
     CFG.goalGifPath = goalGifPath;
@@ -1429,18 +1430,6 @@
       }
     }
 
-    function resetStreamBits() {
-      if (bitsPeriod !== 'stream') return;
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
-          request: "SendCustom",
-          id: "resetStreamBits",
-          data: { action: "resetStreamBits" }
-        }));
-      }
-      updateBitsGoal(0, bitsTarget);
-    }
-
     // WebSocket
     function tryParse(s) { try { return JSON.parse(s); } catch { return null; } }
     function tierLbl(t) { return t === '1000' ? 'Tier 1' : t === '2000' ? 'Tier 2' : t === '3000' ? 'Tier 3' : t === 'Prime' ? 'Prime' : t || ''; }
@@ -1460,10 +1449,11 @@
           }
         }));
         ws.send(JSON.stringify({ request: 'GetChannelInfo', id: 'hipe-livecheck' }));
-        // Solicitar el estado actual de bits al conectar
-        requestBitsState();
-        // Sincronizar configuración de bits con el bot (si la meta está activa)
+
+        initialSyncDone = false; // reiniciar bandera
+
         if (bitsActive) {
+          // Enviar nueva configuración al bot
           ws.send(JSON.stringify({
             request: "SendCustom",
             id: "syncBitsConfig",
@@ -1474,6 +1464,14 @@
               current: currentBits
             }
           }));
+          // Esperar 1.5 segundos antes de aceptar actualizaciones del bot
+          setTimeout(() => {
+            initialSyncDone = true;
+            requestBitsState(); // pedir estado final por si acaso
+          }, 1500);
+        } else {
+          initialSyncDone = true;
+          requestBitsState();
         }
       };
       ws.onmessage = (msg) => {
@@ -1521,6 +1519,7 @@
           if (payload.action === 'goalUpdate') {
             const goalType = payload.type || 'subs';
             if (goalType === 'bits') {
+              if (!initialSyncDone) return; // <-- ignorar durante sincronización
               updateBitsGoal(+payload.current, +payload.target);
             } else {
               if (payload.celebrating === true || payload.celebrating === 'true')
@@ -1531,10 +1530,12 @@
             return;
           }
           if (payload.action === 'bitsState') {
+            if (!initialSyncDone) return; // <-- ignorar durante sincronización
             updateBitsGoal(payload.current, payload.target);
             return;
           }
           if (payload.action === 'bitsUpdate') {
+            if (!initialSyncDone) return; // <-- ignorar durante sincronización
             updateBitsGoal(payload.current, payload.target);
             return;
           }
