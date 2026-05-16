@@ -4,9 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Hipe Widget — Panel de Control</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     /* ===== ESTILOS (sin cambios estructurales) ===== */
     *,
@@ -228,7 +226,6 @@
       width: 100%;
     }
 
-    /* Nuevos estilos para sliders de opacidad */
     .range-field {
       display: flex;
       align-items: center;
@@ -1276,38 +1273,37 @@
       return url;
     }
 
-    function copyWidgetUrl() {
-      const config = collectConfig();
-      const jsonStr = JSON.stringify(config);
-      const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
-      const baseUrl = window.location.href.replace(/admin\.html.*$/, 'widget.html');
-      const url = `${baseUrl}?config=${encodeURIComponent(base64)}`;
-
-      // Copiar al portapapeles
-      navigator.clipboard.writeText(url).then(() => toast('✅ Enlace copiado al portapapeles. Pégarlo en OBS como Browser Source.')).catch(() => toast('❌ No se pudo copiar.'));
-
-      // Enviar configuración al bot (Streamer.bot) a través de WebSocket
-      sendConfigToBot(config);
-    }
-
+    // NUEVA FUNCIÓN: enviar configuración al bot
     function sendConfigToBot(config) {
       const sbHost = config.sbHost || '127.0.0.1';
       const sbPort = config.sbPort || 8080;
       const ws = new WebSocket(`ws://${sbHost}:${sbPort}/`);
-
       ws.onopen = () => {
         const payload = {
           request: "SendCustom",
           id: "adminSync",
           data: {
             action: "adminSyncConfig",
-            goalBits: config.goalBits   // enviamos toda la configuración de bits
+            goalBits: config.goalBits
           }
         };
         ws.send(JSON.stringify(payload));
         setTimeout(() => ws.close(), 500);
       };
-      ws.onerror = () => console.log('No se pudo conectar al bot para sincronizar configuración');
+      ws.onerror = () => console.log('No se pudo conectar al bot');
+    }
+
+    // MODIFICADA: copiar enlace y enviar configuración al bot
+    function copyWidgetUrl() {
+      const config = collectConfig();
+      const jsonStr = JSON.stringify(config);
+      const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      const baseUrl = window.location.href.replace(/admin\.html.*$/, 'widget.html');
+      const url = `${baseUrl}?config=${encodeURIComponent(base64)}`;
+      navigator.clipboard.writeText(url).then(() => {
+        toast('✅ Enlace copiado al portapapeles. Pégarlo en OBS como Browser Source.');
+        sendConfigToBot(config);
+      }).catch(() => toast('❌ No se pudo copiar.'));
     }
 
     function init() {
