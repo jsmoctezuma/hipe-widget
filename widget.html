@@ -9,7 +9,7 @@
     rel="stylesheet">
   <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
   <style>
-    /* ========== ESTILOS BASE (igual que antes, sin cambios) ========== */
+    /* ========== ESTILOS BASE (igual que antes) ========== */
     *,
     *::before,
     *::after {
@@ -933,7 +933,6 @@
     // Variables globales para bits
     let currentBits = bitsCurrentFromCfg;
     let ws = null;
-    let initialSyncDone = false; // <-- NUEVA: bandera para ignorar mensajes del bot durante la sincronización inicial
 
     CFG.logoPath = logoPath;
     CFG.goalGifPath = goalGifPath;
@@ -1046,7 +1045,6 @@
     if (bitsActive) {
       document.getElementById('gst-bits-gif').src = bitsGif;
       document.getElementById('bits-caption').textContent = bitsCaption;
-      // Usar el valor inicial desde la configuración
       document.getElementById('gst-bits-txt').textContent = `${bitsCurrentFromCfg}/${bitsTarget}`;
       const percent = Math.min(bitsCurrentFromCfg / Math.max(bitsTarget, 1) * 100, 100);
       document.getElementById('gst-bits-fill').style.width = percent + '%';
@@ -1450,29 +1448,8 @@
         }));
         ws.send(JSON.stringify({ request: 'GetChannelInfo', id: 'hipe-livecheck' }));
 
-        initialSyncDone = false; // reiniciar bandera
-
-        if (bitsActive) {
-          // Enviar nueva configuración al bot
-          ws.send(JSON.stringify({
-            request: "SendCustom",
-            id: "syncBitsConfig",
-            data: {
-              action: "syncBitsConfig",
-              period: bitsPeriod,
-              target: bitsTarget,
-              current: currentBits
-            }
-          }));
-          // Esperar 1.5 segundos antes de aceptar actualizaciones del bot
-          setTimeout(() => {
-            initialSyncDone = true;
-            requestBitsState(); // pedir estado final por si acaso
-          }, 1500);
-        } else {
-          initialSyncDone = true;
-          requestBitsState();
-        }
+        // Solo pedir el estado actual al bot (el admin ya envió la configuración)
+        requestBitsState();
       };
       ws.onmessage = (msg) => {
         let d; try { d = JSON.parse(msg.data); } catch { return; }
@@ -1519,7 +1496,6 @@
           if (payload.action === 'goalUpdate') {
             const goalType = payload.type || 'subs';
             if (goalType === 'bits') {
-              if (!initialSyncDone) return; // <-- ignorar durante sincronización
               updateBitsGoal(+payload.current, +payload.target);
             } else {
               if (payload.celebrating === true || payload.celebrating === 'true')
@@ -1530,12 +1506,10 @@
             return;
           }
           if (payload.action === 'bitsState') {
-            if (!initialSyncDone) return; // <-- ignorar durante sincronización
             updateBitsGoal(payload.current, payload.target);
             return;
           }
           if (payload.action === 'bitsUpdate') {
-            if (!initialSyncDone) return; // <-- ignorar durante sincronización
             updateBitsGoal(payload.current, payload.target);
             return;
           }
