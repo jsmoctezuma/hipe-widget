@@ -1455,85 +1455,56 @@
         // Solo pedir el estado actual al bot (el admin ya envió la configuración)
         requestBitsState();
       };
+      // =====================================================================
+      // REEMPLAZAR en widget.html el bloque ws.onmessage completo
+      // Busca: "ws.onmessage = (msg) => {"
+      // y reemplaza TODO hasta el ws.onclose que sigue después
+      // =====================================================================
+
       ws.onmessage = (msg) => {
         let d; try { d = JSON.parse(msg.data); } catch { return; }
+
+        // ── CASO 1: respuesta directa de la API (GetChannelInfo, etc.) ──
         if (d.id === 'hipe-livecheck') {
           const isLive = d.response?.isLive || d.data?.isLive || false;
           setLive(isLive); if (!isLive) stopUptime(); return;
         }
+
+        // ── CASO 2: broadcast directo del bot via WebsocketBroadcastJson ──
+        // Llegan como {"action":"bitsUpdate","current":X,"target":Y}
+        // directamente en `d`, sin envoltura de evento.
+        if (d.action) {
+          handleBotPayload(d);
+          return;
+        }
+
+        // ── CASO 3: eventos de Streamer.Bot (subs, raids, cheers, etc.) ──
         const src = (d.event?.source || '').toLowerCase();
-        const type = (d.event?.type || d.data?.type || d.data?.event || d.data?.eventType || d.data?.subscription?.type || '').toLowerCase();
+        const type = (d.event?.type || d.data?.type || d.data?.event ||
+          d.data?.eventType || '').toLowerCase();
         const dd = d.data || {};
         const E = CFG.events || {};
+
         if (src === 'twitch' && (type === 'streamonline' || type === 'online')) {
           const was = streamLive; setLive(true);
-          if (!was) {
-            startUptime(true);
-          }
+          if (!was) startUptime(true);
           return;
         }
         if (src === 'twitch' && (type === 'streamoffline' || type === 'offline')) {
           const was = streamLive; setLive(false); if (was) stopUptime(); return;
         }
+
+        // General > Custom: mensajes que el bot envía como evento custom
+        // (ruta alternativa por si el bot usa SendRawData en vez de WebsocketBroadcastJson)
         if (src === 'general' && type === 'custom') {
-          const payload = (typeof dd === 'object' && dd.action) ? dd : (typeof dd.message === 'string') ? tryParse(dd.message) : tryParse(JSON.stringify(dd));
-          if (!payload) return;
-          if (payload.action === 'streamState') {
-            const isLive = payload.live === true, was = streamLive;
-            setLive(isLive);
-            if (isLive && !was) {
-              const uptimeSecs = payload.uptime || 0;
-              if (uptimeSecs > 0) {
-                uptimeSeconds = uptimeSecs;
-                setUptime(uptimeSecs);
-              } else {
-                startUptime(true);
-              }
-              if (bitsPeriod === 'stream') {
-                requestBitsState(); // Pedir estado actual
-              }
-            } else if (!isLive && was) {
-              stopUptime();
-            }
-            return;
-          }
-          if (payload.action === 'goalUpdate') {
-            const goalType = payload.type || 'subs';
-            if (goalType === 'bits') {
-              updateBitsGoal(+payload.current, +payload.target);
-            } else {
-              if (payload.celebrating === true || payload.celebrating === 'true')
-                celebrate(+payload.current, +payload.newTarget, payload.lastUser, 'subs');
-              else if (!celebrating)
-                updateGoal(+payload.current, +payload.target);
-            }
-            return;
-          }
-          if (payload.action === 'bitsState') {
-            updateBitsGoal(payload.current, payload.target);
-            return;
-          }
-          if (payload.action === 'bitsUpdate') {
-            updateBitsGoal(payload.current, payload.target);
-            return;
-          }
+          let payload = null;
+          if (dd && dd.action) payload = dd;
+          else if (typeof dd.message === 'string') payload = tryParse(dd.message);
+          else payload = tryParse(JSON.stringify(dd));
+          if (payload) { handleBotPayload(payload); return; }
         }
-        function getUsername(data) {
-          const candidates = [
-            data?.user?.displayName, data?.user?.name, data?.user?.login, data?.displayName, data?.userName, data?.username,
-            data?.login, data?.name, data?.user, data?.from_broadcaster_user_name, data?.from_broadcaster_user_login,
-            data?.from_user_name, data?.from_user_login, data?.to_broadcaster_user_name, data?.raider?.displayName,
-            data?.raider?.name, data?.raider_name, data?.gifter?.displayName, data?.gifter?.name, data?.gifter_name,
-            data?.from_user?.displayName, data?.from_user?.name, data?.donor, data?.donation?.donor,
-            data?.event?.user?.displayName, data?.event?.user?.name, data?.event?.user_name, data?.event?.user_login,
-            data?.event?.displayName, data?.event?.username, data?.event?.from_broadcaster_user_name,
-            data?.user_name, data?.user_login, data?.display_name, data?.redemption?.user?.displayName, data?.redemption?.user?.name,
-            typeof data === 'string' ? data : null
-          ];
-          for (let c of candidates) if (c && typeof c === 'string' && c.trim() !== '') return c.trim();
-          console.warn('No se pudo extraer nombre del evento:', data);
-          return 'Alguien';
-        }
+
+        // ── Eventos de Twitch ──
         if (src === 'twitch') {
           const u = getUsername(dd);
           if (type === 'sub' && E.showSubs) pushEvent({ type: 'sub', user: u, extra: `se suscribió ${tierLbl(dd.subTier) || ''}` });
@@ -1545,16 +1516,90 @@
           if (type === 'follow' && E.showFollows) pushEvent({ type: 'follow', user: u, extra: `comenzó a seguir` });
           if (type === 'rewardredemption' && E.showRedemptions) pushEvent({ type: 'redeem', user: u, extra: `canjeó "${dd.rewardTitle || dd.reward?.title || 'recompensa'}"` });
         }
+
+        // ── Eventos de YouTube ──
         if (src === 'youtube') {
           const u = dd.user?.displayName || dd.displayName || 'Alguien';
-          if ((type === 'newmember' || type === 'membermilestone') && E.showYTMembers) pushEvent({ type: 'member', user: u, extra: `se unió como miembro ${dd.tier || ''}` });
-          if (type === 'superchat' && E.showSuperChat) pushEvent({ type: 'super', user: u, extra: `envió $${dd.amount || ''} en Super Chat` });
+          if ((type === 'newmember' || type === 'membermilestone') && E.showYTMembers)
+            pushEvent({ type: 'member', user: u, extra: `se unió como miembro ${dd.tier || ''}` });
+          if (type === 'superchat' && E.showSuperChat)
+            pushEvent({ type: 'super', user: u, extra: `envió $${dd.amount || ''} en Super Chat` });
         }
+
+        // ── StreamElements ──
         if (src === 'streamelements' && type === 'donation' && E.showDonations) {
           const u = dd.donor || dd.name || dd.username || 'Anónimo';
           pushEvent({ type: 'donate', user: u, extra: `donó $${dd.amount || ''}` });
         }
       };
+
+      // =====================================================================
+      // AÑADIR esta función handleBotPayload ANTES de la función connect()
+      // Es la función centralizada que procesa todos los mensajes del bot
+      // =====================================================================
+
+      function handleBotPayload(payload) {
+        if (!payload || !payload.action) return;
+
+        if (payload.action === 'streamState') {
+          const isLive = payload.live === true, was = streamLive;
+          setLive(isLive);
+          if (isLive && !was) {
+            const uptimeSecs = payload.uptime || 0;
+            if (uptimeSecs > 0) { uptimeSeconds = uptimeSecs; setUptime(uptimeSecs); startUptime(false); }
+            else startUptime(true);
+            if (bitsActive) requestBitsState();
+          } else if (!isLive && was) {
+            stopUptime();
+          }
+          return;
+        }
+
+        if (payload.action === 'goalUpdate') {
+          const goalType = payload.type || 'subs';
+          if (goalType === 'bits') {
+            updateBitsGoal(+payload.current, +payload.target);
+          } else {
+            if (payload.celebrating === true || payload.celebrating === 'true')
+              celebrate(+payload.current, +payload.newTarget, payload.lastUser, 'subs');
+            else if (!celebrating)
+              updateGoal(+payload.current, +payload.target);
+          }
+          return;
+        }
+
+        if (payload.action === 'bitsState' || payload.action === 'bitsUpdate') {
+          updateBitsGoal(+payload.current, +payload.target);
+          return;
+        }
+      }
+
+      // =====================================================================
+      // TAMBIÉN reemplazar la función getUsername que debe estar FUERA
+      // del bloque onmessage, como función independiente antes de connect()
+      // =====================================================================
+
+      function getUsername(data) {
+        const candidates = [
+          data?.user?.displayName, data?.user?.name, data?.user?.login,
+          data?.displayName, data?.userName, data?.username, data?.login, data?.name, data?.user,
+          data?.from_broadcaster_user_name, data?.from_broadcaster_user_login,
+          data?.from_user_name, data?.from_user_login, data?.to_broadcaster_user_name,
+          data?.raider?.displayName, data?.raider?.name, data?.raider_name,
+          data?.gifter?.displayName, data?.gifter?.name, data?.gifter_name,
+          data?.from_user?.displayName, data?.from_user?.name,
+          data?.donor, data?.donation?.donor,
+          data?.event?.user?.displayName, data?.event?.user?.name,
+          data?.event?.user_name, data?.event?.user_login,
+          data?.event?.displayName, data?.event?.username,
+          data?.event?.from_broadcaster_user_name,
+          data?.user_name, data?.user_login, data?.display_name,
+          data?.redemption?.user?.displayName, data?.redemption?.user?.name,
+          typeof data === 'string' ? data : null
+        ];
+        for (let c of candidates) if (c && typeof c === 'string' && c.trim() !== '') return c.trim();
+        return 'Alguien';
+      }
       ws.onclose = () => {
         setLive(false);
         document.getElementById('tick-user').textContent = '⚠  Señal perdida — reconectando...';
