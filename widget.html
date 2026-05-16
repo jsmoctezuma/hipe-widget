@@ -1420,10 +1420,14 @@
     // ========== FUNCIONES PARA BITS ==========
     function requestBitsState() {
       if (ws && ws.readyState === WebSocket.OPEN) {
+        // Igual: DoAction para que el Execute() lo reciba como arg directo
         ws.send(JSON.stringify({
-          request: "SendCustom",
+          request: "DoAction",
           id: "getBitsState",
-          data: { action: "getBitsState" }
+          action: { name: "Hipe Widget" },   // <-- mismo nombre de acción
+          args: {
+            adminAction: "getBitsState"
+          }
         }));
       }
     }
