@@ -802,9 +802,10 @@
             <span class="fhint">Cómo se cuentan los bits para alcanzar la meta.</span>
           </div>
           <div class="field">
-            <label>Objetivo de bits</label>
-            <input type="number" id="goalBitsTarget" value="1000" min="1" step="100" onchange="saveToLocalStorage()">
-            <span class="fhint">Cantidad de bits que quieres alcanzar.</span>
+            <label>Bits actuales (opcional)</label>
+            <input type="number" id="goalBitsCurrent" value="0" min="0" step="100" onchange="saveToLocalStorage()">
+            <span class="fhint">Si ya llevas bits acumulados, escribe aquí la cantidad actual. De lo contrario, déjalo
+              en 0.</span>
           </div>
         </div>
         <div class="field">
@@ -1145,6 +1146,7 @@
         soundEvents,
         notificationVolume: parseInt(document.getElementById('notificationVolume').value),
         goalBits: {
+          current: parseInt(document.getElementById('goalBitsCurrent').value) || 0,
           active: document.getElementById('goalBitsActive').checked,
           period: document.getElementById('goalBitsPeriod').value,
           target: parseInt(document.getElementById('goalBitsTarget').value) || 0,
@@ -1172,7 +1174,7 @@
       contentDiv.style.display = isActive ? '' : 'none';
       document.getElementById('tr-goalBits').classList.toggle('on', isActive);
     }
-    
+
     function saveToLocalStorage() {
       const config = collectConfig();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
@@ -1222,6 +1224,7 @@
         document.getElementById('goalBitsTarget').value = goalBits.target || 1000;
         document.getElementById('goalBitsGif').value = goalBits.gif || '';
         document.getElementById('goalBitsCaption').value = goalBits.caption || '';
+        document.getElementById('goalBitsCurrent').value = goalBits.current || 0;
         toggleGoalBitsUI();
         document.getElementById('bgOpacity').value = bgOp;
         document.getElementById('borderOpacity').value = brOp;
