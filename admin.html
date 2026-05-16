@@ -1277,8 +1277,37 @@
     }
 
     function copyWidgetUrl() {
-      const url = generateWidgetUrl();
+      const config = collectConfig();
+      const jsonStr = JSON.stringify(config);
+      const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      const baseUrl = window.location.href.replace(/admin\.html.*$/, 'widget.html');
+      const url = `${baseUrl}?config=${encodeURIComponent(base64)}`;
+
+      // Copiar al portapapeles
       navigator.clipboard.writeText(url).then(() => toast('✅ Enlace copiado al portapapeles. Pégarlo en OBS como Browser Source.')).catch(() => toast('❌ No se pudo copiar.'));
+
+      // Enviar configuración al bot (Streamer.bot) a través de WebSocket
+      sendConfigToBot(config);
+    }
+
+    function sendConfigToBot(config) {
+      const sbHost = config.sbHost || '127.0.0.1';
+      const sbPort = config.sbPort || 8080;
+      const ws = new WebSocket(`ws://${sbHost}:${sbPort}/`);
+
+      ws.onopen = () => {
+        const payload = {
+          request: "SendCustom",
+          id: "adminSync",
+          data: {
+            action: "adminSyncConfig",
+            goalBits: config.goalBits   // enviamos toda la configuración de bits
+          }
+        };
+        ws.send(JSON.stringify(payload));
+        setTimeout(() => ws.close(), 500);
+      };
+      ws.onerror = () => console.log('No se pudo conectar al bot para sincronizar configuración');
     }
 
     function init() {
