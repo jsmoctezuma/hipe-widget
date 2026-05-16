@@ -1491,7 +1491,8 @@
           if (!was) {
             startUptime(true);
             if (bitsPeriod === 'stream') {
-              resetStreamBits();
+              // En lugar de resetStreamBits, pedimos el estado actual al bot
+              requestBitsState();
             }
           }
           return;
@@ -1514,7 +1515,7 @@
                 startUptime(true);
               }
               if (bitsPeriod === 'stream') {
-                resetStreamBits();
+                requestBitsState(); // Pedir estado actual
               }
             } else if (!isLive && was) {
               stopUptime();
