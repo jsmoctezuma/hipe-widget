@@ -1490,10 +1490,6 @@
           const was = streamLive; setLive(true);
           if (!was) {
             startUptime(true);
-            if (bitsPeriod === 'stream') {
-              // En lugar de resetStreamBits, pedimos el estado actual al bot
-              requestBitsState();
-            }
           }
           return;
         }
