@@ -1356,6 +1356,35 @@
       toggleSocialsUI();
       toggleCreatorUI();
       toggleSoundGlobal();
+      // Pedir el estado actual de bits al bot (para que el campo "Bits actuales" muestre el valor real)
+      function pedirEstadoBitsAlBot() {
+        const puerto = document.getElementById('sbPort').value || 8080;
+        const ws = new WebSocket(`ws://127.0.0.1:${puerto}/`);
+        ws.onopen = function () {
+          ws.send(JSON.stringify({
+            request: "DoAction",
+            id: "getBitsState",
+            action: { name: "Hipe Widget" },
+            args: { adminAction: "getBitsState" }
+          }));
+          setTimeout(function () { ws.close(); }, 1000);
+        };
+        ws.onmessage = function (mensaje) {
+          try {
+            const dato = JSON.parse(mensaje.data);
+            if (dato.action === 'bitsState') {
+              const bitsActuales = dato.current;
+              if (bitsActuales !== undefined) {
+                document.getElementById('goalBitsCurrent').value = bitsActuales;
+                guardarConfigLocal(); // esto guarda en localStorage
+              }
+            }
+          } catch (e) { }
+        };
+        ws.onerror = function () { console.log('No se pudo conectar al bot'); };
+      }
+      // Esperar medio segundo y luego pedir el estado
+      setTimeout(pedirEstadoBitsAlBot, 500);
     }
     init();
   </script>
