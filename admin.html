@@ -4,9 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <title>Hipe Widget — Panel de Control</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
   <link
     href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
     rel="stylesheet">
+  <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
   <style>
     /* ===== ESTILOS (sin cambios estructurales) ===== */
     *,
@@ -144,6 +147,41 @@
       background: var(--red);
     }
 
+    .btn-test {
+      background: transparent;
+      color: var(--acc2);
+      border: 1px solid var(--acc);
+      padding: 12px 18px;
+      border-radius: var(--rad);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      width: fit-content;
+    }
+
+    .btn-test:hover {
+      background: var(--acc);
+      color: #fff;
+    }
+
+    .conn-status {
+      font-size: 14px;
+      color: var(--mut);
+      min-height: 22px;
+    }
+
+    .conn-status.ok {
+      color: var(--grn);
+    }
+
+    .conn-status.err {
+      color: var(--red);
+    }
+
     main {
       max-width: 960px;
       margin: 0 auto;
@@ -171,6 +209,11 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .card-title iconify-icon {
+      color: var(--acc2);
+      flex-shrink: 0;
     }
 
     .card-title::before {
@@ -221,6 +264,11 @@
       border-color: var(--acc);
     }
 
+    input.is-invalid {
+      border-color: var(--red) !important;
+      box-shadow: 0 0 0 1px rgba(248, 113, 113, .35);
+    }
+
     input[type=color] {
       padding: 4px 6px;
       height: 46px;
@@ -261,6 +309,14 @@
       color: var(--mut);
       margin-top: 5px;
       line-height: 1.5;
+    }
+
+    .field-warning {
+      display: none;
+      color: var(--red);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 4px;
     }
 
     .tog-row {
@@ -373,6 +429,21 @@
 
     .soc-row.on {
       border-color: var(--acc);
+      background: rgba(124, 58, 237, .12);
+      box-shadow: 0 0 0 1px rgba(124, 58, 237, .18) inset;
+    }
+
+    .soc-row.on .soc-name::after {
+      content: 'ACTIVA';
+      display: inline-flex;
+      margin-left: 8px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(124, 58, 237, .22);
+      color: var(--acc2);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .08em;
     }
 
     .soc-icon-box {
@@ -394,7 +465,8 @@
       font-size: 16px;
       font-weight: 600;
       color: var(--txt);
-      min-width: 96px;
+      width: 150px;
+      min-width: 150px;
     }
 
     .soc-inp {
@@ -412,6 +484,11 @@
 
     .soc-inp:focus {
       border-color: var(--acc);
+    }
+
+    .soc-row.invalid {
+      border-color: var(--red);
+      background: rgba(248, 113, 113, .08);
     }
 
     .soc-inp:disabled {
@@ -471,7 +548,7 @@
       grid-template-columns: minmax(150px, 1.15fr) minmax(130px, 145px) auto auto;
       gap: 14px 12px;
       width: 100%;
-      align-items: end;
+      align-items: start;
     }
 
     .sp-grid>* {
@@ -490,6 +567,15 @@
       flex-direction: column;
       gap: 6px;
       min-width: 0;
+    }
+
+    .sp-field.compact {
+      justify-content: flex-start;
+    }
+
+    .sp-field.compact .tog,
+    .sp-field.compact .btn-rm {
+      margin-top: 0;
     }
 
     .sp-field.full {
@@ -608,6 +694,38 @@
       border-color: var(--acc);
     }
 
+    .event-group-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0 4px;
+      color: var(--acc2);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .event-group-title:first-child {
+      margin-top: 0;
+    }
+
+    .event-group-title::after {
+      content: '';
+      height: 1px;
+      flex: 1;
+      background: var(--bord);
+    }
+
+    .event-group-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--acc);
+      box-shadow: 0 0 14px currentColor;
+    }
+
     .event-row .tog-group {
       display: flex;
       align-items: center;
@@ -668,6 +786,11 @@
       white-space: pre-line;
     }
 
+    #toast.warning {
+      background: #f59e0b;
+      color: #111;
+    }
+
     #toast.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
@@ -694,25 +817,30 @@
   </header>
 
   <div class="action-bar">
-    <button class="btn-copy" id="copyUrlBtn">📋 Copiar enlace del widget</button>
-    <button class="btn-reset" id="resetBtn">⟳ Restaurar valores</button>
+    <button class="btn-copy" id="copyUrlBtn">📋 Copiar enlace para OBS</button>
+    <button class="btn-reset" id="resetBtn">⟳ Restablecer configuración</button>
   </div>
 
   <main>
+    <div class="hint">Tus cambios se guardan automáticamente en este navegador. Si cambias algo después de agregar el
+      widget a OBS, vuelve a copiar el enlace y actualízalo en la Fuente de navegador.</div>
+
     <!-- ========== CONFIGURACIÓN GENERAL DEL WIDGET ========== -->
     <div class="card">
-      <div class="card-title">Diseño del Widget</div>
+      <div class="card-title"><iconify-icon icon="mdi:view-dashboard-edit" width="22"></iconify-icon>1. Formato del
+        widget</div>
       <div class="field" style="max-width:320px;">
         <label for="layoutMode">Elige el estilo</label>
         <select id="layoutMode" onchange="saveToLocalStorage()">
-          <option value="classic">Compacto (dos filas)</option>
-          <option value="horizontal">Horizontal (una fila ancha)</option>
+          <option value="classic">Compacto para overlay</option>
+          <option value="horizontal">Horizontal para barra inferior</option>
         </select>
       </div>
-      <div id="layout-classic-note" class="hint">En el diseño compacto, la información del canal, la meta de
-        suscriptores y los mensajes en pantalla siempre se muestran. Solo puedes ocultar la sección de patrocinadores y
-        el contador de tiempo en vivo, o la sección de redes sociales / código de creador.</div>
+      <div id="layout-classic-note" class="hint">En modo compacto siempre se muestran: canal, metas y mensajes en
+        pantalla. Puedes ocultar patrocinadores/cronómetro o redes/código de creador.</div>
       <div id="layout-horizontal-controls" class="subcard" style="display:none;">
+        <div class="hint" style="margin-bottom:14px;">En modo horizontal puedes ocultar secciones para crear una barra
+          más limpia.</div>
         <div class="tog-row" id="tr-showBranding">
           <div>
             <div class="tog-lbl">Mostrar información del canal</div>
@@ -737,32 +865,41 @@
       </div>
     </div>
 
+    <!-- ========== CONEXIÓN CON STREAMER.BOT ========== -->
+    <div class="card">
+      <div class="card-title"><iconify-icon icon="mdi:connection" width="22"></iconify-icon>2. Conexión con Streamer.bot
+      </div>
+      <div class="r2">
+        <div class="field"><label>Host de Streamer.bot</label><input type="text" id="sbHost" value="127.0.0.1"
+            placeholder="127.0.0.1" onchange="saveToLocalStorage()"><span class="fhint">Déjalo así si Streamer.bot
+            está en la misma PC que OBS.</span></div>
+        <div class="field"><label>Puerto WebSocket</label><input type="number" id="sbPort" value="8080"
+            onchange="saveToLocalStorage()"><span class="fhint">Debe coincidir con General → WebSocket Server en
+            Streamer.bot.</span></div>
+      </div>
+      <button type="button" class="btn-test" id="testConnectionBtn">Probar conexión</button>
+      <div class="conn-status" id="connectionStatus">Streamer.bot debe estar abierto y con WebSocket Server activado.
+      </div>
+    </div>
+
     <!-- ========== DATOS DEL CANAL ========== -->
     <div class="card">
-      <div class="card-title">Tu Canal</div>
+      <div class="card-title"><iconify-icon icon="mdi:account-circle" width="22"></iconify-icon>3. Identidad del canal
+      </div>
       <div class="r2">
         <div class="field"><label>Nombre del canal o usuario</label><input type="text" id="channelName"
             placeholder="Ej. MancoSquad" onchange="saveToLocalStorage()"><span class="fhint">Se verá junto a tu foto de
             perfil en el widget.</span></div>
-        <div class="field"><label>Puerto de conexión con Streamer.bot</label><input type="number" id="sbPort"
-            value="8080" onchange="saveToLocalStorage()"><span class="fhint">Déjalo en 8080 si no lo cambiaste en
-            Streamer.bot.</span></div>
-      </div>
-      <div class="r2">
         <div class="field"><label>URL de la foto de perfil / logo</label><input type="text" id="logoPath"
             placeholder="https://i.imgur.com/ejemplo.png" onchange="saveToLocalStorage()">
-          <div class="fhint">Pega aquí la URL de tu logo (Imgur, Discord, etc.)</div>
-        </div>
-        <div class="field"><label>URL del GIF del corazón (meta de subs)</label><input type="text" id="goalGifPath"
-            placeholder="https://i.imgur.com/corazon.gif" onchange="saveToLocalStorage()">
-          <div class="fhint">Pega la URL de un GIF animado para el corazón.</div>
+          <div class="fhint">Pega aquí la URL de tu logo. Recomendado: imagen cuadrada, mínimo 300x300 px, PNG o JPG.</div>
         </div>
       </div>
     </div>
 
     <!-- ========== METAS (SUSCRIPTORES Y BITS) ========== -->
     <div class="card">
-      <div class="card-title">Metas</div>
+      <div class="card-title"><iconify-icon icon="mdi:target" width="22"></iconify-icon>4. Metas y progreso</div>
       <div class="r2">
         <div class="field">
           <label>Tiempo de celebración (segundos)</label>
@@ -776,10 +913,38 @@
             activas).</span>
         </div>
       </div>
+      <div class="field">
+        <label>URL del GIF del corazón (meta de suscriptores)</label><input type="text" id="goalGifPath"
+          placeholder="https://i.imgur.com/corazon.gif" onchange="saveToLocalStorage()">
+        <div class="fhint">Imagen o GIF que aparece en la meta de suscriptores. Recomendado: cuadrado, mínimo 300x300 px.</div>
+      </div>
 
       <div style="border-top: 1px solid var(--bord); margin: 20px 0 16px 0;"></div>
 
-      <div class="card-title" style="margin-bottom: 16px;">Meta de bits</div>
+      <div class="card-title" style="margin-bottom: 16px;"><iconify-icon icon="mdi:heart-plus"
+          width="22"></iconify-icon>Meta de follows</div>
+      <div class="tog-row" id="tr-goalFollows">
+        <div>
+          <div class="tog-lbl">Activar meta de follows</div>
+          <div class="tog-sub">Muestra una meta de seguidores rotando junto con las demás metas.</div>
+        </div>
+        <label class="tog">
+          <input type="checkbox" id="goalFollowsActive" onchange="toggleGoalFollowsUI(); saveToLocalStorage()">
+          <span class="tog-sl"></span>
+        </label>
+      </div>
+      <div id="goalFollowsContent" style="display: none;">
+        <div class="field">
+          <label>URL del GIF/icono (opcional)</label>
+          <input type="text" id="goalFollowsGif" placeholder="assets/follow.gif" onchange="saveToLocalStorage()">
+          <span class="fhint">Imagen o GIF de la meta de follows. Recomendado: cuadrado, mínimo 300x300 px.</span>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--bord); margin: 20px 0 16px 0;"></div>
+
+      <div class="card-title" style="margin-bottom: 16px;"><iconify-icon icon="mdi:diamond-stone"
+          width="22"></iconify-icon>Meta de bits</div>
       <div class="tog-row" id="tr-goalBits">
         <div>
           <div class="tog-lbl">Activar meta de bits</div>
@@ -791,6 +956,12 @@
         </label>
       </div>
       <div id="goalBitsContent" style="display: none;">
+        <div class="field">
+          <label>URL del GIF/icono (opcional)</label>
+          <input type="text" id="goalBitsGif" placeholder="https://i.imgur.com/bits.gif"
+            onchange="saveToLocalStorage()">
+          <span class="fhint">Pega la URL de un GIF o imagen. Recomendado: cuadrado, mínimo 300x300 px. Por defecto se usa uno genérico.</span>
+        </div>
         <div class="r2">
           <div class="field">
             <label>Período de acumulación</label>
@@ -801,34 +972,31 @@
             <span class="fhint">Cómo se cuentan los bits para alcanzar la meta.</span>
           </div>
           <div class="field">
-            <label>Objetivo de bits</label>
-            <input type="number" id="goalBitsTarget" value="1000" min="1" step="100" onchange="saveToLocalStorage()">
-            <span class="fhint">Cantidad de bits que quieres alcanzar.</span>
+            <label>Leyenda (opcional)</label>
+            <input type="text" id="goalBitsCaption" placeholder="Ej. Audífonos nuevos" onchange="saveToLocalStorage()">
+            <span class="fhint">Texto corto que aparecerá debajo de la barra de progreso.</span>
           </div>
         </div>
-        <div class="field">
-          <label>Bits actuales (opcional)</label>
-          <input type="number" id="goalBitsCurrent" value="0" min="0" step="100" onchange="saveToLocalStorage()">
-          <span class="fhint">Si ya llevas bits acumulados, escribe aquí la cantidad actual. De lo contrario, déjalo
-            en 0.</span>
-        </div>
-        <div class="field">
-          <label>URL del GIF/icono (opcional)</label>
-          <input type="text" id="goalBitsGif" placeholder="https://i.imgur.com/bitcoin.gif"
-            onchange="saveToLocalStorage()">
-          <span class="fhint">Pega la URL de un GIF o imagen (por defecto se usa uno genérico).</span>
-        </div>
-        <div class="field">
-          <label>Leyenda (opcional)</label>
-          <input type="text" id="goalBitsCaption" placeholder="Ej. 🎧 Audífonos nuevos" onchange="saveToLocalStorage()">
-          <span class="fhint">Texto corto que aparecerá debajo de la barra de progreso.</span>
+        <div class="r2">
+          <div class="field">
+            <label>Bits actuales (opcional)</label>
+            <input type="number" id="goalBitsCurrent" value="0" min="0" step="100">
+            <span class="fhint">Si ya llevas bits acumulados, escribe aquí la cantidad actual.</span>
+            <span class="field-warning" id="goalBitsCurrentWarning"></span>
+          </div>
+          <div class="field">
+            <label>Objetivo de bits</label>
+            <input type="number" id="goalBitsTarget" value="1000" min="1" step="100">
+            <span class="fhint">Cantidad de bits que quieres alcanzar.</span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- ========== PATROCINADORES Y CRONÓMETRO ========== -->
     <div class="card">
-      <div class="card-title">Patrocinadores y tiempo en vivo</div>
+      <div class="card-title"><iconify-icon icon="mdi:tag-multiple" width="22"></iconify-icon>5. Patrocinadores y
+        directo</div>
       <div class="tog-row" id="tr-sponsors">
         <div>
           <div class="tog-lbl">Activar patrocinadores</div>
@@ -851,11 +1019,18 @@
           <div class="tog-sub">Contador del tiempo que llevas en directo.</div>
         </div><label class="tog"><input type="checkbox" id="showUptime" checked><span class="tog-sl"></span></label>
       </div>
+      <div class="tog-row" id="tr-category">
+        <div>
+          <div class="tog-lbl">Mostrar categoría actual</div>
+          <div class="tog-sub">Muestra la imagen y nombre de la categoría del directo.</div>
+        </div><label class="tog"><input type="checkbox" id="showCategory" checked><span class="tog-sl"></span></label>
+      </div>
     </div>
 
     <!-- ========== REDES SOCIALES Y CÓDIGO DE CREADOR ========== -->
     <div class="card">
-      <div class="card-title">Redes sociales y código de creador</div>
+      <div class="card-title"><iconify-icon icon="mdi:share-variant" width="22"></iconify-icon>6. Redes sociales y
+        código de creador</div>
       <div class="tog-row" id="tr-showSocials">
         <div>
           <div class="tog-lbl">Activar redes sociales</div>
@@ -864,15 +1039,17 @@
       </div>
       <div id="socials-content">
         <div id="socials-list"></div>
-        <div class="field" style="margin-top:18px;max-width:180px;"><label>Segundos que se ve cada red</label><input
-            type="number" id="socialRotSecs" value="5" min="2" max="30" onchange="saveToLocalStorage()"><span
-            class="fhint">Tiempo antes de pasar a la siguiente.</span></div>
-        <div class="field" style="margin-top:18px;max-width:320px;"><label>Efecto de cambio entre redes</label><select
-            id="socialTransition" onchange="saveToLocalStorage()">
-            <option value="fade">Desvanecimiento suave</option>
-            <option value="slide">Deslizamiento</option>
-            <option value="zoom">Zoom</option>
-          </select><span class="fhint">Cómo se reemplaza una red por la siguiente.</span></div>
+        <div class="r2" style="margin-top:18px;">
+          <div class="field"><label>Duración por red (segundos)</label><input type="number" id="socialRotSecs" value="5"
+              min="2" max="30" onchange="saveToLocalStorage()"><span class="fhint">Tiempo antes de pasar a la
+              siguiente.</span></div>
+          <div class="field"><label>Efecto de cambio entre redes</label><select id="socialTransition"
+              onchange="saveToLocalStorage()">
+              <option value="fade">Desvanecimiento suave</option>
+              <option value="slide">Deslizamiento</option>
+              <option value="zoom">Zoom</option>
+            </select><span class="fhint">Cómo se reemplaza una red por la siguiente.</span></div>
+        </div>
       </div>
       <div class="tog-row" id="tr-showCreatorCode">
         <div>
@@ -889,14 +1066,14 @@
         </div>
         <div class="field"><label>URL del logo del código de creador</label><input type="text" id="creatorLogoPath"
             placeholder="https://i.imgur.com/codigo.png" onchange="saveToLocalStorage()">
-          <div class="fhint">Pega la URL de la imagen que quieras.</div>
+          <div class="fhint">Pega la URL de la imagen que quieras. Recomendado: cuadrada o logo horizontal simple, ideal PNG transparente.</div>
         </div>
       </div>
     </div>
 
     <!-- ========== MENSAJES EN PANTALLA (TICKER) ========== -->
     <div class="card">
-      <div class="card-title">Mensajes en pantalla (eventos)</div>
+      <div class="card-title"><iconify-icon icon="mdi:bell-ring" width="22"></iconify-icon>7. Eventos y sonidos</div>
       <div class="tog-row" id="tr-enableSounds">
         <div>
           <div class="tog-lbl">🔊 Activar sonidos para los eventos</div>
@@ -904,20 +1081,23 @@
         </div><label class="tog"><input type="checkbox" id="enableSounds"><span class="tog-sl"></span></label>
       </div>
       <div class="ev-grid" id="events-grid"></div>
-      <div class="field" style="margin-top:18px;max-width:300px;"><label>Volumen de los sonidos (%)</label>
-        <div style="display: flex; align-items: center; gap: 12px;"><input type="range" id="notificationVolume" min="0"
-            max="100" step="10" value="80" onchange="updateVolumeLabel(); saveToLocalStorage()"><span
-            id="volumeLabel">80%</span></div>
-        <div class="fhint">Ajusta qué tan fuerte se escuchan (0% = sin sonido).</div>
+      <div class="r2" style="margin-top:18px;">
+        <div class="field"><label>Volumen de los sonidos (%)</label>
+          <div style="display: flex; align-items: center; gap: 12px;"><input type="range" id="notificationVolume"
+              min="0" max="100" step="10" value="80" onchange="updateVolumeLabel(); saveToLocalStorage()"><span
+              id="volumeLabel">80%</span></div>
+          <div class="fhint">Ajusta qué tan fuerte se escuchan (0% = sin sonido).</div>
+        </div>
+        <div class="field"><label>Duración de cada mensaje (segundos)</label><input type="number" id="tickerSecs"
+            value="8" min="3" max="30" onchange="saveToLocalStorage()"><span class="fhint">Tiempo que se ve cada evento
+            en
+            pantalla.</span></div>
       </div>
-      <div class="field" style="margin-top:18px;max-width:220px;"><label>Segundos que dura cada mensaje</label><input
-          type="number" id="tickerSecs" value="8" min="3" max="30" onchange="saveToLocalStorage()"><span
-          class="fhint">Tiempo que se ve cada evento en pantalla.</span></div>
     </div>
 
     <!-- ========== APARIENCIA (COLORES, OPACIDAD, TIPOGRAFÍA) ========== -->
     <div class="card">
-      <div class="card-title">Colores y forma</div>
+      <div class="card-title"><iconify-icon icon="mdi:palette" width="22"></iconify-icon>8. Apariencia</div>
       <div class="r3">
         <div class="field"><label>Color de fondo</label><input type="color" id="th-bg" value="#111117"
             onchange="saveToLocalStorage()"></div>
@@ -926,29 +1106,31 @@
         <div class="field"><label>Color principal (acento)</label><input type="color" id="th-accent" value="#7c3aed"
             onchange="saveToLocalStorage()"></div>
       </div>
-      <div class="field">
-        <label>Opacidad del fondo (%)</label>
-        <div class="range-field">
-          <input type="range" id="bgOpacity" min="0" max="100" step="1" value="100" onchange="saveToLocalStorage()">
-          <span id="bgOpacityLabel">100%</span>
+      <div class="r2">
+        <div class="field">
+          <label>Opacidad del fondo (%)</label>
+          <div class="range-field">
+            <input type="range" id="bgOpacity" min="0" max="100" step="10" value="100" onchange="saveToLocalStorage()">
+            <span id="bgOpacityLabel">100%</span>
+          </div>
+          <div class="fhint">Define qué tan transparente es el fondo.</div>
         </div>
-        <div class="fhint">Define qué tan transparente es el fondo (0% = completamente transparente).</div>
-      </div>
-      <div class="field">
-        <label>Opacidad de los bordes (%)</label>
-        <div class="range-field">
-          <input type="range" id="borderOpacity" min="0" max="100" step="1" value="100" onchange="saveToLocalStorage()">
-          <span id="borderOpacityLabel">100%</span>
+        <div class="field">
+          <label>Opacidad de los bordes (%)</label>
+          <div class="range-field">
+            <input type="range" id="borderOpacity" min="0" max="100" step="10" value="100"
+              onchange="saveToLocalStorage()">
+            <span id="borderOpacityLabel">100%</span>
+          </div>
+          <div class="fhint">Transparencia del borde alrededor de cada bloque.</div>
         </div>
-        <div class="fhint">Transparencia del borde alrededor de cada bloque.</div>
-      </div>
-      <div class="field">
-        <label>Tipografía principal</label>
-        <input type="text" id="fontFamily" placeholder="Rajdhani" onchange="saveToLocalStorage()">
-        <div class="fhint">Escribe el nombre de una fuente de Google Fonts (ej. "Poppins", "Montserrat", "Roboto"). Si
-          está vacío, se usará "Rajdhani".</div>
       </div>
       <div class="r2">
+        <div class="field">
+          <label>Tipografía principal</label>
+          <input type="text" id="fontFamily" placeholder="Rajdhani" onchange="saveToLocalStorage()">
+          <div class="fhint">Nombre de una fuente de Google Fonts. Si está vacío, se usará "Rajdhani".</div>
+        </div>
         <div class="field"><label>Redondeo de las esquinas</label><input type="text" id="th-radius" value="6px"
             placeholder="6px" onchange="saveToLocalStorage()"></div>
       </div>
@@ -972,23 +1154,35 @@
     ];
 
     const EVTS = [
-      { k: 'showSubs', l: 'Suscripciones de Twitch', d: true, soundKey: 'soundSubs', eventType: 'sub' },
-      { k: 'showReSubs', l: 'Renovaciones de suscripción', d: true, soundKey: 'soundReSubs', eventType: 'resub' },
-      { k: 'showGiftSubs', l: 'Regalos de suscripción', d: true, soundKey: 'soundGiftSubs', eventType: 'giftsub' },
-      { k: 'showGiftBombs', l: 'Ráfagas de regalos (gift bombs)', d: true, soundKey: 'soundGiftBombs', eventType: 'giftbomb' },
-      { k: 'showRaids', l: 'Raids (llegada de espectadores)', d: true, soundKey: 'soundRaids', eventType: 'raid' },
-      { k: 'showCheers', l: 'Bits / Cheers', d: true, soundKey: 'soundCheers', eventType: 'bits' },
-      { k: 'showFollows', l: 'Nuevos seguidores', d: false, soundKey: 'soundFollows', eventType: 'follow' },
-      { k: 'showRedemptions', l: 'Canjes de puntos de la comunidad', d: true, soundKey: 'soundRedemptions', eventType: 'redeem' },
-      { k: 'showYTMembers', l: 'Miembros de YouTube', d: true, soundKey: 'soundYTMembers', eventType: 'member' },
-      { k: 'showSuperChat', l: 'Superchats de YouTube', d: true, soundKey: 'soundSuperChat', eventType: 'super' },
-      { k: 'showDonations', l: 'Donaciones (StreamElements)', d: true, soundKey: 'soundDonations', eventType: 'donate' },
+      { group: 'Twitch', color: '#9147ff', k: 'showSubs', l: 'Suscripciones', d: true, soundKey: 'soundSubs', eventType: 'sub' },
+      { group: 'Twitch', color: '#9147ff', k: 'showReSubs', l: 'Renovaciones de suscripción', d: true, soundKey: 'soundReSubs', eventType: 'resub' },
+      { group: 'Twitch', color: '#9147ff', k: 'showGiftSubs', l: 'Regalos de suscripción', d: true, soundKey: 'soundGiftSubs', eventType: 'giftsub' },
+      { group: 'Twitch', color: '#9147ff', k: 'showGiftBombs', l: 'Ráfagas de regalos (gift bombs)', d: true, soundKey: 'soundGiftBombs', eventType: 'giftbomb' },
+      { group: 'Twitch', color: '#9147ff', k: 'showRaids', l: 'Raids (llegada de espectadores)', d: true, soundKey: 'soundRaids', eventType: 'raid' },
+      { group: 'Twitch', color: '#9147ff', k: 'showCheers', l: 'Bits / Cheers', d: true, soundKey: 'soundCheers', eventType: 'bits' },
+      { group: 'Twitch', color: '#9147ff', k: 'showFollows', l: 'Nuevos seguidores', d: false, soundKey: 'soundFollows', eventType: 'follow' },
+      { group: 'Twitch', color: '#9147ff', k: 'showRedemptions', l: 'Canjes de puntos de la comunidad', d: true, soundKey: 'soundRedemptions', eventType: 'redeem' },
+      { group: 'YouTube', color: '#ff0000', k: 'showYTSubscribers', l: 'Nuevos suscriptores', d: true, soundKey: 'soundYTSubscribers', eventType: 'ytsub' },
+      { group: 'YouTube', color: '#ff0000', k: 'showYTMembers', l: 'Miembros', d: true, soundKey: 'soundYTMembers', eventType: 'member' },
+      { group: 'YouTube', color: '#ff0000', k: 'showYTGifts', l: 'Regalos de membresía', d: true, soundKey: 'soundYTGifts', eventType: 'ytgift' },
+      { group: 'YouTube', color: '#ff0000', k: 'showSuperChat', l: 'Superchats', d: true, soundKey: 'soundSuperChat', eventType: 'super' },
+      { group: 'StreamElements', color: '#06b6d4', k: 'showDonations', l: 'Donaciones', d: true, soundKey: 'soundDonations', eventType: 'donate' },
     ];
 
-    function toast(msg) {
+    function toast(msg, type = '') {
       const t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
+
+      t.classList.remove('warning');
+      if (type === 'warning') {
+        t.classList.add('warning');
+      }
+
+      t.textContent = msg;
+      t.classList.add('show');
+
+      setTimeout(() => {
+        t.classList.remove('show', 'warning');
+      }, 3000);
     }
 
     function updateVolumeLabel() {
@@ -1007,6 +1201,14 @@
       const on = document.getElementById('showSponsors').checked;
       document.getElementById('sponsors-content').style.display = on ? '' : 'none';
       document.getElementById('tr-sponsors').classList.toggle('on', on);
+    }
+    function toggleUptimeUI() {
+      const on = document.getElementById('showUptime').checked;
+      document.getElementById('tr-uptime').classList.toggle('on', on);
+    }
+    function toggleCategoryUI() {
+      const on = document.getElementById('showCategory').checked;
+      document.getElementById('tr-category').classList.toggle('on', on);
     }
     function toggleSocialsUI() {
       const on = document.getElementById('showSocials').checked;
@@ -1049,8 +1251,18 @@
           <span class="soc-name">${p.n}</span>
           <input class="soc-inp" type="text" placeholder="tu_usuario" value="" data-p="${p.k}">
           <label class="tog"><input type="checkbox"><span class="tog-sl"></span></label>`;
+        const cb = row.querySelector('input[type="checkbox"]');
+        cb.addEventListener('change', () => row.classList.toggle('on', cb.checked));
         c.appendChild(row);
       });
+    }
+
+    function escapeAttr(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
     }
 
     function addSponsor() { addSponsorRow({}); }
@@ -1059,13 +1271,15 @@
       const d = document.createElement('div'); d.className = 'sp-row';
       const uid = 'sp_' + Math.random().toString(36).slice(2, 8);
       const durSecs = Math.max(1, Math.round((sp.duration || 8000) / 1000));
+      const sponsorName = escapeAttr(sp.name || '');
+      const sponsorPath = escapeAttr(sp.imagePath || '');
       d.innerHTML = `
         <div class="sp-grid">
-          <div class="sp-field"><label for="${uid}_name">Nombre (solo para ti)</label><input id="${uid}_name" class="sp-name" type="text" placeholder="Ej. Red Bull" value="${sp.name || ''}"><div class="sp-mini">No se muestra en el widget.</div></div>
+          <div class="sp-field"><label for="${uid}_name">Nombre (solo para ti)</label><input id="${uid}_name" class="sp-name" type="text" placeholder="Ej. Red Bull" value="${sponsorName}"><div class="sp-mini">No se muestra en el widget.</div></div>
           <div class="sp-field"><label for="${uid}_dur">Segundos visibles</label><input id="${uid}_dur" class="sp-dur" type="number" placeholder="8" value="${durSecs}" min="1" step="1"></div>
-          <div class="sp-field"><label>Activo</label><label class="tog"><input id="${uid}_active" data-role="sp-active" type="checkbox" ${sp.active !== false ? 'checked' : ''}><span class="tog-sl"></span></label></div>
-          <div class="sp-field"><label>Eliminar</label><button type="button" class="btn-rm" onclick="this.closest('.sp-row').remove()">×</button></div>
-          <div class="sp-field full"><label for="${uid}_path">URL de la imagen/vídeo</label><input id="${uid}_path" class="sp-path" type="text" placeholder="https://i.imgur.com/patrocinador.png" value="${sp.imagePath || ''}"><div class="sp-mini">Pega la URL del archivo (imagen o .mp4/.webm).</div></div>
+          <div class="sp-field compact"><label>Activo</label><label class="tog"><input id="${uid}_active" data-role="sp-active" type="checkbox" ${sp.active !== false ? 'checked' : ''}><span class="tog-sl"></span></label></div>
+          <div class="sp-field compact"><label>Eliminar</label><button type="button" class="btn-rm" onclick="this.closest('.sp-row').remove()">×</button></div>
+          <div class="sp-field full"><label for="${uid}_path">URL de la imagen/vídeo</label><input id="${uid}_path" class="sp-path" type="text" placeholder="https://i.imgur.com/patrocinador.png" value="${sponsorPath}"><div class="sp-mini">Pega la URL del archivo. Recomendado: horizontal 16:9 o 3:1; compacto aprox. 300x160 px, horizontal aprox. 260x80 px.</div></div>
         </div>`;
       l.appendChild(d);
       attachSponsorEvents(d);
@@ -1079,7 +1293,15 @@
     function buildEvents() {
       const container = document.getElementById('events-grid');
       container.innerHTML = '';
+      let currentGroup = '';
       EVTS.forEach(ev => {
+        if (ev.group !== currentGroup) {
+          currentGroup = ev.group;
+          const title = document.createElement('div');
+          title.className = 'event-group-title';
+          title.innerHTML = `<span class="event-group-dot" style="color:${ev.color};background:${ev.color}"></span><span>${ev.group}</span>`;
+          container.appendChild(title);
+        }
         const row = document.createElement('div');
         row.className = 'event-row';
         row.innerHTML = `
@@ -1094,12 +1316,92 @@
 
     // ==================== LOCALSTORAGE Y GENERACIÓN DE URL ====================
     const STORAGE_KEY = 'hipe_widget_config';
+    let botBitsCurrent = null;
+
+    function validateBitsCurrent(showNotice = false) {
+      const period = document.getElementById('goalBitsPeriod').value;
+      const input = document.getElementById('goalBitsCurrent');
+      const targetInput = document.getElementById('goalBitsTarget');
+      const warning = document.getElementById('goalBitsCurrentWarning');
+
+      let currentValue = parseInt(input.value) || 0;
+      let targetValue = parseInt(targetInput.value) || 0;
+
+      warning.style.display = 'none';
+      warning.textContent = '';
+
+      // En mensual, si ya existen bits guardados, el objetivo nunca debe quedar
+      // por debajo o igual a esos bits. En lugar de bajar los bits actuales,
+      // subimos el objetivo a la siguiente meta lógica.
+      if (period === 'monthly' && botBitsCurrent !== null) {
+        if (targetValue <= botBitsCurrent) {
+          targetInput.value = getNextBitsTarget(botBitsCurrent);
+          targetValue = parseInt(targetInput.value) || 0;
+        }
+
+        currentValue = parseInt(input.value) || 0;
+
+        if (currentValue < botBitsCurrent) {
+          input.value = botBitsCurrent;
+          warning.textContent = `Streamer.bot ya tiene ${botBitsCurrent} bits mensuales guardados. No se puede guardar un valor menor.`;
+          warning.style.display = 'block';
+          if (showNotice) toast(warning.textContent, 'warning');
+          return false;
+        }
+      }
+
+      // No permitir bits actuales mayores al objetivo.
+      // Esta regla queda después del ajuste mensual para evitar el choque:
+      // objetivo 1 / bits guardados 90.
+      currentValue = parseInt(input.value) || 0;
+      targetValue = parseInt(targetInput.value) || 0;
+
+      if (targetValue > 0 && currentValue > targetValue) {
+        input.value = targetValue;
+        warning.textContent = `Los bits actuales no pueden ser mayores al objetivo de bits (${targetValue}).`;
+        warning.style.display = 'block';
+        if (showNotice) toast(warning.textContent, 'warning');
+        return false;
+      }
+
+      return true;
+    }
+
+    function getNextBitsTarget(currentBits) {
+      const bits = Math.max(0, parseInt(currentBits) || 0);
+
+      let step = 100;
+
+      if (bits >= 1000 && bits < 10000) {
+        step = 500;
+      } else if (bits >= 10000) {
+        step = 1000;
+      }
+
+      return Math.ceil((bits + 1) / step) * step;
+    }
+
+    function ensureMonthlyBitsTargetFromCurrent() {
+      const period = document.getElementById('goalBitsPeriod').value;
+      if (period !== 'monthly') return;
+
+      const currentInput = document.getElementById('goalBitsCurrent');
+      const targetInput = document.getElementById('goalBitsTarget');
+
+      const currentValue = parseInt(currentInput.value) || 0;
+      const targetValue = parseInt(targetInput.value) || 0;
+
+      if (currentValue > 0 && targetValue <= currentValue) {
+        targetInput.value = getNextBitsTarget(currentValue);
+      }
+    }
 
     function collectConfig() {
+      validateBitsCurrent(false);
       const socials = PLATS.map(p => {
         const row = document.querySelector(`.soc-row[data-p="${p.k}"]`);
         if (!row) return { platform: p.k, handle: '', active: false };
-        const handle = row.querySelector('.soc-inp').value;
+        const handle = row.querySelector('.soc-inp').value.trim();
         const active = row.querySelector('input[type="checkbox"]').checked;
         return { platform: p.k, handle, active };
       });
@@ -1121,6 +1423,7 @@
       const cfg = {
         channelName: document.getElementById('channelName').value,
         logoPath: document.getElementById('logoPath').value,
+        sbHost: document.getElementById('sbHost').value.trim() || '127.0.0.1',
         sbPort: parseInt(document.getElementById('sbPort').value) || 8080,
         goalGifPath: document.getElementById('goalGifPath').value,
         layout,
@@ -1130,6 +1433,7 @@
         goalCelebrationSeconds: parseInt(document.getElementById('goalCelebSecs').value) || 10,
         showSponsors: document.getElementById('showSponsors').checked,
         showUptime: document.getElementById('showUptime').checked,
+        showCategory: document.getElementById('showCategory').checked,
         goalRotationSeconds: parseInt(document.getElementById('goalRotSecs').value) || 30,
         sponsors,
         sponsorTransition: document.getElementById('sponsorTransition').value,
@@ -1157,6 +1461,10 @@
           gif: document.getElementById('goalBitsGif').value.trim(),
           caption: document.getElementById('goalBitsCaption').value.trim()
         },
+        goalFollows: {
+          active: document.getElementById('goalFollowsActive').checked,
+          gif: document.getElementById('goalFollowsGif').value.trim()
+        },
         theme: {
           bgColor: document.getElementById('th-bg').value,
           borderColor: document.getElementById('th-border').value,
@@ -1179,6 +1487,36 @@
       document.getElementById('tr-goalBits').classList.toggle('on', isActive);
     }
 
+    function toggleGoalFollowsUI() {
+      const isActive = document.getElementById('goalFollowsActive').checked;
+      const contentDiv = document.getElementById('goalFollowsContent');
+      contentDiv.style.display = isActive ? '' : 'none';
+      document.getElementById('tr-goalFollows').classList.toggle('on', isActive);
+    }
+
+    function validateSocials(showNotice = false) {
+      let firstInvalid = null;
+      document.querySelectorAll('.soc-row').forEach(row => {
+        const input = row.querySelector('.soc-inp');
+        const cb = row.querySelector('input[type="checkbox"]');
+        const invalid = cb.checked && input.value.trim() === '';
+        row.classList.toggle('invalid', invalid);
+        input.classList.toggle('is-invalid', invalid);
+        if (invalid && !firstInvalid) firstInvalid = row;
+      });
+
+      if (firstInvalid) {
+        if (showNotice) {
+          const name = firstInvalid.querySelector('.soc-name')?.textContent?.replace('ACTIVA', '').trim() || 'la red social';
+          toast(`Completa el usuario de ${name} o desactiva esa red social.`, 'warning');
+          firstInvalid.querySelector('.soc-inp')?.focus();
+        }
+        return false;
+      }
+
+      return true;
+    }
+
     function saveToLocalStorage() {
       const config = collectConfig();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
@@ -1191,6 +1529,7 @@
         const cfg = JSON.parse(saved);
         document.getElementById('channelName').value = cfg.channelName || '';
         document.getElementById('logoPath').value = cfg.logoPath || '';
+        document.getElementById('sbHost').value = cfg.sbHost || '127.0.0.1';
         document.getElementById('sbPort').value = cfg.sbPort || 8080;
         document.getElementById('goalGifPath').value = cfg.goalGifPath || '';
         document.getElementById('layoutMode').value = cfg.layout || 'classic';
@@ -1202,6 +1541,7 @@
         document.getElementById('goalCelebSecs').value = cfg.goalCelebrationSeconds || 10;
         document.getElementById('showSponsors').checked = cfg.showSponsors !== false;
         document.getElementById('showUptime').checked = cfg.showUptime !== false;
+        document.getElementById('showCategory').checked = cfg.showCategory !== false;
         document.getElementById('goalRotSecs').value = cfg.goalRotationSeconds || 30;
         document.getElementById('sponsorTransition').value = cfg.sponsorTransition || 'fade';
         document.getElementById('showSocials').checked = cfg.showSocials !== false;
@@ -1228,6 +1568,9 @@
         document.getElementById('goalBitsCurrent').value = goalBits.current || 0;
         document.getElementById('goalBitsGif').value = goalBits.gif || '';
         document.getElementById('goalBitsCaption').value = goalBits.caption || '';
+        const goalFollows = cfg.goalFollows || {};
+        document.getElementById('goalFollowsActive').checked = goalFollows.active === true;
+        document.getElementById('goalFollowsGif').value = goalFollows.gif || '';
         toggleGoalBitsUI();
         document.getElementById('bgOpacity').value = bgOp;
         document.getElementById('borderOpacity').value = brOp;
@@ -1248,13 +1591,16 @@
         (cfg.sponsors || []).forEach(sp => addSponsorRow(sp));
         EVTS.forEach(ev => {
           const evCb = document.getElementById(`ev-${ev.k}`);
-          if (evCb) evCb.checked = cfg.events?.[ev.k] === true;
+          if (evCb) evCb.checked = cfg.events?.[ev.k] ?? ev.d;
           const soundCb = document.getElementById(`sound-${ev.soundKey}`);
-          if (soundCb) soundCb.checked = cfg.soundEvents?.[ev.soundKey] === true;
+          if (soundCb) soundCb.checked = cfg.soundEvents?.[ev.soundKey] ?? ev.d;
         });
         toggleSponsorsUI();
+        toggleUptimeUI();
+        toggleCategoryUI();
         toggleSocialsUI();
         toggleCreatorUI();
+        toggleGoalFollowsUI();
         applyLayoutModeUI();
         toggleSoundGlobal();
         return true;
@@ -1262,8 +1608,50 @@
     }
 
     function resetToDefaults() {
+      if (!confirm('Esto borrará tus cambios guardados en este navegador. ¿Quieres continuar?')) return;
       localStorage.removeItem(STORAGE_KEY);
       location.reload();
+    }
+
+    function testConnection() {
+      const status = document.getElementById('connectionStatus');
+      const sbHost = document.getElementById('sbHost').value.trim() || '127.0.0.1';
+      const sbPort = parseInt(document.getElementById('sbPort').value) || 8080;
+      let finished = false;
+
+      status.className = 'conn-status';
+      status.textContent = 'Probando conexión...';
+
+      try {
+        const ws = new WebSocket(`ws://${sbHost}:${sbPort}/`);
+        const timer = setTimeout(() => {
+          if (finished) return;
+          finished = true;
+          status.className = 'conn-status err';
+          status.textContent = 'No se pudo conectar. Revisa host, puerto y WebSocket Server en Streamer.bot.';
+          try { ws.close(); } catch (e) { }
+        }, 3500);
+
+        ws.onopen = () => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          status.className = 'conn-status ok';
+          status.textContent = 'Conectado correctamente con Streamer.bot.';
+          ws.close();
+        };
+
+        ws.onerror = () => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          status.className = 'conn-status err';
+          status.textContent = 'No se pudo conectar. Revisa que Streamer.bot esté abierto y el WebSocket Server activo.';
+        };
+      } catch (e) {
+        status.className = 'conn-status err';
+        status.textContent = 'Host o puerto inválido. Revisa los datos de conexión.';
+      }
     }
 
     function generateWidgetUrl() {
@@ -1275,7 +1663,6 @@
       return url;
     }
 
-    // NUEVA FUNCIÓN: enviar configuración al bot
     function sendConfigToBot(config) {
       const sbHost = config.sbHost || '127.0.0.1';
       const sbPort = config.sbPort || 8080;
@@ -1291,10 +1678,12 @@
           action: { name: "Hipe Widget" },   // <-- nombre exacto de tu acción en Streamer.Bot
           args: {
             adminAction: "adminSyncConfig",
+            channelName: config.channelName || "",
             bitsActive: String(config.goalBits?.active ?? false),
             bitsPeriod: config.goalBits?.period || "stream",
             bitsTarget: String(config.goalBits?.target ?? 0),
-            bitsCurrent: String(config.goalBits?.current ?? 0)
+            bitsCurrent: String(config.goalBits?.current ?? 0),
+            followsActive: String(config.goalFollows?.active ?? false)
           }
         };
         ws.send(JSON.stringify(payload));
@@ -1306,15 +1695,16 @@
       };
     }
 
-    // MODIFICADA: copiar enlace y enviar configuración al bot
     function copyWidgetUrl() {
+      if (!validateSocials(true)) return;
+      if (!validateBitsCurrent(true)) return;
       const config = collectConfig();
       const jsonStr = JSON.stringify(config);
       const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
       const baseUrl = window.location.href.replace(/admin\.html.*$/, 'widget.html');
       const url = `${baseUrl}?config=${encodeURIComponent(base64)}`;
       navigator.clipboard.writeText(url).then(() => {
-        toast('✅ Enlace copiado al portapapeles. Pégarlo en OBS como Browser Source.');
+        toast('Enlace copiado. Ahora pégalo en OBS como Fuente de navegador.');
         sendConfigToBot(config);
       }).catch(() => toast('❌ No se pudo copiar.'));
     }
@@ -1333,55 +1723,151 @@
         document.getElementById('enableSounds').checked = true;
         document.getElementById('showSocials').checked = true;
         document.getElementById('showCreatorCode').checked = false;
+        document.querySelectorAll('.soc-row').forEach(row => {
+          const cb = row.querySelector('input[type="checkbox"]');
+          if (cb) cb.checked = true;
+          row.classList.add('on');
+        });
         toggleSocialsUI();
         toggleCreatorUI();
+        toggleGoalFollowsUI();
         toggleSoundGlobal();
         applyLayoutModeUI();
         saveToLocalStorage();
       }
       const allInputs = document.querySelectorAll('input, select, textarea');
-      allInputs.forEach(el => el.addEventListener('change', saveToLocalStorage));
+      allInputs.forEach(el => {
+        if (el.id === 'goalBitsCurrent') return;
+        if (el.id === 'goalBitsPeriod') return;
+        if (el.id === 'goalBitsTarget') return;
+        el.addEventListener('change', saveToLocalStorage);
+      });
       document.getElementById('copyUrlBtn').addEventListener('click', copyWidgetUrl);
       document.getElementById('resetBtn').addEventListener('click', resetToDefaults);
+      document.getElementById('testConnectionBtn').addEventListener('click', testConnection);
       document.getElementById('showSponsors').addEventListener('change', () => { toggleSponsorsUI(); saveToLocalStorage(); });
+      document.getElementById('showUptime').addEventListener('change', () => { toggleUptimeUI(); saveToLocalStorage(); });
+      document.getElementById('showCategory').addEventListener('change', () => { toggleCategoryUI(); saveToLocalStorage(); });
       document.getElementById('showSocials').addEventListener('change', () => { toggleSocialsUI(); saveToLocalStorage(); });
       document.getElementById('showCreatorCode').addEventListener('change', () => { toggleCreatorUI(); saveToLocalStorage(); });
       document.getElementById('enableSounds').addEventListener('change', () => { toggleSoundGlobal(); saveToLocalStorage(); });
       document.getElementById('layoutMode').addEventListener('change', () => { applyLayoutModeUI(); saveToLocalStorage(); });
+      document.getElementById('goalBitsPeriod').addEventListener('change', () => {
+        botBitsCurrent = null;
+        saveToLocalStorage();
+
+        setTimeout(() => {
+          pedirEstadoBitsAlBot();
+        }, 100);
+      });
+      document.getElementById('goalBitsCurrent').addEventListener('change', () => { validateBitsCurrent(true); saveToLocalStorage(); });
+      document.getElementById('goalBitsTarget').addEventListener('change', () => {
+        const period = document.getElementById('goalBitsPeriod').value;
+        const targetInput = document.getElementById('goalBitsTarget');
+        const currentInput = document.getElementById('goalBitsCurrent');
+
+        let targetValue = parseInt(targetInput.value) || 0;
+        const currentValue = parseInt(currentInput.value) || 0;
+
+        if (period === 'monthly' && botBitsCurrent !== null && targetValue <= botBitsCurrent) {
+          const nextTarget = getNextBitsTarget(botBitsCurrent);
+          targetInput.value = nextTarget;
+
+          toast(
+            `El objetivo de bits no puede ser menor o igual que los bits mensuales guardados (${botBitsCurrent}). Se ajustó a ${nextTarget}.`,
+            'warning'
+          );
+        } else if (targetValue > 0 && targetValue < currentValue) {
+          targetInput.value = currentValue;
+
+          toast(
+            `El objetivo de bits no puede ser menor que los bits actuales (${currentValue}).`,
+            'warning'
+          );
+        }
+
+        validateBitsCurrent(false);
+        saveToLocalStorage();
+      });
       document.getElementById('notificationVolume').addEventListener('input', updateVolumeLabel);
       document.getElementById('bgOpacity').addEventListener('input', () => { updateOpacityLabels(); saveToLocalStorage(); });
       document.getElementById('borderOpacity').addEventListener('input', () => { updateOpacityLabels(); saveToLocalStorage(); });
+      document.querySelectorAll('.soc-row .soc-inp, .soc-row input[type="checkbox"]').forEach(el => {
+        el.addEventListener('input', () => validateSocials(false));
+        el.addEventListener('change', () => validateSocials(false));
+      });
       applyLayoutModeUI();
+      toggleGoalFollowsUI();
       toggleSponsorsUI();
+      toggleUptimeUI();
+      toggleCategoryUI();
       toggleSocialsUI();
       toggleCreatorUI();
       toggleSoundGlobal();
       // Pedir el estado actual de bits al bot (para que el campo "Bits actuales" muestre el valor real)
       function pedirEstadoBitsAlBot() {
+        const host = document.getElementById('sbHost').value.trim() || '127.0.0.1';
         const puerto = document.getElementById('sbPort').value || 8080;
-        const ws = new WebSocket(`ws://127.0.0.1:${puerto}/`);
+        const ws = new WebSocket(`ws://${host}:${puerto}/`);
+
+        let receivedBitsState = false;
+
+        const closeTimer = setTimeout(function () {
+          try { ws.close(); } catch (e) { }
+        }, 4000);
+
         ws.onopen = function () {
           ws.send(JSON.stringify({
-            request: "DoAction",
-            id: "getBitsState",
-            action: { name: "Hipe Widget" },
-            args: { adminAction: "getBitsState" }
+            request: 'Subscribe',
+            id: 'admin-sub',
+            events: {
+              General: ['Custom']
+            }
           }));
-          setTimeout(function () { ws.close(); }, 1000);
+
+          setTimeout(function () {
+            ws.send(JSON.stringify({
+              request: "DoAction",
+              id: "getBitsState",
+              action: { name: "Hipe Widget" },
+              args: {
+                adminAction: "getBitsState",
+                bitsPeriod: document.getElementById('goalBitsPeriod').value
+              }
+            }));
+          }, 150);
         };
+
         ws.onmessage = function (mensaje) {
           try {
             const dato = JSON.parse(mensaje.data);
-            if (dato.action === 'bitsState') {
-              const bitsActuales = dato.current;
+            const payload = dato.data || dato;
+
+            if (payload.action === 'bitsState') {
+              receivedBitsState = true;
+              clearTimeout(closeTimer);
+
+              const bitsActuales = payload.realCurrent ?? payload.current;
+
               if (bitsActuales !== undefined) {
-                document.getElementById('goalBitsCurrent').value = bitsActuales;
-                guardarConfigLocal(); // esto guarda en localStorage
+                botBitsCurrent = parseInt(bitsActuales) || 0;
+                document.getElementById('goalBitsCurrent').value = botBitsCurrent;
+
+                ensureMonthlyBitsTargetFromCurrent();
+
+                validateBitsCurrent(false);
+                saveToLocalStorage();
               }
+
+              try { ws.close(); } catch (e) { }
             }
           } catch (e) { }
         };
-        ws.onerror = function () { console.log('No se pudo conectar al bot'); };
+
+        ws.onerror = function () {
+          clearTimeout(closeTimer);
+          try { ws.close(); } catch (e) { }
+        };
       }
       // Esperar medio segundo y luego pedir el estado
       setTimeout(pedirEstadoBitsAlBot, 500);

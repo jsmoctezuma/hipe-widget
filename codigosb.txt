@@ -1,0 +1,724 @@
+using System;
+using Newtonsoft.Json;
+
+public class CPHInline
+{
+    private int GetNextSubGoal(int currentSubs)
+    {
+        int step = currentSubs < 100 ? 10 : currentSubs < 1000 ? 50 : 100;
+        int nextGoal = ((currentSubs / step) + 1) * step;
+        if (nextGoal <= currentSubs)
+            nextGoal += step;
+        return nextGoal;
+    }
+
+    private int GetNextFollowGoal(int currentFollows)
+    {
+        int step = currentFollows < 100 ? 10 : currentFollows < 1000 ? 50 : 100;
+        int nextGoal = ((currentFollows / step) + 1) * step;
+        if (nextGoal <= currentFollows)
+            nextGoal += step;
+        return nextGoal;
+    }
+
+    private int TryGetTwitchFollowerCount(string channelName)
+    {
+        string channel = (channelName ?? "").Trim().TrimStart('@');
+        if (string.IsNullOrEmpty(channel))
+            return -1;
+        try
+        {
+            using (var wc = new System.Net.WebClient())
+            {
+                wc.Headers.Add("User-Agent", "HipeWidget/1.0");
+                string raw = wc.DownloadString("https://decapi.me/twitch/followcount/" + Uri.EscapeDataString(channel));
+                if (int.TryParse((raw ?? "").Trim(), out int count))
+                    return count;
+            }
+        }
+        catch
+        {
+        }
+
+        return -1;
+    }
+
+    private string BuildTwitchBoxArtUrl(string gameName)
+    {
+        string game = (gameName ?? "").Trim();
+        if (string.IsNullOrEmpty(game))
+            return "";
+        return "https://static-cdn.jtvnw.net/ttv-boxart/" + Uri.EscapeDataString(game) + "-285x380.jpg";
+    }
+
+    private bool TryPreloadTwitchCategory(string channelName, ref string categoryName, ref string categoryImage)
+    {
+        string channel = (channelName ?? "").Trim().TrimStart('@');
+        if (string.IsNullOrEmpty(channel))
+        {
+            CPH.LogInfo("[HipeWidget] Precarga categoría: no hay nombre de canal disponible.");
+            return false;
+        }
+
+        try
+        {
+            using (var wc = new System.Net.WebClient())
+            {
+                wc.Headers.Add("User-Agent", "HipeWidget/1.0");
+                string raw = wc.DownloadString("https://decapi.me/twitch/game/" + Uri.EscapeDataString(channel));
+                string game = (raw ?? "").Trim();
+                if (string.IsNullOrEmpty(game))
+                    return false;
+                string lower = game.ToLowerInvariant();
+                if (lower.Contains("not found") || lower.Contains("error") || lower.Contains("unknown"))
+                    return false;
+                bool updated = false;
+                if (categoryName != game)
+                {
+                    categoryName = game;
+                    updated = true;
+                }
+
+                if (string.IsNullOrWhiteSpace(categoryImage) || updated)
+                {
+                    categoryImage = BuildTwitchBoxArtUrl(categoryName);
+                    updated = true;
+                }
+
+                if (updated)
+                {
+                    CPH.SetGlobalVar("hipeCategoryName", categoryName, true);
+                    CPH.SetGlobalVar("hipeCategoryImage", categoryImage, true);
+                    CPH.LogInfo($"[HipeWidget] Categoría precargada: {categoryName} | {categoryImage}");
+                }
+
+                return updated;
+            }
+        }
+        catch (Exception ex)
+        {
+            CPH.LogInfo($"[HipeWidget] No se pudo precargar categoría: {ex.Message}");
+            return false;
+        }
+    }
+
+    private DateTime NormalizeTwitchStartedAt(object value)
+    {
+        if (value is DateTime dt)
+        {
+            if (dt.Kind == DateTimeKind.Utc)
+                return dt;
+            if (dt.Kind == DateTimeKind.Local)
+                return dt.ToUniversalTime();
+            return DateTime.SpecifyKind(dt, DateTimeKind.Local).ToUniversalTime();
+        }
+
+        string raw = value?.ToString();
+        if (!string.IsNullOrEmpty(raw))
+        {
+            if (DateTimeOffset.TryParse(raw, null, System.Globalization.DateTimeStyles.RoundtripKind, out DateTimeOffset dto))
+                return dto.UtcDateTime;
+            if (DateTime.TryParse(raw, null, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime parsed))
+            {
+                if (parsed.Kind == DateTimeKind.Utc)
+                    return parsed;
+                if (parsed.Kind == DateTimeKind.Local)
+                    return parsed.ToUniversalTime();
+                return DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
+            }
+        }
+
+        return DateTime.UtcNow;
+    }
+
+    public bool Execute()
+    {
+        // ============================================================
+        // TIEMPO ACTUAL EN MILISEGUNDOS (para celebraciones)
+        // ============================================================
+        long nowMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        // ============================================================
+        // DETECTAR TIPO DE EVENTO
+        // ============================================================
+        string eventType = CPH.GetEventType().ToString();
+        bool esCheer = (eventType == "TwitchCheer");
+        bool esFollow = (eventType == "TwitchFollow" || eventType == "Twitch.Follow" || eventType.Contains("Follow"));
+        bool esStreamOnline = (eventType == "Twitch.StreamOnline" || eventType == "TwitchStreamOnline" || eventType.Contains("StreamOnline"));
+        bool esStreamOffline = (eventType == "Twitch.StreamOffline" || eventType == "TwitchStreamOffline" || eventType.Contains("StreamOffline"));
+        // ============================================================
+        // ESTADO Y UPTIME REAL DE TWITCH
+        // ============================================================
+        bool isLive = CPH.GetGlobalVar<bool>("hipeTwitchLive", true);
+        string categoryName = CPH.GetGlobalVar<string>("hipeCategoryName", true) ?? "";
+        string categoryImage = CPH.GetGlobalVar<string>("hipeCategoryImage", true) ?? "";
+        bool categoryChanged = false;
+        if (args.ContainsKey("gameName"))
+        {
+            categoryName = args["gameName"].ToString();
+            categoryChanged = true;
+        }
+        else if (args.ContainsKey("game"))
+        {
+            categoryName = args["game"].ToString();
+            categoryChanged = true;
+        }
+        else if (args.ContainsKey("categoryName"))
+        {
+            categoryName = args["categoryName"].ToString();
+            categoryChanged = true;
+        }
+
+        if (args.ContainsKey("gameBoxArt"))
+        {
+            categoryImage = args["gameBoxArt"].ToString();
+            categoryChanged = true;
+        }
+        else if (args.ContainsKey("boxArt"))
+        {
+            categoryImage = args["boxArt"].ToString();
+            categoryChanged = true;
+        }
+        else if (args.ContainsKey("categoryImage"))
+        {
+            categoryImage = args["categoryImage"].ToString();
+            categoryChanged = true;
+        }
+
+        if (categoryChanged)
+        {
+            CPH.SetGlobalVar("hipeCategoryName", categoryName, true);
+            CPH.SetGlobalVar("hipeCategoryImage", categoryImage, true);
+        }
+
+        if (esStreamOnline)
+        {
+            isLive = true;
+            CPH.SetGlobalVar("hipeTwitchLive", true, true);
+            DateTime startedAt = DateTime.UtcNow;
+            if (args.TryGetValue("startedAt", out object value))
+            {
+                startedAt = NormalizeTwitchStartedAt(value);
+            }
+
+            CPH.SetGlobalVar("twitchStartedAt", startedAt, true);
+            CPH.LogInfo($"[HipeWidget] Twitch online. startedAt={startedAt:O}");
+        }
+
+        if (esStreamOffline)
+        {
+            isLive = false;
+            CPH.SetGlobalVar("hipeTwitchLive", false, true);
+            CPH.LogInfo("[HipeWidget] Twitch offline detectado");
+        }
+
+        long uptimeSeconds = 0;
+        if (isLive)
+        {
+            DateTime twitchStartedAt = CPH.GetGlobalVar<DateTime>("twitchStartedAt", true);
+            if (twitchStartedAt != DateTime.MinValue)
+            {
+                DateTime twitchStartedAtUtc = twitchStartedAt.Kind == DateTimeKind.Utc ? twitchStartedAt : twitchStartedAt.ToUniversalTime();
+                TimeSpan diff = DateTime.UtcNow - twitchStartedAtUtc;
+                uptimeSeconds = (long)diff.TotalSeconds;
+                if (uptimeSeconds < 0)
+                    uptimeSeconds = 0;
+            }
+            else
+            {
+                // Fallback: usar variable de OBS si existe
+                string streamStartedAt = CPH.GetGlobalVar<string>("streamStartedAt", false);
+                if (!string.IsNullOrEmpty(streamStartedAt) && DateTime.TryParse(streamStartedAt, null, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime startTime))
+                {
+                    uptimeSeconds = (long)(DateTime.UtcNow - startTime.ToUniversalTime()).TotalSeconds;
+                    if (uptimeSeconds < 0)
+                        uptimeSeconds = 0;
+                }
+            }
+        }
+
+        // ============================================================
+        // CARGAR VARIABLES GLOBALES (bits y subs)
+        // ============================================================
+        int currentSubs = CPH.GetGlobalVar<int?>("hipeCurrentSubs", true) ?? 0;
+        int goalSubs = CPH.GetGlobalVar<int?>("hipeGoalSubs", true) ?? 0;
+        string celebratingSubs = CPH.GetGlobalVar<string>("hipeCelebrating", true) ?? "false";
+        long celebrateEndSubs = CPH.GetGlobalVar<long?>("hipeCelebrateEnd", true) ?? 0;
+        bool gotSubscriberCountFromArgs = false;
+        if (args.ContainsKey("subscriberCount") && int.TryParse(args["subscriberCount"].ToString(), out int subArg1))
+        {
+            currentSubs = subArg1;
+            gotSubscriberCountFromArgs = true;
+        }
+        else if (args.ContainsKey("subCount") && int.TryParse(args["subCount"].ToString(), out int subArg2))
+        {
+            currentSubs = subArg2;
+            gotSubscriberCountFromArgs = true;
+        }
+        else if (args.ContainsKey("totalSubscribers") && int.TryParse(args["totalSubscribers"].ToString(), out int subArg3))
+        {
+            currentSubs = subArg3;
+            gotSubscriberCountFromArgs = true;
+        }
+        else if (args.ContainsKey("twitchSubscriberCount") && int.TryParse(args["twitchSubscriberCount"].ToString(), out int subArg4))
+        {
+            currentSubs = subArg4;
+            gotSubscriberCountFromArgs = true;
+        }
+
+        if (gotSubscriberCountFromArgs)
+        {
+            CPH.SetGlobalVar("hipeCurrentSubs", currentSubs, true);
+            if (goalSubs <= currentSubs)
+            {
+                goalSubs = GetNextSubGoal(currentSubs);
+                CPH.SetGlobalVar("hipeGoalSubs", goalSubs, true);
+            }
+        }
+
+        bool followsActive = CPH.GetGlobalVar<bool?>("hipeFollowsActive", true) ?? false;
+        string hipeChannelName = CPH.GetGlobalVar<string>("hipeChannelName", true) ?? "";
+        int currentFollows = CPH.GetGlobalVar<int?>("hipeCurrentFollows", true) ?? 0;
+        int goalFollows = CPH.GetGlobalVar<int?>("hipeGoalFollows", true) ?? 0;
+        string celebratingFollows = CPH.GetGlobalVar<string>("hipeFollowsCelebrating", true) ?? "false";
+        long celebrateEndFollows = CPH.GetGlobalVar<long?>("hipeFollowsCelebrateEnd", true) ?? 0;
+        bool gotFollowerCountFromArgs = false;
+        if (args.ContainsKey("followerCount") && int.TryParse(args["followerCount"].ToString(), out int fcArg1))
+        {
+            currentFollows = fcArg1;
+            gotFollowerCountFromArgs = true;
+        }
+        else if (args.ContainsKey("followers") && int.TryParse(args["followers"].ToString(), out int fcArg2))
+        {
+            currentFollows = fcArg2;
+            gotFollowerCountFromArgs = true;
+        }
+        else if (args.ContainsKey("totalFollowers") && int.TryParse(args["totalFollowers"].ToString(), out int fcArg3))
+        {
+            currentFollows = fcArg3;
+            gotFollowerCountFromArgs = true;
+        }
+        else if (args.ContainsKey("twitchFollowerCount") && int.TryParse(args["twitchFollowerCount"].ToString(), out int fcArg4))
+        {
+            currentFollows = fcArg4;
+            gotFollowerCountFromArgs = true;
+        }
+        else if (args.ContainsKey("broadcasterFollowerCount") && int.TryParse(args["broadcasterFollowerCount"].ToString(), out int fcArg5))
+        {
+            currentFollows = fcArg5;
+            gotFollowerCountFromArgs = true;
+        }
+
+        if (gotFollowerCountFromArgs)
+            CPH.SetGlobalVar("hipeCurrentFollows", currentFollows, true);
+        string bitsPeriod = CPH.GetGlobalVar<string>("hipeBitsPeriod", true) ?? "stream";
+        int bitsGoal = CPH.GetGlobalVar<int?>("hipeBitsGoal", true) ?? 0;
+        int currentBitsStream = CPH.GetGlobalVar<int?>("hipeBitsCurrent", true) ?? 0;
+        int currentBitsMont = CPH.GetGlobalVar<int?>("hipeBitsCurrentMonthly", true) ?? 0;
+        bool bitsCelebrating = CPH.GetGlobalVar<bool?>("hipeBitsCelebrating", true) ?? false;
+        long bitsCelebrateEnd = CPH.GetGlobalVar<long?>("hipeBitsCelebrateEnd", true) ?? 0;
+        bool bitsNeverSet = CPH.GetGlobalVar<string>("hipeBitsInitialized", true) == null;
+        // Asegurar variable de último mes (para reinicio mensual)
+        if (CPH.GetGlobalVar<int>("hipeLastMonth", true) == 0)
+            CPH.SetGlobalVar("hipeLastMonth", DateTime.Now.Month, true);
+        // ============================================================
+        // CAMBIO DE ESTADO DEL STREAM (ONLINE/OFFLINE) usando Twitch
+        // ============================================================
+        if (esStreamOffline)
+        {
+            CPH.LogInfo("[HipeWidget] Stream terminado detectado por Twitch");
+            if (bitsPeriod == "stream")
+            {
+                currentBitsStream = 0;
+                CPH.SetGlobalVar("hipeBitsCurrent", 0, true);
+                CPH.SetGlobalVar("hipeBitsCelebrating", false, false);
+                CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "bitsUpdate", current = 0, target = bitsGoal }));
+                CPH.LogInfo("[HipeWidget] Bits reiniciados a 0 por fin de stream");
+            }
+        }
+
+        if (esStreamOnline)
+        {
+            CPH.LogInfo("[HipeWidget] Stream iniciado detectado por Twitch");
+            if (bitsPeriod == "stream")
+            {
+                currentBitsStream = 0;
+                CPH.SetGlobalVar("hipeBitsCurrent", 0, true);
+                CPH.SetGlobalVar("hipeBitsCelebrating", false, false);
+                CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "bitsUpdate", current = 0, target = bitsGoal }));
+                CPH.LogInfo("[HipeWidget] Bits reiniciados a 0 por inicio de stream");
+            }
+        }
+
+        // ============================================================
+        // EVENTO STREAM ONLINE (revisión mensual si aplica)
+        // ============================================================
+        if (esStreamOnline)
+        {
+            if (bitsPeriod == "monthly")
+            {
+                int lastMonth = CPH.GetGlobalVar<int>("hipeLastMonth", true);
+                int nowMonth = DateTime.Now.Month;
+                if (nowMonth != lastMonth)
+                {
+                    currentBitsMont = 0;
+                    CPH.SetGlobalVar("hipeBitsCurrentMonthly", 0, true);
+                    CPH.SetGlobalVar("hipeLastMonth", nowMonth, true);
+                    CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "bitsUpdate", current = 0, target = bitsGoal }));
+                    CPH.LogInfo("[HipeWidget] Nuevo mes - bits mensuales reiniciados");
+                }
+            }
+
+            CPH.SetGlobalVar("hipeBitsCelebrating", false, false);
+        }
+
+        // ============================================================
+        // ADMIN SYNC (cuando guardas la configuración desde el panel)
+        // ============================================================
+        if (args.ContainsKey("adminAction") && args["adminAction"].ToString() == "adminSyncConfig")
+        {
+            bool isActive = args.ContainsKey("bitsActive") && args["bitsActive"].ToString().ToLower() == "true";
+            bool newFollowsActive = args.ContainsKey("followsActive") && args["followsActive"].ToString().ToLower() == "true";
+            CPH.SetGlobalVar("hipeFollowsActive", newFollowsActive, true);
+            if (isActive || newFollowsActive)
+            {
+                string newPeriod = args.ContainsKey("bitsPeriod") ? args["bitsPeriod"].ToString() : "stream";
+                int.TryParse(args.ContainsKey("bitsTarget") ? args["bitsTarget"].ToString() : "0", out int newTarget);
+                int.TryParse(args.ContainsKey("bitsCurrent") ? args["bitsCurrent"].ToString() : "0", out int newCurrent);
+                if (args.ContainsKey("channelName"))
+                {
+                    hipeChannelName = args["channelName"].ToString();
+                    CPH.SetGlobalVar("hipeChannelName", hipeChannelName, true);
+                }
+
+                if (newFollowsActive)
+                {
+                    if (!gotFollowerCountFromArgs)
+                    {
+                        int realFollowCount = TryGetTwitchFollowerCount(hipeChannelName);
+                        if (realFollowCount >= 0)
+                        {
+                            currentFollows = realFollowCount;
+                            CPH.SetGlobalVar("hipeCurrentFollows", currentFollows, true);
+                        }
+                    }
+
+                    if (goalFollows <= currentFollows)
+                        goalFollows = GetNextFollowGoal(currentFollows);
+                    CPH.SetGlobalVar("hipeGoalFollows", goalFollows, true);
+                    CPH.SetGlobalVar("hipeFollowsCelebrating", "false", true);
+                    CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "goalUpdate", type = "follows", current = currentFollows, target = goalFollows, newTarget = goalFollows, celebrating = false, lastUser = "" }));
+                }
+
+                if (goalSubs <= 0)
+                {
+                    goalSubs = GetNextSubGoal(currentSubs);
+                    CPH.SetGlobalVar("hipeGoalSubs", goalSubs, true);
+                }
+
+                CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "goalUpdate", type = "subs", current = currentSubs, target = goalSubs, newTarget = goalSubs, celebrating = false, lastUser = "" }));
+                if (isActive)
+                {
+                    CPH.SetGlobalVar("hipeBitsPeriod", newPeriod, true);
+                    CPH.SetGlobalVar("hipeBitsGoal", newTarget, true);
+                    CPH.SetGlobalVar("hipeBitsCelebrating", false, false);
+                    if (newPeriod == "stream")
+                    {
+                        CPH.SetGlobalVar("hipeBitsCurrent", newCurrent, true);
+                        currentBitsStream = newCurrent;
+                        CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "bitsUpdate", current = currentBitsStream, target = newTarget }));
+                    }
+                    else // mensual
+                    {
+                        int savedMont = CPH.GetGlobalVar<int?>("hipeBitsCurrentMonthly", true) ?? 0;
+                        int nuevoCurrent = newCurrent;
+                        if (bitsNeverSet || savedMont == 0)
+                        {
+                            CPH.SetGlobalVar("hipeBitsCurrentMonthly", nuevoCurrent, true);
+                            currentBitsMont = nuevoCurrent;
+                            CPH.LogInfo($"[HipeWidget] AdminSync mensual (inicial): establecido {currentBitsMont}");
+                        }
+                        else
+                        {
+                            if (nuevoCurrent > savedMont)
+                            {
+                                CPH.SetGlobalVar("hipeBitsCurrentMonthly", nuevoCurrent, true);
+                                currentBitsMont = nuevoCurrent;
+                                CPH.LogInfo($"[HipeWidget] AdminSync mensual: valor aumentado de {savedMont} a {currentBitsMont}");
+                            }
+                            else
+                            {
+                                currentBitsMont = savedMont;
+                                CPH.LogInfo($"[HipeWidget] AdminSync mensual: se mantiene el acumulado real {currentBitsMont}");
+                            }
+                        }
+
+                        CPH.SetGlobalVar("hipeBitsCurrent", 0, true);
+                        currentBitsStream = 0;
+                        int widgetBits = (currentBitsMont >= newTarget) ? newTarget : currentBitsMont;
+                        CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "bitsUpdate", current = widgetBits, target = newTarget }));
+                        CPH.LogInfo($"[HipeWidget] AdminSync mensual: real={currentBitsMont}, widget={widgetBits}/{newTarget}");
+                    }
+
+                    CPH.SetGlobalVar("hipeBitsInitialized", "true", true);
+                    bitsPeriod = newPeriod;
+                    bitsGoal = newTarget;
+                    CPH.LogInfo($"[HipeWidget] AdminSync: {newPeriod} objetivo={newTarget}");
+                }
+            }
+
+            CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "streamState", live = isLive, uptime = uptimeSeconds }));
+            CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "categoryUpdate", name = categoryName, image = categoryImage }));
+            return true;
+        }
+
+        // ============================================================
+        // PETICIÓN DE ESTADO (cuando el widget o admin preguntan)
+        // ============================================================
+        if (args.ContainsKey("adminAction") && args["adminAction"].ToString() == "getBitsState")
+        {
+            string requestedPeriod = args.ContainsKey("bitsPeriod") ? args["bitsPeriod"].ToString() : bitsPeriod;
+            int realCur = (requestedPeriod == "stream") ? currentBitsStream : currentBitsMont;
+            int cur = realCur;
+            CPH.LogInfo($"[HipeWidget] getBitsState recibido. requestedPeriod={requestedPeriod}, bitsPeriodGlobal={bitsPeriod}, stream={currentBitsStream}, monthly={currentBitsMont}, cur={cur}, goal={bitsGoal}");
+            if (requestedPeriod == "monthly" && cur >= bitsGoal)
+                cur = bitsGoal;
+            CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "bitsState", current = cur, realCurrent = realCur, period = requestedPeriod, target = bitsGoal }));
+            if (goalSubs <= 0)
+            {
+                goalSubs = GetNextSubGoal(currentSubs);
+                CPH.SetGlobalVar("hipeGoalSubs", goalSubs, true);
+            }
+
+            CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "goalUpdate", type = "subs", current = currentSubs, target = goalSubs, newTarget = goalSubs, celebrating = false, lastUser = "" }));
+            if (followsActive)
+            {
+                if (!gotFollowerCountFromArgs)
+                {
+                    int realFollowCount = TryGetTwitchFollowerCount(hipeChannelName);
+                    if (realFollowCount >= 0)
+                    {
+                        currentFollows = realFollowCount;
+                        CPH.SetGlobalVar("hipeCurrentFollows", currentFollows, true);
+                    }
+                }
+
+                if (goalFollows <= 0)
+                    goalFollows = GetNextFollowGoal(currentFollows);
+                if (goalFollows <= currentFollows)
+                {
+                    goalFollows = GetNextFollowGoal(currentFollows);
+                    CPH.SetGlobalVar("hipeGoalFollows", goalFollows, true);
+                }
+
+                CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "goalUpdate", type = "follows", current = currentFollows, target = goalFollows, newTarget = goalFollows, celebrating = false, lastUser = "" }));
+            }
+
+            string categoryChannel = hipeChannelName;
+            if (string.IsNullOrWhiteSpace(categoryChannel))
+            {
+                if (args.ContainsKey("broadcastUserName"))
+                    categoryChannel = args["broadcastUserName"].ToString();
+                else if (args.ContainsKey("broadcastUser"))
+                    categoryChannel = args["broadcastUser"].ToString();
+            }
+
+            if (!string.IsNullOrWhiteSpace(categoryChannel))
+            {
+                CPH.SetGlobalVar("hipeChannelName", categoryChannel, true);
+                TryPreloadTwitchCategory(categoryChannel, ref categoryName, ref categoryImage);
+            }
+
+            CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "streamState", live = isLive, uptime = uptimeSeconds }));
+            CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "categoryUpdate", name = categoryName, image = categoryImage }));
+            return true;
+        }
+
+        // ============================================================
+        // EVENTO CHEER (Llegan bits)
+        // ============================================================
+        if (esCheer)
+        {
+            int cheerBits = 0;
+            if (args.ContainsKey("bits") && int.TryParse(args["bits"].ToString(), out int b1))
+                cheerBits = b1;
+            else if (args.ContainsKey("bitsAmount") && int.TryParse(args["bitsAmount"].ToString(), out int b2))
+                cheerBits = b2;
+            if (cheerBits > 0 && bitsGoal > 0)
+            {
+                CPH.LogInfo($"[HipeWidget] CHEER detectado: {cheerBits} bits, período={bitsPeriod}");
+                int previousBits = (bitsPeriod == "stream") ? currentBitsStream : currentBitsMont;
+                bool metaAlcanzadaAntes = (previousBits >= bitsGoal);
+                currentBitsMont += cheerBits;
+                CPH.SetGlobalVar("hipeBitsCurrentMonthly", currentBitsMont, true);
+                CPH.LogInfo($"[HipeWidget] Acumulado mensual real: {currentBitsMont}");
+                int currentBits = previousBits;
+                bool widgetCongelado = metaAlcanzadaAntes && (bitsPeriod == "monthly");
+                if (bitsPeriod == "stream")
+                {
+                    if (!metaAlcanzadaAntes)
+                    {
+                        currentBitsStream += cheerBits;
+                        if (currentBitsStream > bitsGoal)
+                            currentBitsStream = bitsGoal;
+                        CPH.SetGlobalVar("hipeBitsCurrent", currentBitsStream, true);
+                        currentBits = currentBitsStream;
+                        CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "bitsUpdate", current = currentBits, target = bitsGoal }));
+                        CPH.LogInfo($"[HipeWidget] Bits actualizados: {currentBits}/{bitsGoal}");
+                    }
+                    else
+                    {
+                        CPH.LogInfo($"[HipeWidget] Bits ignorados: meta ya alcanzada ({currentBits}/{bitsGoal})");
+                    }
+                }
+                else // mensual
+                {
+                    currentBits = currentBitsMont;
+                    if (!widgetCongelado)
+                    {
+                        int widgetBits = (currentBitsMont >= bitsGoal) ? bitsGoal : currentBitsMont;
+                        CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "bitsUpdate", current = widgetBits, target = bitsGoal }));
+                        CPH.LogInfo($"[HipeWidget] Widget actualizado: {widgetBits}/{bitsGoal}");
+                    }
+                    else
+                    {
+                        CPH.LogInfo($"[HipeWidget] Widget congelado en {bitsGoal}/{bitsGoal} (acumulado real={currentBitsMont})");
+                    }
+                }
+
+                CPH.SetGlobalVar("hipeBitsInitialized", "true", true);
+                if (!bitsCelebrating && !metaAlcanzadaAntes && ((bitsPeriod == "stream" && currentBitsStream >= bitsGoal) || (bitsPeriod == "monthly" && currentBitsMont >= bitsGoal)))
+                {
+                    CPH.SetGlobalVar("hipeBitsCelebrating", true, false);
+                    CPH.SetGlobalVar("hipeBitsCelebrateEnd", nowMs + 10000, false);
+                    string user = args.ContainsKey("user") ? args["user"].ToString() : "";
+                    CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "goalUpdate", type = "bits", current = (bitsPeriod == "stream") ? currentBitsStream : bitsGoal, target = bitsGoal, celebrating = true, newTarget = bitsGoal, lastUser = user }));
+                    CPH.LogInfo($"[HipeWidget] Meta de bits ALCANZADA: {bitsGoal}/{bitsGoal}");
+                }
+
+                goto SubsYEstado;
+            }
+        }
+
+        // ============================================================
+        // EXPIRACIÓN DE CELEBRACIÓN DE BITS
+        // ============================================================
+        if (bitsCelebrating && nowMs > bitsCelebrateEnd)
+        {
+            CPH.SetGlobalVar("hipeBitsCelebrating", false, false);
+            int bitsNow = (bitsPeriod == "stream") ? currentBitsStream : currentBitsMont;
+            if (bitsPeriod == "monthly" && bitsNow >= bitsGoal)
+                bitsNow = bitsGoal;
+            CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "bitsUpdate", current = bitsNow, target = bitsGoal }));
+            CPH.LogInfo("[HipeWidget] Celebración de bits finalizada");
+        }
+
+        // ============================================================
+        // REINICIO MENSUAL POR CAMBIO DE MES
+        // ============================================================
+        int lastMonthStored = CPH.GetGlobalVar<int>("hipeLastMonth", true);
+        int currentMonth = DateTime.Now.Month;
+        if (bitsPeriod == "monthly" && currentMonth != lastMonthStored)
+        {
+            CPH.LogInfo($"[HipeWidget] Cambio de mes detectado: de {lastMonthStored} a {currentMonth}. Reiniciando bits mensuales.");
+            currentBitsMont = 0;
+            CPH.SetGlobalVar("hipeBitsCurrentMonthly", 0, true);
+            CPH.SetGlobalVar("hipeLastMonth", currentMonth, true);
+            CPH.SetGlobalVar("hipeBitsCelebrating", false, false);
+            CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "bitsUpdate", current = 0, target = bitsGoal }));
+        }
+
+        // ============================================================
+        // FOLLOWS
+        // ============================================================
+        SubsYEstado:
+            if (followsActive)
+            {
+                bool updatedFollows = false;
+                if (args.ContainsKey("followerCount") && int.TryParse(args["followerCount"].ToString(), out int fc1))
+                {
+                    currentFollows = fc1;
+                    updatedFollows = true;
+                }
+                else if (args.ContainsKey("followers") && int.TryParse(args["followers"].ToString(), out int fc2))
+                {
+                    currentFollows = fc2;
+                    updatedFollows = true;
+                }
+                else if (args.ContainsKey("totalFollowers") && int.TryParse(args["totalFollowers"].ToString(), out int fc3))
+                {
+                    currentFollows = fc3;
+                    updatedFollows = true;
+                }
+                else if (esFollow)
+                {
+                    currentFollows += 1;
+                    updatedFollows = true;
+                }
+
+                if (updatedFollows)
+                    CPH.SetGlobalVar("hipeCurrentFollows", currentFollows, true);
+                if (goalFollows <= 0)
+                {
+                    goalFollows = GetNextFollowGoal(currentFollows);
+                    CPH.SetGlobalVar("hipeGoalFollows", goalFollows, true);
+                }
+
+                bool sendFollowCelebrate = false;
+                int newFollowsTarget = goalFollows;
+                if (goalFollows > 0 && currentFollows >= goalFollows && celebratingFollows != "true")
+                {
+                    sendFollowCelebrate = true;
+                    newFollowsTarget = GetNextFollowGoal(currentFollows);
+                    CPH.SetGlobalVar("hipeFollowsCelebrating", "true", true);
+                    CPH.SetGlobalVar("hipeFollowsCelebrateEnd", nowMs + 10000, true);
+                    CPH.SetGlobalVar("hipeGoalFollows", newFollowsTarget, true);
+                }
+                else if (celebratingFollows == "true" && nowMs > celebrateEndFollows)
+                {
+                    CPH.SetGlobalVar("hipeFollowsCelebrating", "false", true);
+                }
+
+                string followUser = args.ContainsKey("user") ? args["user"].ToString() : "Alguien";
+                CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "goalUpdate", type = "follows", current = currentFollows, target = goalFollows, newTarget = newFollowsTarget, celebrating = sendFollowCelebrate, lastUser = followUser }));
+            }
+
+        // ============================================================
+        // SUBS
+        // ============================================================
+        if (!gotSubscriberCountFromArgs && args.ContainsKey("subscriberCount"))
+        {
+            int.TryParse(args["subscriberCount"].ToString(), out currentSubs);
+            CPH.SetGlobalVar("hipeCurrentSubs", currentSubs, true);
+            if (goalSubs <= 0)
+            {
+                goalSubs = GetNextSubGoal(currentSubs);
+                CPH.SetGlobalVar("hipeGoalSubs", goalSubs, true);
+            }
+        }
+
+        bool sendCelebrate = false;
+        int newSubsTarget = goalSubs;
+        if (goalSubs > 0 && currentSubs >= goalSubs && celebratingSubs != "true")
+        {
+            sendCelebrate = true;
+            newSubsTarget = GetNextSubGoal(currentSubs);
+            CPH.SetGlobalVar("hipeCelebrating", "true", true);
+            CPH.SetGlobalVar("hipeCelebrateEnd", nowMs + 10000, true);
+            CPH.SetGlobalVar("hipeGoalSubs", newSubsTarget, true);
+        }
+        else if (celebratingSubs == "true" && nowMs > celebrateEndSubs)
+        {
+            CPH.SetGlobalVar("hipeCelebrating", "false", true);
+        }
+
+        string lastUser = args.ContainsKey("user") ? args["user"].ToString() : "Alguien";
+        CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "goalUpdate", type = "subs", current = currentSubs, target = goalSubs, newTarget = newSubsTarget, celebrating = sendCelebrate, lastUser = lastUser }));
+        if (categoryChanged)
+            CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "categoryUpdate", name = categoryName, image = categoryImage }));
+        // ============================================================
+        // ENVIAR ESTADO DEL STREAM (cronómetro y live)
+        // ============================================================
+        CPH.WebsocketBroadcastJson(JsonConvert.SerializeObject(new { action = "streamState", live = isLive, uptime = uptimeSeconds }));
+        return true;
+    }
+}

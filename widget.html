@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Hipe Widget</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
   <link
     href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap"
     rel="stylesheet">
@@ -210,59 +212,114 @@
       pointer-events: auto;
     }
 
+    #gst-cel.on {
+      z-index: 10;
+    }
+
+    #sec-goal.celebrating-goal .gst:not(#gst-cel) {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    #sec-goal.celebrating-goal #gst-cel {
+      opacity: 1 !important;
+      z-index: 20;
+    }
+
     #gst-hdr {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
+      min-width: 0;
+      overflow: hidden;
     }
 
+    /* Títulos de metas: acento suave y espacio suficiente para META FOLLOWS */
     #gst-lbl,
-    #gst-lbl-bits {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--muted);
+    #gst-lbl-bits,
+    #gst-lbl-follows {
+      flex: 1 1 46%;
+      min-width: 0;
+      max-width: 46%;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent);
       text-transform: uppercase;
-      letter-spacing: .11em;
+      letter-spacing: .07em;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 0 5px rgba(var(--accent-rgb), .16);
     }
 
     #widget.layout-completo #gst-lbl,
-    #widget.layout-completo #gst-lbl-bits {
-      font-size: 20px;
+    #widget.layout-completo #gst-lbl-bits,
+    #widget.layout-completo #gst-lbl-follows {
+      flex-basis: 44%;
+      max-width: 44%;
+      font-size: 15px;
+      letter-spacing: .06em;
     }
 
+    /* Contenedor de icono + número */
     #gst-cnt,
-    #gst-cnt-bits {
+    #gst-cnt-bits,
+    #gst-cnt-follows {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: flex-end;
+      gap: 8px;
+      flex: 0 1 54%;
+      min-width: 0;
+      max-width: 54%;
       font-size: 56px;
       font-weight: 700;
       color: var(--text);
       line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
     #widget.layout-completo #gst-cnt,
-    #widget.layout-completo #gst-cnt-bits {
+    #widget.layout-completo #gst-cnt-bits,
+    #widget.layout-completo #gst-cnt-follows {
       font-size: 38px;
       gap: 6px;
+      flex-basis: 56%;
+      max-width: 56%;
+    }
+
+    #gst-txt,
+    #gst-bits-txt,
+    #gst-follows-txt {
+      display: inline-block;
+      min-width: 0;
+      white-space: nowrap;
+      line-height: 1;
     }
 
     #gst-heart,
-    #gst-bits-gif {
+    #gst-bits-gif,
+    #gst-follows-gif {
       height: 60px;
+      max-width: 60px;
+      object-fit: contain;
       flex-shrink: 0;
     }
 
     #widget.layout-completo #gst-heart,
-    #widget.layout-completo #gst-bits-gif {
+    #widget.layout-completo #gst-bits-gif,
+    #widget.layout-completo #gst-follows-gif {
       height: 60px;
+      max-width: 60px;
     }
 
     #gst-track,
-    #gst-track-bits {
+    #gst-track-bits,
+    #gst-track-follows {
       height: 8px;
+      margin-top: 3px;
       background: rgba(255, 255, 255, .07);
       border-radius: 4px;
       overflow: hidden;
@@ -270,12 +327,14 @@
     }
 
     #widget.layout-completo #gst-track,
-    #widget.layout-completo #gst-track-bits {
+    #widget.layout-completo #gst-track-bits,
+    #widget.layout-completo #gst-track-follows {
       height: 6px;
     }
 
     #gst-fill,
-    #gst-bits-fill {
+    #gst-bits-fill,
+    #gst-follows-fill {
       height: 100%;
       background: linear-gradient(90deg,
           var(--goal-grad-3) 0%,
@@ -291,7 +350,8 @@
     }
 
     #gst-fill::after,
-    #gst-bits-fill::after {
+    #gst-bits-fill::after,
+    #gst-follows-fill::after {
       content: '';
       position: absolute;
       top: 0;
@@ -304,7 +364,8 @@
     }
 
     #gst-fill::before,
-    #gst-bits-fill::before {
+    #gst-bits-fill::before,
+    #gst-follows-fill::before {
       content: '';
       position: absolute;
       top: 0;
@@ -317,45 +378,98 @@
     }
 
     .bits-caption {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 17px;
+      font-weight: 700;
       color: var(--muted);
       text-align: center;
-      margin-top: 4px;
+      margin-top: 2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1;
+      opacity: .9;
+    }
+
+    #gst-bits,
+    #gst-bits.on {
+      transform: translateY(0px);
+    }
+
+    /* Solo META BITS en modo compacto:
+   baja icono/número, pero sube el texto inferior */
+    #widget.layout-compacto #gst-bits #gst-hdr {
+      transform: translateY(5px);
+    }
+
+    #widget.layout-compacto #gst-track-bits {
+      margin-top: 6px;
+    }
+
+    #widget.layout-compacto .bits-caption {
+      transform: translateY(-3px);
+    }
+
+    #widget.layout-completo .bits-caption {
+      font-size: 12px;
+      margin-top: 1px;
+      transform: none;
+    }
+
+    #widget.layout-completo #gst-bits,
+    #widget.layout-completo #gst-bits.on {
+      transform: translateY(0px);
+    }
+
+    #widget.layout-completo #gst-bits #gst-hdr,
+    #widget.layout-completo #gst-track-bits {
+      transform: none;
     }
 
     #gst-cel {
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 7px;
+      text-align: center;
+      z-index: 5;
     }
 
     #cel-txt {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 34px;
+      font-weight: 900;
       color: #ffd700;
       text-transform: uppercase;
-      letter-spacing: .06em;
+      letter-spacing: .05em;
       text-align: center;
-      line-height: 1.2;
+      line-height: .95;
+      max-width: 100%;
+      white-space: nowrap;
+      text-shadow:
+        0 0 8px rgba(255, 215, 0, .55),
+        0 0 18px rgba(255, 215, 0, .28);
       animation: cglow 1s ease-in-out infinite alternate;
     }
 
     #widget.layout-completo #cel-txt {
-      font-size: 14px;
+      font-size: 26px;
+      letter-spacing: .04em;
     }
 
     #cel-usr {
-      font-size: 13px;
-      color: var(--muted);
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
       text-align: center;
+      line-height: 1;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: .95;
+      text-shadow: 0 0 8px rgba(255, 255, 255, .16);
     }
 
     #widget.layout-completo #cel-usr {
-      font-size: 11px;
+      font-size: 22px;
     }
 
     @keyframes cglow {
@@ -427,6 +541,86 @@
       color: var(--text);
       line-height: 1;
       letter-spacing: .03em;
+    }
+
+    #sp-category {
+      justify-content: center;
+      align-items: center;
+      padding: 14px 14px 16px;
+    }
+
+    #sp-cat-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    #sp-cat-img {
+      width: 58px;
+      height: 76px;
+      object-fit: cover;
+      border-radius: 5px;
+      box-shadow: 0 0 0 1px rgba(var(--accent-rgb), .45), 0 8px 22px rgba(0, 0, 0, .35);
+      flex-shrink: 0;
+    }
+
+    #sp-cat-info {
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+    }
+
+    #sp-cat-lbl {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    #sp-cat-name {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: .88;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 280px;
+      min-width: 0;
+      text-align: center;
+    }
+
+    #widget.layout-completo #sp-cat-img {
+      width: 44px;
+      height: 60px;
+    }
+
+    #widget.layout-completo #sp-cat-info {
+      max-width: 220px;
+    }
+
+    #widget.layout-completo #sp-cat-name {
+      font-size: 26px;
+      max-width: 220px;
+      min-width: 0;
+    }
+
+    #widget.layout-completo #sp-cat-lbl {
+      font-size: 13px;
     }
 
     .sp-slide img,
@@ -603,6 +797,16 @@
     .et-ok .ev-icon,
     .et-ok iconify-icon {
       color: #4ade80;
+    }
+
+    .et-error {
+      background: rgba(248, 113, 113, .16);
+    }
+
+    .et-error .ev-label,
+    .et-error .ev-icon,
+    .et-error iconify-icon {
+      color: #f87171;
     }
 
     #tick-user {
@@ -839,6 +1043,18 @@
           </div>
           <div class="bits-caption" id="bits-caption"></div>
         </div>
+        <div class="gst" id="gst-follows">
+          <div id="gst-hdr">
+            <span id="gst-lbl-follows">META FOLLOWS</span>
+            <div id="gst-cnt-follows">
+              <img id="gst-follows-gif" src="" alt="♥">
+              <span id="gst-follows-txt">--/--</span>
+            </div>
+          </div>
+          <div id="gst-track-follows">
+            <div id="gst-follows-fill"></div>
+          </div>
+        </div>
         <div class="gst" id="gst-cel">
           <div id="cel-txt">¡META ALCANZADA! 🎉</div>
           <div id="cel-usr"></div>
@@ -851,6 +1067,15 @@
           <div id="sp-ut-wrap">
             <div id="sp-utlbl">EN VIVO</div>
             <div id="sp-utval">00:00:00</div>
+          </div>
+        </div>
+        <div class="sp-slide" id="sp-category">
+          <div id="sp-cat-wrap">
+            <img id="sp-cat-img" src="assets/catego.png" alt="">
+            <div id="sp-cat-info">
+              <div id="sp-cat-lbl">CATEGORIA</div>
+              <div id="sp-cat-name">--</div>
+            </div>
           </div>
         </div>
         <div class="rot-ind" id="sponsor-indicators"></div>
@@ -909,14 +1134,14 @@
     const defaultEvents = {
       showSubs: true, showReSubs: true, showGiftSubs: true, showGiftBombs: true,
       showRaids: true, showCheers: true, showFollows: true, showRedemptions: true,
-      showYTMembers: true, showSuperChat: true, showDonations: true
+      showYTSubscribers: true, showYTMembers: true, showYTGifts: true, showSuperChat: true, showDonations: true
     };
     const eventsFromCfg = CFG.events || {};
     const events = { ...defaultEvents, ...eventsFromCfg };
     const defaultSoundEvents = {
       soundSubs: true, soundReSubs: true, soundGiftSubs: true, soundGiftBombs: true,
       soundRaids: true, soundCheers: true, soundFollows: true, soundRedemptions: true,
-      soundYTMembers: true, soundSuperChat: true, soundDonations: true
+      soundYTSubscribers: true, soundYTMembers: true, soundYTGifts: true, soundSuperChat: true, soundDonations: true
     };
     const soundEventsFromCfg = CFG.soundEvents || {};
     const soundEvents = { ...defaultSoundEvents, ...soundEventsFromCfg };
@@ -926,9 +1151,13 @@
     const bitsActive = goalBits.active === true;
     const bitsPeriod = goalBits.period || 'stream';
     const bitsTarget = goalBits.target || 0;
-    const bitsGif = goalBits.gif || 'assets/bitcoin.gif';
+    const bitsGif = goalBits.gif || 'assets/bits.gif';
     const bitsCaption = goalBits.caption || '';
     const bitsCurrentFromCfg = goalBits.current || 0;
+
+    const goalFollows = CFG.goalFollows || { active: false };
+    const followsActive = goalFollows.active === true;
+    const followsGif = goalFollows.gif || 'assets/follow.gif';
 
     // Variables globales para bits
     let currentBits = bitsCurrentFromCfg;
@@ -953,10 +1182,10 @@
     const soundMap = {
       'sub': 'soundSubs', 'resub': 'soundReSubs', 'giftsub': 'soundGiftSubs', 'giftbomb': 'soundGiftBombs',
       'raid': 'soundRaids', 'bits': 'soundCheers', 'follow': 'soundFollows', 'redeem': 'soundRedemptions',
-      'member': 'soundYTMembers', 'super': 'soundSuperChat', 'donate': 'soundDonations'
+      'ytsub': 'soundYTSubscribers', 'member': 'soundYTMembers', 'ytgift': 'soundYTGifts', 'super': 'soundSuperChat', 'donate': 'soundDonations'
     };
     function playNotificationSound(eventType) {
-      if (!enableSounds) return;
+      if (!enableSounds || !showTicker) return;
       const soundKey = soundMap[eventType];
       if (!soundKey) return;
       const allowed = soundEvents[soundKey] === undefined ? true : soundEvents[soundKey];
@@ -1054,6 +1283,14 @@
       bitsSlide.style.display = 'none';
     }
 
+    const followsSlide = document.getElementById('gst-follows');
+    if (followsActive) {
+      document.getElementById('gst-follows-gif').src = followsGif;
+      followsSlide.style.display = '';
+    } else {
+      followsSlide.style.display = 'none';
+    }
+
     const widgetEl = document.getElementById('widget');
     const secId = document.getElementById('sec-id');
     const secGoal = document.getElementById('sec-goal');
@@ -1068,9 +1305,12 @@
     const showTicker = isCompacto ? true : (CFG.showTicker !== false);
     const showSponsors = CFG.showSponsors !== false;
     const showUptime = CFG.showUptime !== false;
+    const showCategory = CFG.showCategory !== false;
     const showSocials = CFG.showSocials !== false;
     const showCreatorCode = !!(CFG.showCreatorCode ?? CFG.creatorCode?.active ?? false);
-    const hasSponsorBlock = showSponsors || showUptime;
+    const hasSponsorBlock = showSponsors || showUptime || showCategory;
+    const subsActive = isCompacto || showGoal;
+    const anyGoalActive = subsActive || followsActive || bitsActive;
 
     function setW(el, px) {
       el.style.width = px + 'px';
@@ -1113,12 +1353,13 @@
     // ===== VISIBILIDAD EN MODO HORIZONTAL =====
     if (isCompleto) {
       if (!showBranding) secId.style.display = 'none';
-      const anyGoalActive = showGoal || bitsActive;
       if (!anyGoalActive) secGoal.style.display = 'none';
       if (!showTicker) secTicker.style.display = 'none';
       if (!hasSponsorBlock) secSponsor.style.display = 'none';
       if (!hasSocialContent) secSocial.style.display = 'none';
     }
+
+    if (isCompacto && !anyGoalActive) secGoal.style.display = 'none';
 
     if (isCompleto) applyPhase('completo');
     else {
@@ -1135,24 +1376,29 @@
       if (goalRotationInterval) clearInterval(goalRotationInterval);
       const subs = document.getElementById('gst-normal');
       const bits = document.getElementById('gst-bits');
+      const follows = document.getElementById('gst-follows');
       if (subs) subs.classList.remove('on');
       if (bits) bits.classList.remove('on');
+      if (follows) follows.classList.remove('on');
       const cel = document.getElementById('gst-cel');
       if (cel) cel.classList.remove('on');
 
       goalSlides = [];
-      if (subs && (isCompacto || showGoal)) goalSlides.push(subs);
+      if (subs && subsActive) goalSlides.push(subs);
+      if (followsActive && follows) goalSlides.push(follows);
       if (bitsActive && bits) goalSlides.push(bits);
 
       if (goalSlides.length === 0) return;
       currentGoalIndex = 0;
       goalSlides[currentGoalIndex].classList.add('on');
+      fitAllGoalNumbers();
       if (goalSlides.length > 1) {
         const rotSecs = CFG.goalRotationSeconds || 30;
         goalRotationInterval = setInterval(() => {
           goalSlides[currentGoalIndex].classList.remove('on');
           currentGoalIndex = (currentGoalIndex + 1) % goalSlides.length;
           goalSlides[currentGoalIndex].classList.add('on');
+          fitAllGoalNumbers();
         }, rotSecs * 1000);
       }
     }
@@ -1192,7 +1438,7 @@
       }
       let userSize = 36;
       let extraSize = 34;
-      const minSize = 14;
+      const minSize = 12;
       function measure() {
         return cloneSpan(userSpan, userText, userSize) + cloneSpan(extraSpan, extraText, extraSize);
       }
@@ -1212,36 +1458,156 @@
       tickerResizeObserver = new ResizeObserver(() => adjustTickerFontSize());
       tickerResizeObserver.observe(container);
     }
+    function setTickerText(user = '', extra = '') {
+      const userEl = document.getElementById('tick-user');
+      const extraEl = document.getElementById('tick-extra');
 
+      if (userEl) userEl.textContent = user;
+      if (extraEl) extraEl.textContent = extra;
+
+      requestAnimationFrame(() => {
+        adjustTickerFontSize();
+      });
+    }
+    function setTickerBadge(cls = 'et-ok', label = 'HIPE', icon = 'mdi:check-circle') {
+      const badge = document.getElementById('tick-badge');
+      if (!badge) return;
+
+      badge.className = 'ev-badge ' + cls;
+      badge.innerHTML = `<span class="ev-icon"><iconify-icon icon="${icon}" width="22"></iconify-icon></span><span class="ev-label">${label}</span>`;
+
+      requestAnimationFrame(() => {
+        adjustTickerFontSize();
+      });
+    }
     // ========== RESTO DE LÓGICA ==========
-    let celebrating = false, celTimer = null;
+    let celebrating = false, celTimer = null, pendingCelebrationTimer = null;
     let uptimeSeconds = 0, uptimeInterval = null, streamLive = false;
 
+    function fitGoalNumber(type = 'subs') {
+      const map = {
+        subs: {
+          wrap: 'gst-cnt',
+          text: 'gst-txt',
+          img: 'gst-heart',
+          maxCompact: 56,
+          maxFull: 38,
+          minCompact: 28,
+          minFull: 20
+        },
+        bits: {
+          wrap: 'gst-cnt-bits',
+          text: 'gst-bits-txt',
+          img: 'gst-bits-gif',
+          maxCompact: 56,
+          maxFull: 38,
+          minCompact: 28,
+          minFull: 20
+        },
+        follows: {
+          wrap: 'gst-cnt-follows',
+          text: 'gst-follows-txt',
+          img: 'gst-follows-gif',
+          maxCompact: 56,
+          maxFull: 38,
+          minCompact: 28,
+          minFull: 20
+        }
+      };
+
+      const cfg = map[type];
+      if (!cfg) return;
+
+      const wrap = document.getElementById(cfg.wrap);
+      const text = document.getElementById(cfg.text);
+      const img = document.getElementById(cfg.img);
+      const widget = document.getElementById('widget');
+
+      if (!wrap || !text || !widget) return;
+
+      const isFull = widget.classList.contains('layout-completo');
+      const maxSize = isFull ? cfg.maxFull : cfg.maxCompact;
+      const minSize = isFull ? cfg.minFull : cfg.minCompact;
+
+      text.style.fontSize = maxSize + 'px';
+      wrap.style.fontSize = maxSize + 'px';
+
+      if (img) {
+        img.style.height = '60px';
+        img.style.maxWidth = '60px';
+      }
+
+      requestAnimationFrame(() => {
+        let size = maxSize;
+
+        while (wrap.scrollWidth > wrap.clientWidth && size > minSize) {
+          size -= 2;
+          text.style.fontSize = size + 'px';
+          wrap.style.fontSize = size + 'px';
+
+          if (img) {
+            const imgSize = Math.max(isFull ? 32 : 38, Math.min(60, size + 8));
+            img.style.height = imgSize + 'px';
+            img.style.maxWidth = imgSize + 'px';
+          }
+        }
+      });
+    }
+
+    function fitAllGoalNumbers() {
+      fitGoalNumber('subs');
+      fitGoalNumber('bits');
+      fitGoalNumber('follows');
+    }
+    function formatGoalNumber(value) {
+      const n = Number(value || 0);
+      return n.toLocaleString('en-US');
+    }
     function setLive(on) {
       document.getElementById('live-dot').classList.toggle('live', on);
       document.getElementById('live-txt').textContent = on ? 'EN VIVO' : 'OFFLINE';
     }
+    function setSignalLost() {
+      document.getElementById('live-dot').classList.remove('live');
+      document.getElementById('live-txt').textContent = 'SIN SEÑAL';
+    }
     function updateGoal(cur, tgt) {
-      document.getElementById('gst-txt').textContent = `${cur}/${tgt}`;
+      document.getElementById('gst-txt').textContent = `${formatGoalNumber(cur)}/${formatGoalNumber(tgt)}`;
       document.getElementById('gst-fill').style.width = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100) + '%';
+      fitGoalNumber('subs');
     }
     function updateBitsGoal(cur, tgt) {
       if (!bitsActive) return;
       currentBits = cur;
-      document.getElementById('gst-bits-txt').textContent = `${cur}/${tgt}`;
+      document.getElementById('gst-bits-txt').textContent = `${formatGoalNumber(cur)}/${formatGoalNumber(tgt)}`;
       const percent = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100);
       document.getElementById('gst-bits-fill').style.width = percent + '%';
-      if (!celebrating && cur >= tgt && tgt > 0) {
-        celebrate(cur, tgt, '', 'bits');
-      }
+      fitGoalNumber('bits');
+    }
+    function updateFollowsGoal(cur, tgt) {
+      if (!followsActive) return;
+      document.getElementById('gst-follows-txt').textContent = `${formatGoalNumber(cur)}/${formatGoalNumber(tgt)}`;
+      const percent = Math.min(cur / Math.max(tgt || 1, 1) * 100, 100);
+      document.getElementById('gst-follows-fill').style.width = percent + '%';
+      fitGoalNumber('follows');
     }
     function showGst(id) {
+      const goalBox = document.getElementById('sec-goal');
       const subs = document.getElementById('gst-normal');
       const bits = document.getElementById('gst-bits');
+      const follows = document.getElementById('gst-follows');
       const cel = document.getElementById('gst-cel');
+
+      const isCelebration = id === 'gst-cel';
+
+      if (goalBox) goalBox.classList.toggle('celebrating-goal', isCelebration);
+
       if (subs) subs.classList.toggle('on', id === 'gst-normal');
       if (bits && bitsActive) bits.classList.toggle('on', id === 'gst-bits');
-      if (cel) cel.classList.toggle('on', id === 'gst-cel');
+      if (follows && followsActive) follows.classList.toggle('on', id === 'gst-follows');
+      if (cel) cel.classList.toggle('on', isCelebration);
+
+      fitAllGoalNumbers();
     }
     function celebrate(cur, newTgt, user, type = 'subs') {
       celebrating = true;
@@ -1253,8 +1619,17 @@
         celebrating = false;
         if (type === 'subs') updateGoal(cur, newTgt);
         else if (type === 'bits') updateBitsGoal(cur, newTgt);
-        showGst(type === 'subs' ? 'gst-normal' : 'gst-bits');
+        else if (type === 'follows') updateFollowsGoal(cur, newTgt);
+        showGst(type === 'bits' ? 'gst-bits' : type === 'follows' ? 'gst-follows' : 'gst-normal');
       }, duration);
+    }
+    function scheduleCelebration(cur, target, newTarget, user, type = 'subs') {
+      if (pendingCelebrationTimer) clearTimeout(pendingCelebrationTimer);
+      const delayBeforeCelebration = 3000;
+      pendingCelebrationTimer = setTimeout(() => {
+        pendingCelebrationTimer = null;
+        celebrate(cur, newTarget || target, user, type);
+      }, delayBeforeCelebration);
     }
     function setUptime(s) {
       uptimeSeconds = Math.max(0, Math.floor(s || 0));
@@ -1274,6 +1649,45 @@
       if (uptimeInterval) { clearInterval(uptimeInterval); uptimeInterval = null; }
     }
 
+    function normalizeBoxArt(url) {
+      return (url || '').replace('{width}', '144').replace('{height}', '192');
+    }
+
+    function fitCategoryName() {
+      const nameEl = document.getElementById('sp-cat-name');
+      const infoEl = document.getElementById('sp-cat-info');
+      const widget = document.getElementById('widget');
+
+      if (!nameEl || !infoEl || !widget) return;
+
+      const isFull = widget.classList.contains('layout-completo');
+      const maxSize = isFull ? 26 : 40;
+      const minSize = isFull ? 12 : 14;
+
+      nameEl.style.fontSize = maxSize + 'px';
+
+      requestAnimationFrame(() => {
+        let size = maxSize;
+
+        while (nameEl.scrollWidth > nameEl.clientWidth && size > minSize) {
+          size -= 1;
+          nameEl.style.fontSize = size + 'px';
+        }
+      });
+    }
+
+    function updateCategory(name, image) {
+      const catName = (name || '').trim();
+      const catImage = normalizeBoxArt(image || 'assets/catego.png');
+
+      if (catName) {
+        document.getElementById('sp-cat-name').textContent = catName;
+        fitCategoryName();
+      }
+
+      document.getElementById('sp-cat-img').src = catImage;
+    }
+
     function renderIndicators(container, count, activeIdx, activeColor) {
       container.innerHTML = '';
       if (count < 2) return;
@@ -1285,12 +1699,12 @@
       }
     }
 
-    // Sponsors (sin cambios)
+    // Sponsors
     const sponsorSlides = [];
     const sponsorIndicatorsEl = document.getElementById('sponsor-indicators');
     if (hasSponsorBlock && secSponsor.style.display !== 'none') {
       const activeSp = showSponsors ? (CFG.sponsors || []).filter(s => s.active) : [];
-      if (activeSp.length > 0 || showUptime) document.getElementById('sp-empty').style.display = 'none';
+      if (activeSp.length > 0 || showUptime || showCategory) document.getElementById('sp-empty').style.display = 'none';
       activeSp.forEach(sp => {
         const div = document.createElement('div');
         div.className = 'sp-slide';
@@ -1308,6 +1722,7 @@
         sponsorSlides.push({ el: div, duration: sp.duration || 8000 });
       });
       if (showUptime) sponsorSlides.push({ el: document.getElementById('sp-uptime'), duration: (CFG.goalRotationSeconds || 30) * 1000 });
+      if (showCategory) sponsorSlides.push({ el: document.getElementById('sp-category'), duration: (CFG.goalRotationSeconds || 30) * 1000 });
       if (sponsorSlides.length > 0) {
         let si = 0;
         sponsorSlides[0].el.classList.add('on');
@@ -1325,7 +1740,7 @@
       }
     }
 
-    // Socials (sin cambios)
+    // Socials
     const SOC_ICONS = {
       twitch: { icon: 'mdi:twitch', color: '#9147ff' },
       youtube: { icon: 'mdi:youtube', color: '#ff0000' },
@@ -1338,11 +1753,67 @@
     const rotationItems = [];
     const activeSocials = showSocials ? (CFG.socials || []).filter(s => s.active && s.handle) : [];
     const creatorEnabled = !!(showCreatorCode && CFG.creatorCode?.value);
+
+    function buildSocialCard(item) {
+      const div = document.createElement('div');
+      div.className = 'social-card';
+      div.dataset.color = item.color;
+      div.dataset.type = item.type;
+
+      if (item.type === 'social') {
+        const iconWrap = document.createElement('div');
+        iconWrap.className = 'soc-icon-wrap';
+        const icon = document.createElement('iconify-icon');
+        icon.setAttribute('icon', item.icon);
+        icon.setAttribute('width', '26');
+        icon.style.color = item.color;
+        iconWrap.appendChild(icon);
+
+        const handle = document.createElement('span');
+        handle.className = 'soc-hnd';
+        handle.style.color = item.color;
+        handle.textContent = item.handle;
+
+        div.appendChild(iconWrap);
+        div.appendChild(handle);
+        return div;
+      }
+
+      const badge = document.createElement('div');
+      badge.className = 'creator-badge';
+
+      const logoWrap = document.createElement('span');
+      logoWrap.className = 'logo-wrapper';
+      const img = document.createElement('img');
+      img.className = 'creator-logo';
+      img.src = item.logo;
+      img.alt = 'creator';
+      img.onerror = () => { img.style.display = 'none'; };
+      logoWrap.appendChild(img);
+
+      const info = document.createElement('div');
+      info.className = 'creator-info';
+      const label = document.createElement('div');
+      label.className = 'creator-label';
+      label.textContent = item.label;
+      const code = document.createElement('div');
+      code.className = 'creator-code';
+      code.style.color = item.color;
+      code.textContent = item.value;
+      info.appendChild(label);
+      info.appendChild(code);
+
+      badge.appendChild(logoWrap);
+      badge.appendChild(info);
+      div.appendChild(badge);
+      return div;
+    }
+
     activeSocials.forEach(s => {
       const si = SOC_ICONS[s.platform] || { icon: 'mdi:web', color: '#aaa' };
       rotationItems.push({
         type: 'social', color: si.color, duration: (CFG.socialRotationSeconds || 5) * 1000,
-        html: `<div class="soc-icon-wrap"><iconify-icon icon="${si.icon}" width="26" style="color:${si.color}"></iconify-icon></div><span class="soc-hnd" style="color:${si.color}">${s.handle}</span>`
+        icon: si.icon, handle: s.handle
       });
     });
     if (creatorEnabled) {
@@ -1352,18 +1823,15 @@
       const creatorLogo = CFG.creatorCode?.logo || "assets/codigo.png";
       rotationItems.push({
         type: 'creator', color: accentColor, duration: (CFG.socialRotationSeconds || 5) * 1000,
-        html: `<div class="creator-badge"><span class="logo-wrapper"><img class="creator-logo" src="${creatorLogo}" alt="creator" onerror="this.style.display='none'"></span><div class="creator-info"><div class="creator-label">${creatorLabel}</div><div class="creator-code" style="color:${accentColor}">${creatorValue}</div></div></div>`
+        label: creatorLabel, value: creatorValue, logo: creatorLogo
       });
     }
     if (rotationItems.length > 0 && secSocial.style.display !== 'none') {
       const socialStage = document.getElementById('social-stage');
       const socialIndicatorsEl = document.getElementById('social-indicators');
       rotationItems.forEach((item, i) => {
-        const div = document.createElement('div');
-        div.className = 'social-card' + (i === 0 ? ' on' : '');
-        div.dataset.color = item.color;
-        div.dataset.type = item.type;
-        div.innerHTML = item.html;
+        const div = buildSocialCard(item);
+        if (i === 0) div.classList.add('on');
         socialStage.appendChild(div);
       });
       let currentIndex = 0;
@@ -1391,10 +1859,11 @@
       raid: ['et-raid', 'RAID', 'ion:ios-people', '#3B82F6'], bits: ['et-bits', 'BITS', 'material-symbols:diamond-rounded', '#30C4AB'],
       follow: ['et-follow', 'FOLLOW', 'material-symbols-light:favorite-rounded', '#EB4C4C'],
       donate: ['et-donate', 'DONACIÓN', 'tdesign:money-filled', '#179BD7'], redeem: ['et-redeem', 'CANJE', 'bx:coin-stack', '#F59E0B'],
+      ytsub: ['et-follow', 'YT SUB', 'mdi:youtube-subscription', '#FF0000'], ytgift: ['et-gift', 'YT GIFT', 'mdi:gift', '#FF6060'],
       member: ['et-member', 'MIEMBRO', 'mdi:youtube', '#FF6060'], super: ['et-super', 'SUPERCHAT', 'mdi:youtube', '#06B6D4']
     };
     const queue = []; let busy = false;
-    function pushEvent(ev) { queue.push(ev); if (!busy) nextEv(); }
+    function pushEvent(ev) { if (!showTicker) return; queue.push(ev); if (!busy) nextEv(); }
     function nextEv() {
       if (!queue.length) { busy = false; return; }
       busy = true;
@@ -1403,10 +1872,8 @@
       const badge = document.getElementById('tick-badge');
       badge.className = 'ev-badge ' + cls;
       badge.innerHTML = `<span class="ev-icon"><iconify-icon icon="${icon}" width="22"></iconify-icon></span><span class="ev-label">${label}</span>`;
-      document.getElementById('tick-user').textContent = ev.user || '';
-      document.getElementById('tick-extra').textContent = ev.extra || '';
+      setTickerText(ev.user || '', ev.extra || '');
       playNotificationSound(ev.type);
-      setTimeout(adjustTickerFontSize, 0);
       const bar = document.getElementById('tick-bar');
       bar.style.transition = 'none';
       bar.style.background = `linear-gradient(90deg,${barColor},${barColor}CC,${barColor})`;
@@ -1439,38 +1906,24 @@
     function connect() {
       ws = new WebSocket(`ws://${CFG.sbHost || '127.0.0.1'}:${CFG.sbPort || 8080}/`);
       ws.onopen = () => {
-        document.getElementById('tick-user').textContent = 'Bienvenido ✓  —  Sistema en línea';
-        setTimeout(adjustTickerFontSize, 0);
+        setTickerBadge('et-ok', 'ONLINE', 'mdi:check-circle');
+        setTickerText('Sistema en línea', '');
         ws.send(JSON.stringify({
           request: 'Subscribe', id: 'hipe',
           events: {
-            Twitch: ['Follow', 'Sub', 'ReSub', 'GiftSub', 'GiftBomb', 'Raid', 'Cheer', 'RewardRedemption', 'StreamOnline', 'StreamOffline'],
-            YouTube: ['NewMember', 'MemberMilestone', 'SuperChat'],
+            Twitch: ['Follow', 'Sub', 'ReSub', 'GiftSub', 'GiftBomb', 'Raid', 'Cheer', 'RewardRedemption', 'StreamOnline', 'StreamOffline', 'StreamUpdate'],
+            YouTube: ['NewSubscriber', 'NewMember', 'MemberMilestone', 'MembershipGift', 'SuperChat'],
             StreamElements: ['Donation'],
             General: ['Custom']
           }
         }));
-        ws.send(JSON.stringify({ request: 'GetChannelInfo', id: 'hipe-livecheck' }));
-
-        // Solo pedir el estado actual al bot (el admin ya envió la configuración)
+        // Pedir estado actual al bot. El C# responde con bitsState y streamState.
         requestBitsState();
       };
-      // =====================================================================
-      // REEMPLAZAR en widget.html el bloque ws.onmessage completo
-      // Busca: "ws.onmessage = (msg) => {"
-      // y reemplaza TODO hasta el ws.onclose que sigue después
-      // =====================================================================
-
       ws.onmessage = (msg) => {
         let d; try { d = JSON.parse(msg.data); } catch { return; }
 
-        // ── CASO 1: respuesta directa de la API (GetChannelInfo, etc.) ──
-        if (d.id === 'hipe-livecheck') {
-          const isLive = d.response?.isLive || d.data?.isLive || false;
-          setLive(isLive); if (!isLive) stopUptime(); return;
-        }
-
-        // ── CASO 2: broadcast directo del bot via WebsocketBroadcastJson ──
+        // ── CASO 1: broadcast directo del bot via WebsocketBroadcastJson ──
         // Llegan como {"action":"bitsUpdate","current":X,"target":Y}
         // directamente en `d`, sin envoltura de evento.
         if (d.action) {
@@ -1478,21 +1931,14 @@
           return;
         }
 
-        // ── CASO 3: eventos de Streamer.Bot (subs, raids, cheers, etc.) ──
+        // ── CASO 2: eventos de Streamer.Bot (subs, raids, cheers, etc.) ──
         const src = (d.event?.source || '').toLowerCase();
         const type = (d.event?.type || d.data?.type || d.data?.event ||
           d.data?.eventType || '').toLowerCase();
         const dd = d.data || {};
         const E = CFG.events || {};
 
-        if (src === 'twitch' && (type === 'streamonline' || type === 'online')) {
-          const was = streamLive; setLive(true);
-          if (!was) startUptime(true);
-          return;
-        }
-        if (src === 'twitch' && (type === 'streamoffline' || type === 'offline')) {
-          const was = streamLive; setLive(false); if (was) stopUptime(); return;
-        }
+        if (src === 'twitch' && (type === 'streamonline' || type === 'online' || type === 'streamoffline' || type === 'offline')) return;
 
         // General > Custom: mensajes que el bot envía como evento custom
         // (ruta alternativa por si el bot usa SendRawData en vez de WebsocketBroadcastJson)
@@ -1520,8 +1966,14 @@
         // ── Eventos de YouTube ──
         if (src === 'youtube') {
           const u = dd.user?.displayName || dd.displayName || 'Alguien';
-          if ((type === 'newmember' || type === 'membermilestone') && E.showYTMembers)
+          if ((type === 'newsubscriber' || type === 'subscriber' || type === 'subscription') && E.showYTSubscribers)
+            pushEvent({ type: 'ytsub', user: u, extra: `se suscribió al canal` });
+          if (type === 'newmember' && E.showYTMembers)
             pushEvent({ type: 'member', user: u, extra: `se unió como miembro ${dd.tier || ''}` });
+          if (type === 'membermilestone' && E.showYTMembers)
+            pushEvent({ type: 'member', user: u, extra: `celebró su membresía ${dd.months || dd.memberMonths || ''}` });
+          if ((type === 'membershipgift' || type === 'giftmembership' || type === 'membershipgifted') && E.showYTGifts)
+            pushEvent({ type: 'ytgift', user: u, extra: `regaló una membresía` });
           if (type === 'superchat' && E.showSuperChat)
             pushEvent({ type: 'super', user: u, extra: `envió $${dd.amount || ''} en Super Chat` });
         }
@@ -1533,35 +1985,46 @@
         }
       };
 
-      // =====================================================================
-      // AÑADIR esta función handleBotPayload ANTES de la función connect()
-      // Es la función centralizada que procesa todos los mensajes del bot
-      // =====================================================================
-
       function handleBotPayload(payload) {
         if (!payload || !payload.action) return;
 
         if (payload.action === 'streamState') {
           const isLive = payload.live === true, was = streamLive;
           setLive(isLive);
-          if (isLive && !was) {
+          if (isLive) {
             const uptimeSecs = payload.uptime || 0;
-            if (uptimeSecs > 0) { uptimeSeconds = uptimeSecs; setUptime(uptimeSecs); startUptime(false); }
-            else startUptime(true);
-            if (bitsActive) requestBitsState();
+            setUptime(uptimeSecs);
+            startUptime(false);
+            if (!was && bitsActive) requestBitsState();
           } else if (!isLive && was) {
             stopUptime();
+            setUptime(0);
           }
+          return;
+        }
+
+        if (payload.action === 'categoryUpdate') {
+          if (showCategory) updateCategory(payload.name, payload.image);
           return;
         }
 
         if (payload.action === 'goalUpdate') {
           const goalType = payload.type || 'subs';
           if (goalType === 'bits') {
+            if (!bitsActive) return;
             updateBitsGoal(+payload.current, +payload.target);
-          } else {
             if (payload.celebrating === true || payload.celebrating === 'true')
-              celebrate(+payload.current, +payload.newTarget, payload.lastUser, 'subs');
+              scheduleCelebration(+payload.current, +payload.target, +payload.newTarget || +payload.target, payload.lastUser, 'bits');
+          } else if (goalType === 'follows') {
+            if (!followsActive) return;
+            if (payload.celebrating === true || payload.celebrating === 'true')
+              scheduleCelebration(+payload.current, +payload.target, +payload.newTarget, payload.lastUser, 'follows');
+            else if (!celebrating)
+              updateFollowsGoal(+payload.current, +payload.target);
+          } else {
+            if (!subsActive) return;
+            if (payload.celebrating === true || payload.celebrating === 'true')
+              scheduleCelebration(+payload.current, +payload.target, +payload.newTarget, payload.lastUser, 'subs');
             else if (!celebrating)
               updateGoal(+payload.current, +payload.target);
           }
@@ -1573,11 +2036,6 @@
           return;
         }
       }
-
-      // =====================================================================
-      // TAMBIÉN reemplazar la función getUsername que debe estar FUERA
-      // del bloque onmessage, como función independiente antes de connect()
-      // =====================================================================
 
       function getUsername(data) {
         const candidates = [
@@ -1601,8 +2059,11 @@
         return 'Alguien';
       }
       ws.onclose = () => {
-        setLive(false);
-        document.getElementById('tick-user').textContent = '⚠  Señal perdida — reconectando...';
+        setSignalLost();
+        if (showTicker) {
+          setTickerBadge('et-error', 'OFFLINE', 'mdi:close-circle');
+          setTickerText('Reconectando...', '');
+        }
         setTimeout(connect, 5000);
       };
       ws.onerror = () => ws.close();
@@ -1618,6 +2079,7 @@
         initTickerResizeObserver();
         adjustTickerFontSize();
         initGoalRotation();
+        fitAllGoalNumbers();
       }, 300);
     });
     setTimeout(() => {
@@ -1626,6 +2088,8 @@
         initTickerResizeObserver();
       }
     }, 500);
+    window.addEventListener('resize', fitAllGoalNumbers);
+    window.addEventListener('resize', fitCategoryName);
   </script>
 </body>
 
