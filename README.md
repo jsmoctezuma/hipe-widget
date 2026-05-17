@@ -72,12 +72,6 @@ Ahí encontrarás el formulario completo de configuración.
 
 ### 2 · Importar la acción en Streamer.bot
 
-La acción se llama:
-
-```text
-Hipe Widget
-```
-
 El código de importación actualizado está en:
 
 ```text
@@ -92,21 +86,6 @@ U0JBRR+LCAAAAAAABADtPdly4ki27xMx/9BRrz3UaEGAJuI+GMwibFPFJkC3+kEbICMBYzbDxPz7PZmp
 4. Usa **Import from Clipboard** si tu versión lo permite.
 5. Si no, guarda el código de importación en un archivo `.sbaction` e impórtalo desde archivo.
 6. Verifica que la acción **Hipe Widget** quede habilitada.
-
-La acción final incluye estas sub-actions en este orden:
-
-```text
-Get Twitch Subscriber Count
-Get Twitch Follower Count
-Add Twitch Broadcaster Information
-Execute C# Code
-```
-
-Para que la categoría cambie en vivo cuando actualices el juego/categoría en Twitch, agrega también este trigger a la acción:
-
-```text
-Twitch → General → Stream Update
-```
 
 ---
 
