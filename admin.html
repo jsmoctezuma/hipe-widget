@@ -98,6 +98,10 @@
       justify-content: space-between;
       gap: 20px;
       flex-wrap: wrap;
+      position: sticky;
+      top: 85px;
+      z-index: 90;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .18);
     }
 
     .btn-copy {
@@ -338,6 +342,11 @@
 
     .tog-row.on {
       border-color: var(--acc);
+    }
+
+    .tog-row.invalid {
+      border-color: var(--red);
+      background: rgba(248, 113, 113, .08);
     }
 
     .tog-lbl {
@@ -848,13 +857,6 @@
           </div>
           <label class="tog"><input type="checkbox" id="showBranding"><span class="tog-sl"></span></label>
         </div>
-        <div class="tog-row" id="tr-showGoal">
-          <div>
-            <div class="tog-lbl">Mostrar meta de suscriptores</div>
-            <div class="tog-sub">Bloque con la barra de progreso y el corazón.</div>
-          </div>
-          <label class="tog"><input type="checkbox" id="showGoal"><span class="tog-sl"></span></label>
-        </div>
         <div class="tog-row" id="tr-showTicker">
           <div>
             <div class="tog-lbl">Mostrar mensajes en pantalla</div>
@@ -913,10 +915,19 @@
             activas).</span>
         </div>
       </div>
-      <div class="field">
-        <label>URL del GIF del corazón (meta de suscriptores)</label><input type="text" id="goalGifPath"
-          placeholder="https://i.imgur.com/corazon.gif" onchange="saveToLocalStorage()">
-        <div class="fhint">Imagen o GIF que aparece en la meta de suscriptores. Recomendado: cuadrado, mínimo 300x300 px.</div>
+      <div class="tog-row" id="tr-goalSubs">
+        <div>
+          <div class="tog-lbl">Activar meta de suscriptores</div>
+          <div class="tog-sub">En compacto puedes apagarla si dejas activa follows o bits.</div>
+        </div>
+        <label class="tog"><input type="checkbox" id="goalSubsActive" checked><span class="tog-sl"></span></label>
+      </div>
+      <div id="goalSubsContent">
+        <div class="field">
+          <label>URL del GIF del corazón (meta de suscriptores)</label><input type="text" id="goalGifPath"
+            placeholder="https://i.imgur.com/corazon.gif" onchange="saveToLocalStorage()">
+          <div class="fhint">Imagen o GIF que aparece en la meta de suscriptores. Recomendado: cuadrado, mínimo 300x300 px.</div>
+        </div>
       </div>
 
       <div style="border-top: 1px solid var(--bord); margin: 20px 0 16px 0;"></div>
@@ -1074,6 +1085,12 @@
     <!-- ========== MENSAJES EN PANTALLA (TICKER) ========== -->
     <div class="card">
       <div class="card-title"><iconify-icon icon="mdi:bell-ring" width="22"></iconify-icon>7. Eventos y sonidos</div>
+      <div class="tog-row" id="tr-goalSound">
+        <div>
+          <div class="tog-lbl">🔊 Sonido de celebración de metas</div>
+          <div class="tog-sub">Reproduce assets/goal.mp3 cuando se alcanza una meta.</div>
+        </div><label class="tog"><input type="checkbox" id="enableGoalSound" checked><span class="tog-sl"></span></label>
+      </div>
       <div class="tog-row" id="tr-enableSounds">
         <div>
           <div class="tog-lbl">🔊 Activar sonidos para los eventos</div>
@@ -1236,7 +1253,6 @@
       document.getElementById('layout-classic-note').style.display = horizontal ? 'none' : '';
       if (!horizontal) {
         document.getElementById('showBranding').checked = true;
-        document.getElementById('showGoal').checked = true;
         document.getElementById('showTicker').checked = true;
       }
     }
@@ -1426,9 +1442,9 @@
         sbHost: document.getElementById('sbHost').value.trim() || '127.0.0.1',
         sbPort: parseInt(document.getElementById('sbPort').value) || 8080,
         goalGifPath: document.getElementById('goalGifPath').value,
+        goalSubsActive: document.getElementById('goalSubsActive').checked,
         layout,
         showBranding: layout === 'horizontal' ? document.getElementById('showBranding').checked : true,
-        showGoal: layout === 'horizontal' ? document.getElementById('showGoal').checked : true,
         showTicker: layout === 'horizontal' ? document.getElementById('showTicker').checked : true,
         goalCelebrationSeconds: parseInt(document.getElementById('goalCelebSecs').value) || 10,
         showSponsors: document.getElementById('showSponsors').checked,
@@ -1451,6 +1467,7 @@
         events,
         tickerDisplaySeconds: parseInt(document.getElementById('tickerSecs').value) || 8,
         enableSounds: document.getElementById('enableSounds').checked,
+        enableGoalSound: document.getElementById('enableGoalSound').checked,
         soundEvents,
         notificationVolume: parseInt(document.getElementById('notificationVolume').value),
         goalBits: {
@@ -1494,6 +1511,37 @@
       document.getElementById('tr-goalFollows').classList.toggle('on', isActive);
     }
 
+    function toggleGoalSubsUI() {
+      const isActive = document.getElementById('goalSubsActive').checked;
+      document.getElementById('tr-goalSubs').classList.toggle('on', isActive);
+      document.getElementById('goalSubsContent').style.display = isActive ? '' : 'none';
+    }
+
+    function toggleGoalSoundUI() {
+      const isActive = document.getElementById('enableGoalSound').checked;
+      document.getElementById('tr-goalSound').classList.toggle('on', isActive);
+    }
+
+    function validateCompactGoals(showNotice = false) {
+      const layout = document.getElementById('layoutMode').value;
+      if (layout !== 'classic') return true;
+
+      const subsActive = document.getElementById('goalSubsActive').checked;
+      const followsActive = document.getElementById('goalFollowsActive').checked;
+      const bitsActive = document.getElementById('goalBitsActive').checked;
+      const valid = subsActive || followsActive || bitsActive;
+
+      document.getElementById('tr-goalSubs').classList.toggle('invalid', !valid);
+      document.getElementById('tr-goalFollows').classList.toggle('invalid', !valid);
+      document.getElementById('tr-goalBits').classList.toggle('invalid', !valid);
+
+      if (!valid && showNotice) {
+        toast('En modo compacto debes dejar activa al menos una meta: subs, follows o bits.', 'warning');
+      }
+
+      return valid;
+    }
+
     function validateSocials(showNotice = false) {
       let firstInvalid = null;
       document.querySelectorAll('.soc-row').forEach(row => {
@@ -1532,10 +1580,10 @@
         document.getElementById('sbHost').value = cfg.sbHost || '127.0.0.1';
         document.getElementById('sbPort').value = cfg.sbPort || 8080;
         document.getElementById('goalGifPath').value = cfg.goalGifPath || '';
+        document.getElementById('goalSubsActive').checked = cfg.goalSubsActive !== false;
         document.getElementById('layoutMode').value = cfg.layout || 'classic';
         if (cfg.layout === 'horizontal') {
           document.getElementById('showBranding').checked = cfg.showBranding === true;
-          document.getElementById('showGoal').checked = cfg.showGoal === true;
           document.getElementById('showTicker').checked = cfg.showTicker === true;
         }
         document.getElementById('goalCelebSecs').value = cfg.goalCelebrationSeconds || 10;
@@ -1553,6 +1601,7 @@
         document.getElementById('socialTransition').value = cfg.socialTransition || 'fade';
         document.getElementById('tickerSecs').value = cfg.tickerDisplaySeconds || 8;
         document.getElementById('enableSounds').checked = cfg.enableSounds === true;
+        document.getElementById('enableGoalSound').checked = cfg.enableGoalSound !== false;
         document.getElementById('notificationVolume').value = cfg.notificationVolume || 80;
         updateVolumeLabel();
         document.getElementById('th-bg').value = cfg.theme?.bgColor || '#111117';
@@ -1697,6 +1746,7 @@
 
     function copyWidgetUrl() {
       if (!validateSocials(true)) return;
+      if (!validateCompactGoals(true)) return;
       if (!validateBitsCurrent(true)) return;
       const config = collectConfig();
       const jsonStr = JSON.stringify(config);
@@ -1730,7 +1780,9 @@
         });
         toggleSocialsUI();
         toggleCreatorUI();
+        toggleGoalSubsUI();
         toggleGoalFollowsUI();
+        toggleGoalSoundUI();
         toggleSoundGlobal();
         applyLayoutModeUI();
         saveToLocalStorage();
@@ -1751,7 +1803,11 @@
       document.getElementById('showSocials').addEventListener('change', () => { toggleSocialsUI(); saveToLocalStorage(); });
       document.getElementById('showCreatorCode').addEventListener('change', () => { toggleCreatorUI(); saveToLocalStorage(); });
       document.getElementById('enableSounds').addEventListener('change', () => { toggleSoundGlobal(); saveToLocalStorage(); });
-      document.getElementById('layoutMode').addEventListener('change', () => { applyLayoutModeUI(); saveToLocalStorage(); });
+      document.getElementById('enableGoalSound').addEventListener('change', () => { toggleGoalSoundUI(); saveToLocalStorage(); });
+      document.getElementById('layoutMode').addEventListener('change', () => { applyLayoutModeUI(); toggleGoalSubsUI(); saveToLocalStorage(); });
+      document.getElementById('goalSubsActive').addEventListener('change', () => { toggleGoalSubsUI(); validateCompactGoals(false); saveToLocalStorage(); });
+      document.getElementById('goalFollowsActive').addEventListener('change', () => { validateCompactGoals(false); });
+      document.getElementById('goalBitsActive').addEventListener('change', () => { validateCompactGoals(false); });
       document.getElementById('goalBitsPeriod').addEventListener('change', () => {
         botBitsCurrent = null;
         saveToLocalStorage();
@@ -1797,13 +1853,16 @@
         el.addEventListener('change', () => validateSocials(false));
       });
       applyLayoutModeUI();
+      toggleGoalSubsUI();
       toggleGoalFollowsUI();
+      toggleGoalSoundUI();
       toggleSponsorsUI();
       toggleUptimeUI();
       toggleCategoryUI();
       toggleSocialsUI();
       toggleCreatorUI();
       toggleSoundGlobal();
+      validateCompactGoals(false);
       // Pedir el estado actual de bits al bot (para que el campo "Bits actuales" muestre el valor real)
       function pedirEstadoBitsAlBot() {
         const host = document.getElementById('sbHost').value.trim() || '127.0.0.1';
