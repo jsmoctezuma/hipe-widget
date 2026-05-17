@@ -1613,46 +1613,98 @@
       location.reload();
     }
 
-    function testConnection() {
-      const status = document.getElementById('connectionStatus');
-      const sbHost = document.getElementById('sbHost').value.trim() || '127.0.0.1';
-      const sbPort = parseInt(document.getElementById('sbPort').value) || 8080;
-      let finished = false;
+function testConnection() {
+  const status = document.getElementById('connectionStatus');
+  const sbHost = document.getElementById('sbHost').value.trim() || '127.0.0.1';
+  const sbPort = parseInt(document.getElementById('sbPort').value) || 8080;
+  const wsUrl = `ws://${sbHost}:${sbPort}/`;
 
-      status.className = 'conn-status';
-      status.textContent = 'Probando conexión...';
+  status.className = 'conn-status';
+  status.textContent = 'Probando conexión... revisa también la consola del navegador.';
 
-      try {
-        const ws = new WebSocket(`ws://${sbHost}:${sbPort}/`);
-        const timer = setTimeout(() => {
-          if (finished) return;
-          finished = true;
-          status.className = 'conn-status err';
-          status.textContent = 'No se pudo conectar. Revisa host, puerto y WebSocket Server en Streamer.bot.';
-          try { ws.close(); } catch (e) { }
-        }, 3500);
+  console.clear();
+  console.log('[HipeWidget Debug] ===== PRUEBA DE CONEXIÓN =====');
+  console.log('[HipeWidget Debug] Página actual:', window.location.href);
+  console.log('[HipeWidget Debug] Protocolo de página:', window.location.protocol);
+  console.log('[HipeWidget Debug] Origen:', window.location.origin);
+  console.log('[HipeWidget Debug] Es contexto seguro:', window.isSecureContext);
+  console.log('[HipeWidget Debug] Host usado:', sbHost);
+  console.log('[HipeWidget Debug] Puerto usado:', sbPort);
+  console.log('[HipeWidget Debug] URL WebSocket:', wsUrl);
 
-        ws.onopen = () => {
-          if (finished) return;
-          finished = true;
-          clearTimeout(timer);
-          status.className = 'conn-status ok';
-          status.textContent = 'Conectado correctamente con Streamer.bot.';
-          ws.close();
-        };
+  let ws;
+  let finished = false;
 
-        ws.onerror = () => {
-          if (finished) return;
-          finished = true;
-          clearTimeout(timer);
-          status.className = 'conn-status err';
-          status.textContent = 'No se pudo conectar. Revisa que Streamer.bot esté abierto y el WebSocket Server activo.';
-        };
-      } catch (e) {
-        status.className = 'conn-status err';
-        status.textContent = 'Host o puerto inválido. Revisa los datos de conexión.';
-      }
+  try {
+    ws = new WebSocket(wsUrl);
+    console.log('[HipeWidget Debug] WebSocket creado. readyState inicial:', ws.readyState);
+  } catch (err) {
+    console.error('[HipeWidget Debug] Error al crear WebSocket:', err);
+    status.className = 'conn-status err';
+    status.textContent = `Error creando WebSocket: ${err.message || err}`;
+    return;
+  }
+
+  const timer = setTimeout(() => {
+    if (finished) return;
+    finished = true;
+
+    console.warn('[HipeWidget Debug] Timeout de conexión. readyState:', ws.readyState);
+
+    try {
+      ws.close();
+    } catch (e) {
+      console.warn('[HipeWidget Debug] Error cerrando WebSocket tras timeout:', e);
     }
+
+    status.className = 'conn-status err';
+    status.textContent = `Timeout conectando a ${wsUrl}. Revisa consola del navegador.`;
+  }, 5000);
+
+  ws.onopen = () => {
+    if (finished) return;
+    finished = true;
+    clearTimeout(timer);
+
+    console.log('[HipeWidget Debug] CONEXIÓN ABIERTA correctamente.');
+    console.log('[HipeWidget Debug] readyState:', ws.readyState);
+
+    status.className = 'conn-status ok';
+    status.textContent = `Conectado correctamente con Streamer.bot usando ${sbHost}:${sbPort}.`;
+
+    try {
+      ws.close();
+    } catch (e) {
+      console.warn('[HipeWidget Debug] Error cerrando WebSocket:', e);
+    }
+  };
+
+  ws.onerror = (event) => {
+    console.error('[HipeWidget Debug] ERROR WebSocket:', event);
+    console.error('[HipeWidget Debug] readyState en error:', ws.readyState);
+
+    if (!finished) {
+      status.className = 'conn-status err';
+      status.textContent = `Error WebSocket con ${wsUrl}. Revisa consola del navegador.`;
+    }
+  };
+
+  ws.onclose = (event) => {
+    console.warn('[HipeWidget Debug] WebSocket cerrado.');
+    console.warn('[HipeWidget Debug] code:', event.code);
+    console.warn('[HipeWidget Debug] reason:', event.reason);
+    console.warn('[HipeWidget Debug] wasClean:', event.wasClean);
+    console.warn('[HipeWidget Debug] readyState final:', ws.readyState);
+
+    if (!finished) {
+      finished = true;
+      clearTimeout(timer);
+
+      status.className = 'conn-status err';
+      status.textContent = `Conexión cerrada. code=${event.code}, clean=${event.wasClean}. Revisa consola.`;
+    }
+  };
+}
 
     function generateWidgetUrl() {
       const config = collectConfig();
