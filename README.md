@@ -453,13 +453,15 @@ Sí. Si cambias configuración en el panel, copia otra vez el enlace y actualíz
 
 ---
 
-## 👑 Créditos
+## Créditos
 
-| Rol | Recurso |
-|---|---|
-| Desarrollo y diseño | [jsmoctezuma](https://github.com/jsmoctezuma) |
-| Iconos | [Iconify](https://iconify.design) |
-| Fuentes | [Rajdhani](https://fonts.google.com/specimen/Rajdhani) · [Barlow Condensed](https://fonts.google.com/specimen/Barlow+Condensed) |
+<p align="center">
+  Desarrollado por <a href="https://github.com/jsmoctezuma">jsmoctezuma</a>
+  &nbsp;•&nbsp;
+  Iconos por <a href="https://iconify.design">Iconify</a>
+  &nbsp;•&nbsp;
+  Fuentes: <a href="https://fonts.google.com">Rajdhani y Barlow Condensed</a>
+</p>
 
 ---
 
