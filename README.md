@@ -453,7 +453,7 @@ Sí. Si cambias configuración en el panel, copia otra vez el enlace y actualíz
 
 ---
 
-## Créditos
+## 👑 Créditos
 
 <p align="center">
   Desarrollado por <a href="https://github.com/jsmoctezuma">jsmoctezuma</a>
