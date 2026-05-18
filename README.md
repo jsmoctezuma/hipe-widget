@@ -1,81 +1,107 @@
-# Hipe Widget · Overlay configurable para Streamer.bot
+# 🎮 Hipe Widget
 
-> Widget para OBS que muestra estado del canal, metas, categoría actual, patrocinadores, redes sociales y eventos del stream usando Streamer.bot.
+> Overlay configurable para OBS y Streamer.bot, creado para streamers que quieren mostrar metas, eventos, redes, patrocinadores, categoría actual y estado del directo sin tocar código.
 
-[![GitHub Pages](https://img.shields.io/badge/Panel-GitHub%20Pages-blue?logo=github)](https://jsmoctezuma.github.io/hipe-widget/admin.html)
-[![Streamer.bot](https://img.shields.io/badge/Compatible-Streamer.bot-purple)](https://streamer.bot)
-[![OBS Studio](https://img.shields.io/badge/Compatible-OBS%20Studio-black?logo=obsstudio)](https://obsproject.com)
-
----
-
-## ¿Qué es Hipe Widget?
-
-**Hipe Widget** es un overlay configurable para streamers. Se configura desde una página web, genera un enlace y ese enlace se pega en **OBS Studio** como **Fuente de navegador**.
-
-No necesitas programar. Solo necesitas abrir el panel, importar la acción en Streamer.bot, configurar tu diseño y copiar el enlace para OBS.
-
-**Panel de administración →** https://jsmoctezuma.github.io/hipe-widget/admin.html
+<p align="center">
+  <a href="https://jsmoctezuma.github.io/hipe-widget/admin.html">
+    <img src="https://img.shields.io/badge/Abrir%20panel-GitHub%20Pages-7c3aed?style=for-the-badge&logo=github" alt="Abrir panel">
+  </a>
+  <img src="https://img.shields.io/badge/Compatible-Streamer.bot-9146FF?style=for-the-badge" alt="Streamer.bot">
+  <img src="https://img.shields.io/badge/Compatible-OBS%20Studio-111111?style=for-the-badge&logo=obsstudio" alt="OBS Studio">
+</p>
 
 ---
 
-## Inicio rápido
+## ✨ ¿Qué es Hipe Widget?
+
+**Hipe Widget** es un overlay para streams que se configura desde un panel web y se usa en **OBS Studio** como una **Fuente de navegador**.
+
+No necesitas saber programar.  
+Solo abres el panel, eliges tus opciones, copias el enlace generado y lo pegas en OBS.
+
+🔗 **Panel de configuración:**  
+https://jsmoctezuma.github.io/hipe-widget/admin.html
+
+---
+
+## 🚀 Inicio rápido
 
 ```text
-1. Abre el panel de administración
-2. Importa la acción en Streamer.bot
-3. Activa el WebSocket Server de Streamer.bot
-4. Configura colores, metas, eventos, patrocinadores y redes
-5. Copia el enlace para OBS
-6. Pégalo en OBS como Browser Source / Fuente de navegador
+1. Abre el panel de configuración.
+2. Importa la acción "Hipe Widget" en Streamer.bot.
+3. Activa el WebSocket Server en Streamer.bot.
+4. Configura tu canal, metas, colores, redes, sonidos y eventos.
+5. Copia el enlace para OBS.
+6. Pega ese enlace en OBS como Fuente de navegador.
 ```
 
 ---
 
-## Funciones principales
+## ✅ Qué puede mostrar el widget
 
-- Dos diseños: **compacto** y **horizontal**.
-- Estado del canal: **EN VIVO**, **OFFLINE** o **SIN SEÑAL**.
-- Foto/logo del canal y nombre del streamer.
-- Meta de suscriptores de Twitch con avance automático por rangos.
-- Meta de follows de Twitch con avance automático por rangos.
-- Meta de bits por stream.
-- Meta de bits mensual con acumulado persistente en Streamer.bot.
-- Celebración visual de metas.
-- Patrocinadores con rotación, duración personalizada e indicadores.
-- Cronómetro del directo basado en el tiempo real de Twitch.
-- Tarjeta de categoría actual del directo con portada, nombre y fallback visual si no hay imagen disponible.
-- Redes sociales con rotación e indicadores por color.
-- Código de creador con etiqueta, código e imagen.
-- Ticker de eventos en pantalla.
-- Sonido global y sonido por tipo de evento.
-- Sonido independiente para celebración de metas usando `assets/goal.mp3`.
-- Formato visual de números grandes en metas, por ejemplo `11900/12000` se muestra como `11,900/12,000`.
-- Ajuste automático de texto para evitar que números largos, categorías largas y textos del ticker se salgan del contenedor.
-- Personalización de colores, opacidad, tipografía y bordes.
-- Host y puerto configurables para Streamer.bot.
-- Prueba de conexión desde el panel.
+| Función | Descripción |
+|---|---|
+| 🟢 Estado del canal | Muestra si estás EN VIVO, OFFLINE o SIN SEÑAL. |
+| 👤 Identidad del canal | Nombre del streamer y foto/logo del canal. |
+| 🎯 Meta de subs | Muestra el progreso de suscriptores de Twitch. |
+| ❤️ Meta de follows | Muestra el progreso de seguidores de Twitch. |
+| 💎 Meta de bits | Soporta meta por stream y meta mensual. |
+| 🎉 Celebración de metas | Muestra una animación cuando se alcanza una meta. |
+| 🔊 Sonidos | Sonidos para eventos y sonido especial de celebración. |
+| ⏱️ Cronómetro | Muestra el tiempo real que llevas en directo. |
+| 🎮 Categoría actual | Muestra el juego/categoría de Twitch con portada. |
+| 📢 Ticker de eventos | Muestra follows, subs, bits, raids, donaciones y más. |
+| 🤝 Patrocinadores | Rotación de logos, imágenes o videos. |
+| 🌐 Redes sociales | Muestra tus redes con rotación automática. |
+| 🧾 Código de creador | Muestra un código promocional o de afiliado. |
+| 🎨 Personalización visual | Colores, bordes, opacidad, tipografía y formato. |
 
 ---
 
-## Instalación paso a paso
+## 🧩 Requisitos
 
-### 1 · Abrir el panel de administración
+Antes de usarlo necesitas:
 
-Visita el panel en tu navegador:
+- **OBS Studio**
+- **Streamer.bot**
+- Una cuenta de **Twitch** conectada a Streamer.bot
+- El WebSocket Server de Streamer.bot activado
+- El enlace del panel de configuración del widget
+
+---
+
+## 📦 Archivos principales del proyecto
+
+```text
+admin.html              Panel de configuración
+widget.html             Overlay que se pega en OBS
+streamerbot-import.txt  Código de importación para Streamer.bot
+codigosb.txt            Código C# de referencia
+assets/                 Imágenes, favicon y sonidos
+TESTING.md              Lista de pruebas recomendadas
+```
+
+---
+
+## 🛠️ Instalación paso a paso
+
+### 1. Abrir el panel
+
+Abre este enlace en tu navegador:
 
 ```text
 https://jsmoctezuma.github.io/hipe-widget/admin.html
 ```
 
-Ahí encontrarás el formulario completo de configuración.
+Desde ahí podrás configurar todo el widget sin editar archivos.
 
 ---
 
-### 2 · Importar la acción en Streamer.bot
+### 2. Importar la acción en Streamer.bot
 
 La acción le indica a Streamer.bot qué eventos enviar al widget.
 
-**Código de importación actualizado (Base64):**
+#### Código de importación actualizado
 
 <details>
 <summary>Ver código de importación (haz clic para expandir)</summary>
@@ -86,7 +112,7 @@ U0JBRR+LCAAAAAAABADtfVmTqkq28HtH9H84sV9PuxtQVDrieygtB6zS2k6o3N0PTColqKecSjv6v38r
 
 </details>
 
-**Pasos para importar:**
+#### Pasos para importar
 
 1. Abre **Streamer.bot**.
 2. Ve a **Actions**.
@@ -112,113 +138,171 @@ Twitch → General → Stream Update
 
 ---
 
-### 3 · Configurar Streamer.bot
+### 3. Activar WebSocket Server en Streamer.bot
 
-Activa el servidor WebSocket:
+Ve a:
 
 ```text
 Streamer.bot → General → WebSocket Server
 ```
 
-Valores recomendados:
+Usa estos valores recomendados:
 
-| Campo | Valor recomendado |
+| Campo | Valor |
 |---|---|
 | Host | `127.0.0.1` |
 | Puerto | `8080` |
 
-En el panel del widget puedes cambiar host y puerto si tu configuración es diferente.
+Después, en el panel del widget, revisa que el host y puerto sean los mismos.
 
 ---
 
-### 4 · Configurar el widget
+### 4. Configurar el widget
 
-En el panel de administración ajusta cada sección según tus preferencias:
+En el panel encontrarás varias secciones. Estas son las más importantes:
 
-| Sección | Descripción |
+| Sección | Para qué sirve |
 |---|---|
-| **Formato del widget** | Elegir compacto u horizontal |
-| **Conexión con Streamer.bot** | Host, puerto y prueba de conexión |
-| **Identidad del canal** | Nombre y foto/logo del streamer |
-| **Imágenes y videos** | URLs públicas directas para logo, gifs, patrocinadores y recursos visuales |
-| **Metas y progreso** | Meta de subs, follows, bits y celebración |
-| **Patrocinadores y directo** | Logos/videos, cronómetro y categoría actual |
-| **Redes sociales y código de creador** | Cuentas sociales y código promocional |
-| **Eventos y sonidos** | Eventos visibles, sonidos y duración del ticker |
-| **Apariencia** | Colores, opacidad, tipografía y bordes |
+| **Formato del widget** | Elige si quieres modo compacto o barra horizontal. |
+| **Conexión con Streamer.bot** | Configura host, puerto y prueba la conexión. |
+| **Identidad del canal** | Coloca nombre, logo o foto de perfil. |
+| **Metas y progreso** | Activa subs, follows, bits y celebración. |
+| **Patrocinadores y directo** | Agrega patrocinadores, cronómetro y categoría. |
+| **Redes sociales** | Muestra Twitch, YouTube, TikTok, Instagram, X, Discord y más. |
+| **Eventos y sonidos** | Decide qué eventos se muestran y qué sonidos usan. |
+| **Apariencia** | Cambia colores, opacidad, bordes y estilo visual. |
 
-> Todos los cambios se guardan automáticamente en el navegador usando `localStorage`.
+> Los cambios se guardan automáticamente en tu navegador.
 
 ---
 
-### 5 · Imágenes, gifs y videos
+### 5. Copiar el enlace para OBS
 
-Para logos, patrocinadores, gifs o imágenes personalizadas, usa **enlaces públicos directos**.
+Cuando termines de configurar el panel:
 
-Recomendado:
+1. Haz clic en **Copiar enlace para OBS**.
+2. Abre OBS.
+3. Crea una nueva **Fuente de navegador**.
+4. Pega el enlace en el campo **URL**.
 
-- Imgur.
-- GitHub Pages.
-- Un servidor propio.
-- Cualquier hosting que entregue el archivo directamente.
+Cada vez que cambies metas, colores, redes, imágenes o eventos, vuelve a copiar el enlace y actualízalo en OBS.
 
-Ejemplos válidos:
+---
+
+## 🖥️ Medidas recomendadas para OBS
+
+Usa estas medidas en la Fuente de navegador:
+
+| Diseño | Tamaño recomendado |
+|---|---|
+| Compacto completo | `1200 x 204` |
+| Compacto sin patrocinadores/redes | `800 x 204` |
+| Horizontal / barra inferior | `1920 x 116` |
+
+También se recomienda activar en OBS:
 
 ```text
-https://i.imgur.com/archivo.png
-https://i.imgur.com/archivo.gif
-https://tusitio.com/imagen.webp
-https://tusitio.com/video.mp4
+Refresh browser when scene becomes active
 ```
 
-Evita usar rutas locales como:
+---
+
+## 🎯 Cómo funcionan las metas
+
+### Meta de suscriptores
+
+La meta de suscriptores usa el conteo real de Twitch obtenido desde Streamer.bot.
+
+El widget calcula la siguiente meta automáticamente:
+
+| Rango de subs | Salto de meta |
+|---|---|
+| 0 a 99 | De 10 en 10 |
+| 100 a 999 | De 50 en 50 |
+| 1000 o más | De 100 en 100 |
+
+Ejemplos:
 
 ```text
-C:\Users\TuUsuario\Desktop\imagen.png
+21 subs    → meta 30
+64 subs    → meta 70
+134 subs   → meta 150
+1340 subs  → meta 1400
 ```
 
-OBS y el widget necesitan una URL pública o una ruta accesible desde el navegador. Si usas Imgur, asegúrate de copiar el **enlace directo de la imagen**, normalmente uno que termine en `.png`, `.jpg`, `.jpeg`, `.gif` o `.webp`.
+Cuando alcanzas la meta, el widget muestra una celebración y después sube a la siguiente meta.
 
-> Si subes imágenes al propio repositorio, puedes usarlas desde la carpeta `assets/` o mediante GitHub Pages.
-
----
-
-### 6 · Generar el enlace para OBS
-
-Pulsa el botón para copiar el enlace del widget desde el panel de administración.
-
-Ese enlace contiene tu configuración codificada, por eso si cambias metas, colores, redes o eventos, debes copiar de nuevo el enlace y actualizarlo en OBS.
+Si las subs bajan bastante, la meta también se reajusta al siguiente objetivo lógico para que no se quede demasiado alta.
 
 ---
 
-### 7 · Añadir el widget a OBS Studio
+### Meta de follows
 
-1. Abre OBS Studio.
-2. En tu escena, añade una nueva fuente → **Browser Source** / **Fuente de navegador**.
-3. Pega el enlace generado por el panel en el campo **URL**.
-4. Configura el tamaño según el diseño elegido:
+La meta de follows funciona de forma similar a la meta de subs.
 
-| Diseño | Medida recomendada |
+| Rango de follows | Salto de meta |
 |---|---|
-| Compacto con patrocinadores y redes | `1200 x 204` |
-| Compacto sin patrocinadores ni redes | `800 x 204` |
-| Horizontal | `1920 x 116` |
+| 0 a 99 | De 10 en 10 |
+| 100 a 999 | De 50 en 50 |
+| 1000 o más | De 100 en 100 |
 
-5. Activa **Refresh browser when scene becomes active**.
-6. Guarda la fuente.
+Ejemplo:
+
+```text
+86 follows   → meta 90
+101 follows  → meta 150
+940 follows  → meta 950
+1020 follows → meta 1100
+```
+
+Si el conteo de follows baja, el widget puede reajustar la meta para mantenerla cerca del progreso real.
 
 ---
 
-### 8 · Verificar la conexión con Streamer.bot
+### Meta de bits
 
-- En Streamer.bot: **General → WebSocket Server** debe estar activado.
-- En OBS, el widget debe mostrar el estado de conexión del ticker como **ONLINE / Sistema en línea**.
-- Si aparece **SIN SEÑAL**, revisa que Streamer.bot esté abierto y que el WebSocket Server esté activo.
-- Simula un evento desde Streamer.bot para confirmar que el ticker reacciona.
+La meta de bits tiene dos modos:
+
+#### Por stream
+
+- Cuenta los bits recibidos durante el directo.
+- Puede iniciar desde una cantidad base configurada en el panel.
+- Al llegar a la meta, se muestra la celebración.
+- Se reinicia cuando termina el stream.
+
+#### Mensual
+
+- Guarda el acumulado mensual en Streamer.bot.
+- Al alcanzar la meta, el widget se congela visualmente en la meta lograda.
+- Streamer.bot sigue guardando los bits reales.
+- Para continuar, vuelve al panel, sube el objetivo y copia un nuevo enlace.
+- El acumulado mensual se reinicia al cambiar de mes.
+
+> El panel protege el acumulado mensual para evitar bajarlo por accidente.
 
 ---
 
-## Eventos soportados
+## 🎉 Celebraciones y sonidos
+
+Cuando una meta se alcanza, el widget puede mostrar una celebración visual y reproducir un sonido.
+
+El sonido de celebración usa este archivo:
+
+```text
+assets/goal.mp3
+```
+
+Desde el panel puedes controlar:
+
+- Sonido global activado/desactivado
+- Sonido de celebración de metas
+- Sonido por tipo de evento
+- Volumen general
+- Duración de la celebración
+
+---
+
+## 📢 Eventos soportados
 
 ### Twitch
 
@@ -248,140 +332,130 @@ Ese enlace contiene tu configuración codificada, por eso si cambias metas, colo
 
 ---
 
-## Metas de suscriptores
+## 🖼️ Imágenes, GIFs y videos
 
-La meta de suscriptores usa los datos reales de Twitch obtenidos por Streamer.bot.
+Para logos, patrocinadores, GIFs o imágenes personalizadas, usa enlaces públicos directos.
 
-En **Metas y progreso** puedes activar o desactivar la meta de suscriptores. En modo compacto, el panel no permite generar el enlace si subs, follows y bits están apagadas al mismo tiempo; debe quedar al menos una meta activa para no dejar vacío el bloque de metas.
-
-La meta se calcula por rangos:
-
-| Rango | Salto de meta |
-|---|---|
-| 0 a 99 | 10 |
-| 100 a 999 | 50 |
-| 1000 en adelante | 100 |
-
-Ejemplos:
+Ejemplos válidos:
 
 ```text
-21 subs    → meta 30
-134 subs   → meta 150
-1340 subs  → meta 1400
+https://i.imgur.com/archivo.png
+https://i.imgur.com/archivo.gif
+https://tusitio.com/video.mp4
+https://tusitio.com/imagen.webp
 ```
 
-Al llegar a la meta, el widget espera unos segundos, muestra la celebración y luego actualiza a la siguiente meta.
+Evita rutas locales como:
+
+```text
+C:\Users\TuUsuario\Desktop\imagen.png
+```
+
+OBS necesita poder leer la imagen desde el navegador. Por eso lo más recomendable es usar una URL pública o subir los archivos al propio repositorio en la carpeta `assets/`.
 
 ---
 
-## Meta de follows
+## 🎮 Cronómetro y categoría actual
 
-La meta de follows usa una lógica similar a la meta de suscriptores.
+El cronómetro usa el tiempo real del directo de Twitch.
 
-| Rango | Salto de meta |
-|---|---|
-| 0 a 99 | 10 |
-| 100 a 999 | 50 |
-| 1000 en adelante | 100 |
+Si reinicias OBS o recargas el widget, el cronómetro no empieza desde cero: se sincroniza con el tiempo real del stream.
 
-Si Streamer.bot envía el total de followers, el widget usa ese número. Si solo llega un evento de follow, Streamer.bot suma 1 al acumulado guardado.
+La categoría actual puede mostrar:
 
----
-
-## Meta de bits
-
-La meta de bits tiene dos modos.
-
-### Por stream
-
-- Empieza desde los bits actuales configurados en el admin.
-- Suma cheers/bits recibidos durante el directo.
-- Al llegar a la meta, se congela visualmente en `objetivo/objetivo`.
-- Se reinicia al terminar el directo.
-- También suma al acumulado mensual interno.
-
-### Mensual
-
-- Usa la variable mensual persistente de Streamer.bot.
-- Al llegar a la meta, el widget se congela visualmente en `objetivo/objetivo`.
-- Streamer.bot sigue acumulando bits reales internamente.
-- Si quieres una meta más grande, vuelve al admin, sube el objetivo y copia un nuevo enlace.
-- Los bits mensuales solo se reinician al cambiar de mes.
-
-> El admin no permite bajar los bits mensuales guardados en Streamer.bot. Esto protege el acumulado real.
+- Nombre del juego o categoría
+- Portada de Twitch
+- Fallback visual si no hay imagen
+- Actualización automática con `Stream Update`
 
 ---
 
-## Cronómetro y categoría actual
-
-El cronómetro usa el tiempo real del directo de Twitch.  
-Si recargas OBS o cambias el enlace durante un directo, el cronómetro no empieza desde cero: se sincroniza con el tiempo real que lleva el stream.
-
-La tarjeta de categoría muestra:
-
-- Portada de la categoría actual.
-- Nombre de la categoría.
-- Fallback visual si no hay imagen disponible.
-- Actualización usando el trigger `Twitch → General → Stream Update`.
-
----
-
-## Estados del canal
+## 🟢 Estados del widget
 
 | Estado | Significado |
 |---|---|
-| **EN VIVO** | Twitch está online |
-| **OFFLINE** | Twitch está offline |
-| **SIN SEÑAL** | El widget perdió conexión con Streamer.bot |
+| **EN VIVO** | Twitch está online. |
+| **OFFLINE** | Twitch está offline. |
+| **SIN SEÑAL** | El widget perdió conexión con Streamer.bot. |
 
-Si aparece **SIN SEÑAL**, revisa que Streamer.bot esté abierto y que el WebSocket Server esté activo.
+Si aparece **SIN SEÑAL**, normalmente significa que Streamer.bot está cerrado o que el WebSocket Server no está activo.
 
 ---
 
-## Solución de problemas
+## 🧪 Cómo probar que todo funciona
 
-| Problema | Solución |
+1. Abre Streamer.bot.
+2. Activa WebSocket Server.
+3. Abre el panel del widget.
+4. Usa el botón **Probar conexión**.
+5. Copia el enlace para OBS.
+6. Pégalo como Fuente de navegador.
+7. Simula un evento desde Streamer.bot.
+8. Revisa que el ticker, metas y sonidos reaccionen.
+
+---
+
+## 🆘 Solución de problemas
+
+| Problema | Qué revisar |
 |---|---|
-| El widget muestra **SIN SEÑAL** | Abre Streamer.bot y revisa el WebSocket Server |
-| No conecta con Streamer.bot | Verifica host `127.0.0.1` y puerto `8080` |
-| No aparecen eventos | Revisa que la acción **Hipe Widget** esté habilitada |
-| No suenan eventos | Revisa sonido global, sonido por evento y volumen |
-| No suena la celebración | Revisa `Sonido de celebración de metas`, sonido global, volumen y que exista `assets/goal.mp3` |
-| No se ven imágenes | Usa enlaces públicos directos. En Imgur deben terminar normalmente en `.png`, `.jpg`, `.gif` o `.webp` |
-| El cronómetro no coincide | Verifica triggers Twitch Stream Online/Offline |
-| La categoría no cambia en vivo | Agrega el trigger `Twitch → General → Stream Update` |
-| Bits mensuales no bajan | Es intencional; Streamer.bot protege el acumulado real |
-| El texto se corta en el ticker | Aumenta el ancho del Browser Source en OBS o revisa que el diseño corresponda con la medida recomendada |
+| El widget dice **SIN SEÑAL** | Streamer.bot debe estar abierto y WebSocket Server activo. |
+| No conecta | Revisa host `127.0.0.1` y puerto `8080`. |
+| No aparecen eventos | Confirma que la acción **Hipe Widget** esté habilitada. |
+| No aparecen subs o follows | Revisa que las sub-actions de conteo estén en la acción. |
+| No suenan eventos | Revisa sonido global, sonido por evento y volumen. |
+| No suena la celebración | Revisa que exista `assets/goal.mp3` y que el sonido esté activado. |
+| No se ven imágenes | Usa enlaces públicos directos que terminen en `.png`, `.jpg`, `.gif`, `.webp` o `.mp4`. |
+| La categoría no cambia | Agrega el trigger `Twitch → General → Stream Update`. |
+| El cronómetro no coincide | Revisa los triggers Stream Online y Stream Offline. |
+| Los bits mensuales no bajan | Es normal; el acumulado mensual está protegido. |
+| El texto se corta | Aumenta el ancho de la Fuente de navegador o usa el tamaño recomendado. |
 
 ---
 
-## Archivos principales
+## ❓ Preguntas frecuentes
 
-```text
-admin.html              Panel de configuración
-widget.html             Overlay para OBS
-codigosb.txt            Código C# de Streamer.bot para referencia
-streamerbot-import.txt  Código de importación de la acción
-TESTING.md              Checklist de pruebas
-assets/                 Imágenes, audio y favicon
-```
+### ¿Necesito saber programar?
+
+No. El widget se configura desde el panel. Solo necesitas importar la acción en Streamer.bot y pegar el enlace en OBS.
+
+### ¿Puedo cambiar colores y estilo?
+
+Sí. Desde el panel puedes ajustar colores, bordes, opacidad y otros detalles visuales.
+
+### ¿Puedo usar mis propias imágenes?
+
+Sí. Usa URLs públicas directas o sube tus archivos a `assets/`.
+
+### ¿Puedo usarlo con otro streamer?
+
+Sí. El enlace guarda la configuración visual, pero los eventos dependen del Streamer.bot de quien lo esté usando.
+
+### ¿Streamer.bot debe estar abierto?
+
+Sí. Si Streamer.bot está cerrado, el widget no recibirá eventos en tiempo real.
+
+### ¿Tengo que copiar de nuevo el enlace si cambio algo?
+
+Sí. Si cambias configuración en el panel, copia otra vez el enlace y actualízalo en OBS.
 
 ---
 
-## Notas
+## 🧾 Notas importantes
 
-- **Sin instalación:** el panel funciona desde GitHub Pages; no necesitas descargar nada para usarlo.
-- **Configuración portable:** el enlace generado contiene la configuración del widget. Puedes compartirlo con otros streamers; ellos verán tus colores e imágenes, pero los eventos vendrán de su propio Streamer.bot.
-- **Sin instalación:** el panel funciona desde GitHub Pages.
-- **Configuración portable:** el enlace generado contiene la configuración del widget.
-- **Streamer.bot debe estar abierto** para recibir eventos en tiempo real.
-- **localStorage:** el panel guarda tus preferencias en el navegador.
-- **Sonido de celebración:** la celebración de metas puede reproducir `assets/goal.mp3`. Se controla desde el panel y usa el volumen general de sonidos.
-- **Autoalojamiento:** puedes clonar el repositorio, activar GitHub Pages en tu cuenta y usar tu propia URL del panel.
+- El panel funciona desde GitHub Pages.
+- La configuración se guarda en el navegador usando `localStorage`.
+- El enlace generado contiene la configuración del widget.
+- Streamer.bot debe estar abierto para recibir eventos.
+- El WebSocket Server debe estar activo.
+- Para imágenes y sonidos, usa rutas accesibles para el navegador.
+- Puedes clonar el repositorio y usar tu propia versión en GitHub Pages.
 
 ---
 
-## Créditos
+## 👑 Créditos
 
-Desarrollado por [jsmoctezuma](https://github.com/jsmoctezuma).  
-Iconos por [Iconify](https://iconify.design) · Fuentes: [Rajdhani y Barlow Condensed](https://fonts.google.com) (Google Fonts).
+Desarrollado por [jsmoctezuma](https://github.com/jsmoctezuma).
+
+Iconos por [Iconify](https://iconify.design).  
+Fuentes: [Rajdhani](https://fonts.google.com/specimen/Rajdhani) y [Barlow Condensed](https://fonts.google.com/specimen/Barlow+Condensed).
