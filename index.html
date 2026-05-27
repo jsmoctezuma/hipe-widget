@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hipe Widget | Guía rápida para OBS y Streamer.bot</title>
+  <meta name="description" content="Overlay configurable para OBS y Streamer.bot con metas, eventos, redes, sponsors, sonidos, categoría actual y clima local." />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080810;
+      --bg2: #10101a;
+      --card: rgba(22, 22, 34, .72);
+      --card2: rgba(31, 31, 48, .74);
+      --line: rgba(255,255,255,.10);
+      --line2: rgba(124,58,237,.35);
+      --txt: #f7f5ff;
+      --muted: #b7b1ca;
+      --soft: #837b9c;
+      --accent: #7c3aed;
+      --accent2: #a78bfa;
+      --accent3: #41e6ff;
+      --pink: #ff4fa0;
+      --green: #4ade80;
+      --yellow: #ffd166;
+      --red: #fb7185;
+      --shadow: 0 24px 80px rgba(0,0,0,.45);
+      --radius: 24px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(124,58,237,.32), transparent 34rem),
+        radial-gradient(circle at top right, rgba(65,230,255,.14), transparent 32rem),
+        radial-gradient(circle at 50% 40%, rgba(255,79,160,.10), transparent 34rem),
+        linear-gradient(180deg, #080810 0%, #0d0d16 44%, #07070d 100%);
+      color: var(--txt);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .30;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, #000, transparent 75%);
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.05) 48%, transparent 54%);
+      transform: translateX(-80%);
+      animation: shine 9s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    @keyframes shine {
+      0%, 60% { transform: translateX(-95%); opacity: 0; }
+      72% { opacity: .45; }
+      100% { transform: translateX(95%); opacity: 0; }
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(var(--max), calc(100% - 36px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(8,8,16,.66);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand { display:flex; align-items:center; gap:13px; min-width: 0; }
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display:block;
+      object-fit: contain;
+      filter: drop-shadow(0 0 14px rgba(124,58,237,.45));
+      flex-shrink: 0;
+    }
+    .brand-lockup { display:flex; align-items:center; gap:12px; min-width:0; }
+    .brand-text {
+      font-family: Rajdhani, sans-serif;
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      background: linear-gradient(120deg, #ffffff 0%, #a78bfa 28%, #ff4fa0 52%, #41e6ff 78%, #ffffff 100%);
+      background-size: 260% 260%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: btnShift 7s ease infinite;
+    }
+    .brand-text span { color: transparent; }
+    .brand-subtitle {
+      display:inline-flex;
+      align-items:center;
+      min-height: 26px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(167,139,250,.14);
+      border: 1px solid rgba(167,139,250,.18);
+      color: #b9a7ff;
+      font-family: Rajdhani, sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .nav { display:flex; align-items:center; gap: 4px; }
+    .nav a {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 12px;
+      border-radius: 999px;
+      transition: .2s ease;
+    }
+    .nav a:hover { color: var(--txt); background: rgba(255,255,255,.07); }
+
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      min-height: 46px;
+      padding: 12px 19px;
+      font-weight: 800;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease, color .18s ease;
+      font-family: Inter, sans-serif;
+      box-shadow: 0 10px 26px rgba(0,0,0,.18);
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 79, 160, 1);
+      box-shadow:
+        0 0 0 1px rgba(255, 79, 160, .35) inset,
+        0 0 26px rgba(255, 79, 160, .34),
+        0 14px 34px rgba(0,0,0,.28);
+    }
+    .btn-primary {
+      color: white;
+      background: #7c3aed;
+    }
+    .btn-primary:hover {
+      background: #ff4fa0;
+      color: #fff;
+    }
+    .btn-secondary {
+      color: #fff;
+      background: #201729;
+    }
+    .btn-secondary:hover {
+      background: #a855f7;
+      color: #fff;
+    }
+    .btn-ghost {
+      color: #dff9ff;
+      background: #122333;
+      border-color: rgba(255,255,255,.12);
+    }
+    .btn-ghost:hover {
+      background: #0ea5e9;
+      color: #fff;
+    }
+    @keyframes btnShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .hero { position: relative; padding: 92px 0 54px; }
+    .hero-grid {
+      display:grid;
+      grid-template-columns: minmax(0, 1.04fr) minmax(360px, .86fr);
+      gap: 44px;
+      align-items: center;
+    }
+    .kicker {
+      display:inline-flex; align-items:center; gap:9px;
+      border:1px solid rgba(167,139,250,.26);
+      color: var(--accent2);
+      background: rgba(124,58,237,.12);
+      border-radius:999px;
+      padding: 8px 12px;
+      font-weight: 800;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing:.08em;
+    }
+    h1 {
+      margin: 20px 0 16px;
+      font-family: Rajdhani, sans-serif;
+      font-size: clamp(56px, 8vw, 112px);
+      line-height: .82;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    h1 span {
+      background: linear-gradient(120deg, #ffffff 0%, #a78bfa 25%, #ff4fa0 50%, #41e6ff 75%, #ffffff 100%);
+      background-size: 260% 260%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: btnShift 7s ease infinite;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.55;
+      max-width: 720px;
+      margin: 0 0 28px;
+    }
+    .hero-actions { display:flex; flex-wrap:nowrap; gap: 10px; margin-bottom: 22px; align-items:center; max-width: 100%; }
+    .hero-actions .btn { white-space: nowrap; flex: 0 1 auto; padding-inline: 18px; }
+    .badges { display:flex; flex-wrap:nowrap; gap: 8px; align-items:center; max-width: 100%; }
+    .badge {
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 7px 10px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.055);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .preview-card {
+      position: relative;
+      min-height: 430px;
+      border: 1px solid rgba(255,255,255,.12);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)),
+        rgba(15,15,24,.82);
+      border-radius: 34px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .preview-card::before {
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(circle at 20% 20%, rgba(124,58,237,.38), transparent 18rem), radial-gradient(circle at 80% 30%, rgba(65,230,255,.18), transparent 14rem);
+      z-index:-1;
+    }
+    .browser-dots { display:flex; gap:7px; margin-bottom: 18px; }
+    .browser-dots i { width:10px; height:10px; border-radius:50%; background: rgba(255,255,255,.22); }
+    .mock-widget {
+      border-radius: 20px;
+      background: #111117;
+      border: 1px solid #28283a;
+      padding: 14px;
+      box-shadow: 0 0 24px rgba(0,0,0,.35);
+    }
+    .mock-row { display:flex; gap:10px; margin-bottom:10px; }
+    .mock-id, .mock-goal, .mock-sponsor, .mock-ticker {
+      background: #171721;
+      border: 1px solid #2a2a3b;
+      border-radius: 10px;
+      min-height: 78px;
+    }
+    .mock-id { flex: .9; display:flex; align-items:center; gap:12px; padding:12px; }
+    .mock-avatar { width:48px; height:48px; border-radius:50%; background: linear-gradient(135deg, var(--accent), var(--accent3)); }
+    .mock-lines span { display:block; height:10px; border-radius:99px; background: rgba(255,255,255,.18); margin:7px 0; }
+    .mock-lines span:first-child { width: 120px; }
+    .mock-lines span:last-child { width: 76px; background: rgba(74,222,128,.35); }
+    .mock-goal { flex: 1.3; padding:12px; display:flex; flex-direction:column; justify-content:center; }
+    .mock-title { color: var(--accent2); font-family: Rajdhani, sans-serif; font-weight:800; letter-spacing:.08em; }
+    .mock-num { font-family: Rajdhani, sans-serif; font-size: 38px; font-weight:800; line-height:1; }
+    .mock-bar { height: 8px; border-radius:99px; background: #252536; overflow:hidden; margin-top:8px; }
+    .mock-bar i { display:block; width:70%; height:100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .mock-sponsor { flex: .9; display:grid; place-items:center; color:var(--muted); font-weight:800; }
+    .mock-ticker { padding: 14px; display:flex; align-items:center; gap:12px; min-height: 76px; }
+    .mock-pill { padding:8px 12px; border-radius:999px; background: rgba(255,79,160,.16); color: #ff8cc0; font-weight:900; font-size:13px; }
+    .mock-user { font-family: Rajdhani, sans-serif; font-size:31px; font-weight:800; }
+    .floating-stat {
+      position:absolute;
+      right: 24px;
+      bottom: 22px;
+      width: min(340px, calc(100% - 48px));
+      padding: 16px;
+      border: 1px solid rgba(65,230,255,.25);
+      background: rgba(8,16,24,.72);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+    }
+    .floating-stat strong { font-family: Rajdhani, sans-serif; font-size: 25px; display:block; }
+    .floating-stat p { margin:4px 0 0; color:var(--muted); line-height:1.4; }
+
+    section { padding: 64px 0; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom: 28px; }
+    .eyebrow { color: var(--accent3); font-weight:900; text-transform:uppercase; letter-spacing:.13em; font-size:13px; }
+    h2 {
+      margin: 8px 0 0;
+      font-family: Rajdhani, sans-serif;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: .95;
+      text-transform: uppercase;
+    }
+    .section-note { color: var(--muted); max-width: 520px; line-height:1.55; margin: 0; }
+
+    .grid { display:grid; gap: 16px; }
+    .features { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .feature-card, .step, .panel, .faq-item, .trouble-card {
+      border:1px solid var(--line);
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 14px 50px rgba(0,0,0,.22);
+    }
+    .feature-icon { font-size: 28px; margin-bottom: 14px; }
+    .feature-card h3, .step h3, .panel h3, .trouble-card h3 { margin: 0 0 8px; font-size: 18px; }
+    .feature-card p, .step p, .panel p, .trouble-card p { margin:0; color:var(--muted); line-height:1.48; font-size:14.5px; }
+
+    .steps { grid-template-columns: repeat(4, minmax(0, 1fr)); counter-reset: steps; }
+    .step { position:relative; padding-top: 56px; }
+    .step::before {
+      counter-increment: steps;
+      content: counter(steps);
+      position:absolute;
+      top: 18px; left: 20px;
+      width:30px; height:30px; border-radius:50%;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      font-weight:900;
+      box-shadow: 0 0 22px rgba(124,58,237,.35);
+    }
+
+    .split { display:grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items:stretch; }
+    #importacion .copy-box,
+    #importacion .panel { min-height: 388px; height: 100%; }
+    .copy-box {
+      border:1px solid var(--line2);
+      background: linear-gradient(180deg, rgba(124,58,237,.14), rgba(255,255,255,.035));
+      border-radius: 28px;
+      padding: 22px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    .copy-box textarea {
+      width:100%;
+      height: 118px;
+      resize: none;
+      margin-top: 14px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.30);
+      color: #e9ddff;
+      border-radius: 16px;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height:1.45;
+      outline: none;
+    }
+    .copy-actions { display:flex; flex-wrap:wrap; gap: 10px; margin-top: 14px; }
+    .mini-list { display:grid; gap:10px; margin-top: 16px; }
+    .mini-list div { display:flex; gap:10px; color:var(--muted); align-items:flex-start; }
+    .mini-list b { color:var(--txt); }
+
+    .goal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .goal-table { width: 100%; border-collapse: collapse; margin-top: 14px; overflow:hidden; border-radius: 14px; }
+    .goal-table th, .goal-table td { border-bottom: 1px solid var(--line); padding: 10px; text-align:left; font-size: 14px; }
+    .goal-table th { color: var(--accent2); background: rgba(124,58,237,.12); }
+    .goal-table tr:last-child td { border-bottom:0; }
+    .code-sample {
+      display:block;
+      background: rgba(0,0,0,.28);
+      border: 1px solid var(--line);
+      padding: 12px;
+      border-radius: 14px;
+      color: #d9ceff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      margin-top: 12px;
+    }
+
+    .trouble { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .faq { display:grid; gap: 12px; }
+    details.faq-item { padding: 0; overflow:hidden; }
+    .faq-item summary {
+      list-style:none;
+      cursor:pointer;
+      padding: 18px 20px;
+      font-weight:900;
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      align-items:center;
+    }
+    .faq-item summary::-webkit-details-marker { display:none; }
+    .faq-item summary::after { content:"+"; color:var(--accent2); font-size: 22px; }
+    .faq-item[open] summary::after { content:"–"; }
+    .faq-item p { margin:0; padding: 0 20px 18px; color:var(--muted); line-height:1.55; }
+
+    .cta {
+      border: 1px solid rgba(167,139,250,.25);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(124,58,237,.30), transparent 22rem),
+        radial-gradient(circle at 80% 20%, rgba(65,230,255,.12), transparent 20rem),
+        rgba(18,18,28,.76);
+      border-radius: 34px;
+      padding: 38px;
+      text-align:center;
+      box-shadow: var(--shadow);
+    }
+    .cta h2 { margin:0 0 12px; }
+    .cta p { color:var(--muted); margin:0 auto 22px; max-width: 680px; line-height:1.58; }
+
+    footer { border-top:1px solid var(--line); padding: 26px 0 38px; color:var(--muted); text-align:center; }
+    footer p { margin: 8px 0; }
+    footer a { color: var(--accent2); font-weight:800; }
+
+    .toast {
+      position: fixed;
+      left:50%; bottom: 22px;
+      transform: translate(-50%, 18px);
+      opacity: 0;
+      pointer-events:none;
+      background: #171721;
+      color: white;
+      border: 1px solid rgba(74,222,128,.35);
+      box-shadow: var(--shadow);
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 800;
+      z-index: 99;
+      transition:.25s ease;
+    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    @media (max-width: 980px) {
+      .nav { display:none; }
+      .hero-grid, .split { grid-template-columns: 1fr; }
+      .hero-actions { flex-wrap: wrap; }
+      .badges { flex-wrap: wrap; }
+      .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .goal-grid { grid-template-columns: 1fr; }
+      #importacion .copy-box,
+      #importacion .panel { min-height: auto; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 24px, var(--max)); }
+      .topbar-inner { height: 64px; }
+      .brand-text { font-size: 20px; }
+      .brand-subtitle { display:none; }
+      .brand-mark { width: 40px; height: 40px; }
+      .hero { padding-top: 58px; }
+      .hero-actions .btn { width:100%; }
+      .preview-card { min-height: 360px; padding: 16px; border-radius: 24px; }
+      .mock-row { flex-direction:column; }
+      .features, .steps, .trouble { grid-template-columns: 1fr; }
+      .section-head { display:block; }
+      .section-note { margin-top: 12px; }
+      .cta { padding: 28px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#inicio" aria-label="Ir al inicio">
+        <img class="brand-mark" src="assets/mc.png" alt="Hipe Widget">
+        <div class="brand-lockup">
+          <div class="brand-text">Hipe <span>Widget</span></div>
+          <div class="brand-subtitle">by jsmoctezuma + LXLT</div>
+        </div>
+      </a>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="#funciones">Funciones</a>
+        <a href="#instalacion">Instalación</a>
+        <a href="#importacion">Importación</a>
+        <a href="#metas">Metas</a>
+        <a href="#ayuda">Ayuda</a>
+      </nav>
+      <a class="btn btn-primary" href="./admin.html" target="_blank" rel="noopener noreferrer">Panel de control</a>
+    </div>
+  </header>
+
+  <main id="inicio">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="kicker">Overlay para OBS + Streamer.bot</div>
+          <h1>Hipe <span>Widget</span></h1>
+          <p class="lead">Muestra metas, eventos, redes, patrocinadores, sonidos, categoría actual, clima local y estado del directo en un overlay limpio, personalizable y fácil de usar. Sin tocar código.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="./admin.html" target="_blank" rel="noopener noreferrer">🚀 Abrir panel</a>
+            <button class="btn btn-secondary" type="button" data-copy-import>📦 Copiar importación</button>
+            <a class="btn btn-ghost" href="#instalacion">📘 Guía rápida</a>
+          </div>
+          <div class="badges" aria-label="Compatibilidades">
+            <span class="badge">✅ OBS Studio</span>
+            <span class="badge">✅ Streamer.bot</span>
+            <span class="badge">✅ Twitch</span>
+            <span class="badge">✅ YouTube</span>
+            <span class="badge">✅ StreamElements</span>
+          </div>
+        </div>
+
+        <div class="preview-card" aria-label="Vista previa visual del widget">
+          <div class="browser-dots"><i></i><i></i><i></i></div>
+          <div class="mock-widget">
+            <div class="mock-row">
+              <div class="mock-id">
+                <div class="mock-avatar"></div>
+                <div class="mock-lines"><span></span><span></span></div>
+              </div>
+              <div class="mock-goal">
+                <div class="mock-title">META SUBS</div>
+                <div class="mock-num">64 / 70</div>
+                <div class="mock-bar"><i></i></div>
+              </div>
+            </div>
+            <div class="mock-row">
+              <div class="mock-sponsor">SPONSOR</div>
+              <div class="mock-sponsor">CATEGORÍA</div>
+            </div>
+            <div class="mock-ticker">
+              <span class="mock-pill">NUEVO FOLLOW</span>
+              <span class="mock-user">MancoSquad</span>
+            </div>
+          </div>
+          <div class="floating-stat">
+            <strong>Panel web + enlace para OBS</strong>
+            <p>Configuras una vez, copias el enlace y lo pegas como Fuente de navegador.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="funciones">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Todo en un solo overlay</div>
+            <h2>Qué puede mostrar</h2>
+          </div>
+          <p class="section-note">Pensado para streamers que quieren un widget visual, ordenado y configurable desde un panel, sin editar archivos.</p>
+        </div>
+        <div class="grid features">
+          <article class="feature-card"><div class="feature-icon">🟢</div><h3>Estado del canal</h3><p>EN VIVO, OFFLINE o SIN SEÑAL según la conexión con Streamer.bot.</p></article>
+          <article class="feature-card"><div class="feature-icon">🎯</div><h3>Metas de subs</h3><p>Progreso automático con celebración cuando alcanzas la meta.</p></article>
+          <article class="feature-card"><div class="feature-icon">❤️</div><h3>Meta de follows</h3><p>Seguidores con rangos automáticos y reajuste si el conteo baja.</p></article>
+          <article class="feature-card"><div class="feature-icon">💎</div><h3>Meta de bits</h3><p>Modo por stream o mensual con acumulado persistente.</p></article>
+          <article class="feature-card"><div class="feature-icon">📢</div><h3>Ticker de eventos</h3><p>Follows, subs, bits, raids, donaciones, recompensas y más.</p></article>
+          <article class="feature-card"><div class="feature-icon">🎮</div><h3>Categoría actual</h3><p>Muestra juego o categoría con portada y actualización en vivo.</p></article>
+          <article class="feature-card"><div class="feature-icon">🌦️</div><h3>Clima local</h3><p>Muestra temperatura, sensación térmica, humedad, viento, condición actual e icono animado del clima.</p></article>
+          <article class="feature-card"><div class="feature-icon">🤝</div><h3>Patrocinadores</h3><p>Rotación de logos, imágenes o videos para tus sponsors.</p></article>
+          <article class="feature-card"><div class="feature-icon">🔊</div><h3>Sonidos</h3><p>Sonidos por evento y sonido especial para celebración de metas.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="instalacion">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Guía rápida</div>
+            <h2>Instalación en 4 pasos</h2>
+          </div>
+          <p class="section-note">Necesitas OBS Studio, Streamer.bot, Twitch conectado en Streamer.bot y WebSocket Server activo.</p>
+        </div>
+        <div class="grid steps">
+          <article class="step"><h3>Abre el panel</h3><p>Entra al panel de configuración y ajusta diseño, colores, metas, sonidos, redes y clima local.</p></article>
+          <article class="step"><h3>Importa la acción</h3><p>Copia el código de importación y agrégalo en Streamer.bot desde Actions.</p></article>
+          <article class="step"><h3>Activa WebSocket</h3><p>En Streamer.bot usa host 127.0.0.1 y puerto 8080, o los datos que configures.</p></article>
+          <article class="step"><h3>Pégalo en OBS</h3><p>Copia el enlace generado y úsalo como Browser Source / Fuente de navegador.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="importacion">
+      <div class="wrap split">
+        <div class="copy-box">
+          <div class="eyebrow">Streamer.bot</div>
+          <h2>Código de importación</h2>
+          <p class="section-note">Este bloque importa la acción que permite enviar eventos, metas, estado del stream y datos del canal al widget.</p>
+          <div class="copy-actions">
+            <button class="btn btn-primary" type="button" data-copy-import>📋 Copiar código</button>
+            <button class="btn btn-secondary" type="button" data-select-import>Seleccionar texto</button>
+          </div>
+          <textarea id="importCode" spellcheck="false" aria-label="Código de importación para Streamer.bot">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</textarea>
+        </div>
+        <div class="panel">
+          <h3>Cómo importarlo</h3>
+          <div class="mini-list">
+            <div><span>1️⃣</span><span>Abre <b>Streamer.bot</b>.</span></div>
+            <div><span>2️⃣</span><span>Ve a <b>Actions</b> y pulsa <b>Import</b>.</span></div>
+            <div><span>3️⃣</span><span>Usa <b>Import from Clipboard</b> o guarda el código como archivo <b>.sbaction</b>.</span></div>
+            <div><span>4️⃣</span><span>Confirma que la acción <b>Hipe Widget</b> quede habilitada.</span></div>
+            <div><span>5️⃣</span><span>Agrega el trigger <b>Twitch → General → Stream Update</b> para actualizar la categoría en vivo.</span></div>
+          </div>
+          <code class="code-sample">Sub-actions esperadas:
+Get Twitch Subscriber Count
+Get Twitch Follower Count
+Add Twitch Broadcaster Information
+Execute C# Code</code>
+        </div>
+      </div>
+    </section>
+
+    <section id="obs">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">OBS Studio</div>
+            <h2>Medidas recomendadas</h2>
+          </div>
+          <p class="section-note">Crea una Fuente de navegador, pega el enlace generado por el panel y usa una de estas medidas.</p>
+        </div>
+        <div class="grid goal-grid">
+          <article class="panel"><h3>Compacto completo</h3><p>Ideal si muestras canal, metas, sponsors y redes.</p><code class="code-sample">1200 x 204</code></article>
+          <article class="panel"><h3>Compacto limpio</h3><p>Para mostrar solo secciones principales sin sponsors o redes.</p><code class="code-sample">800 x 204</code></article>
+          <article class="panel"><h3>Horizontal</h3><p>Perfecto como barra inferior en overlays amplios.</p><code class="code-sample">1920 x 116</code></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="metas">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Progreso automático</div>
+            <h2>Cómo funcionan las metas</h2>
+          </div>
+          <p class="section-note">Subs y follows usan saltos por rangos. Bits puede funcionar por stream o de forma mensual.</p>
+        </div>
+        <div class="grid goal-grid">
+          <article class="panel">
+            <h3>🎯 Subs</h3>
+            <p>Usa el conteo real de Twitch y calcula la siguiente meta automáticamente. Si las subs bajan bastante, la meta se reajusta.</p>
+            <table class="goal-table"><tr><th>Rango</th><th>Salto</th></tr><tr><td>0 a 99</td><td>10</td></tr><tr><td>100 a 999</td><td>50</td></tr><tr><td>1000+</td><td>100</td></tr></table>
+            <code class="code-sample">64 subs → meta 70
+134 subs → meta 150</code>
+          </article>
+          <article class="panel">
+            <h3>❤️ Follows</h3>
+            <p>Funciona igual que subs: crea metas cercanas, sube al alcanzarlas y puede reajustar si el conteo baja.</p>
+            <table class="goal-table"><tr><th>Rango</th><th>Salto</th></tr><tr><td>0 a 99</td><td>10</td></tr><tr><td>100 a 999</td><td>50</td></tr><tr><td>1000+</td><td>100</td></tr></table>
+            <code class="code-sample">86 follows → meta 90
+1020 follows → meta 1100</code>
+          </article>
+          <article class="panel">
+            <h3>💎 Bits</h3>
+            <p>En modo stream se reinicia al terminar directo. En mensual guarda acumulado y protege los bits reales.</p>
+            <code class="code-sample">Por stream: suma durante directo
+Mensual: guarda acumulado
+Meta alcanzada: celebración + congelado visual</code>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="ayuda">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Solución de problemas</div>
+            <h2>Si algo no funciona</h2>
+          </div>
+          <p class="section-note">La mayoría de problemas vienen de Streamer.bot cerrado, WebSocket apagado, enlace viejo, ubicación/clima sin configurar o URLs de imágenes incorrectas.</p>
+        </div>
+        <div class="grid trouble">
+          <article class="trouble-card"><h3>❌ SIN SEÑAL</h3><p>Abre Streamer.bot y activa General → WebSocket Server. Verifica host 127.0.0.1 y puerto 8080.</p></article>
+          <article class="trouble-card"><h3>🔇 No suenan eventos</h3><p>Revisa sonido global, sonidos por evento, volumen y que exista assets/goal.mp3 para celebración.</p></article>
+          <article class="trouble-card"><h3>🖼️ No se ven imágenes</h3><p>Usa enlaces públicos directos terminados en .png, .jpg, .gif, .webp o .mp4.</p></article>
+          <article class="trouble-card"><h3>🎮 Categoría no cambia</h3><p>Agrega el trigger Twitch → General → Stream Update a la acción Hipe Widget.</p></article>
+          <article class="trouble-card"><h3>🌦️ No aparece el clima</h3><p>Activa “Mostrar clima local” en el panel, detecta ubicación o escribe ciudad, latitud y longitud manualmente. Después vuelve a copiar el enlace y actualízalo en OBS.</p></article>
+        </div>
+
+        <div style="height:24px"></div>
+        <div class="faq">
+          <details class="faq-item"><summary>¿Necesito saber programar?</summary><p>No. Se configura desde el panel. Solo importas la acción en Streamer.bot y pegas el enlace en OBS.</p></details>
+          <details class="faq-item"><summary>¿Tengo que copiar el enlace otra vez si cambio algo?</summary><p>Sí. El enlace contiene la configuración. Si cambias colores, metas, redes, eventos o clima local, vuelve a copiarlo y actualízalo en OBS.</p></details>
+          <details class="faq-item"><summary>¿Puedo usar mis propias imágenes?</summary><p>Sí. Puedes usar URLs públicas directas o subir tus archivos a la carpeta assets del sitio.</p></details>
+          <details class="faq-item"><summary>¿Streamer.bot debe estar abierto?</summary><p>Sí. Si Streamer.bot está cerrado, el widget no recibe eventos en tiempo real.</p></details>
+          <details class="faq-item"><summary>¿El clima necesita Streamer.bot?</summary><p>No. El clima se configura desde el panel y se consulta directamente desde el widget usando la ubicación configurada. Streamer.bot sigue siendo necesario para eventos, metas, estado del directo y categoría.</p></details>
+          <details class="faq-item"><summary>¿Cada cuánto se actualiza el clima?</summary><p>El clima se carga al abrir el widget y se actualiza automáticamente cada 10 minutos.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap cta">
+        <h2>Listo para configurar tu overlay</h2>
+        <p>Abre el panel, personaliza el widget, configura el clima local y copia el enlace para OBS. Todo desde una página, sin editar código.</p>
+        <div class="hero-actions" style="justify-content:center;margin-bottom:0">
+          <a class="btn btn-primary" href="./admin.html" target="_blank" rel="noopener noreferrer">🚀 Abrir panel</a>
+          <button class="btn btn-secondary" type="button" data-copy-import>📦 Copiar importación</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Desarrollado por <a href="https://github.com/jsmoctezuma" target="_blank" rel="noopener">jsmoctezuma</a> &nbsp;•&nbsp; Iconos por <a href="https://iconify.design" target="_blank" rel="noopener">Iconify</a> &nbsp;•&nbsp; Fuentes: <a href="https://fonts.google.com" target="_blank" rel="noopener">Rajdhani y Barlow Condensed</a></p>
+      <p>Hecho con 💜 para streamers que quieren un overlay limpio, personalizable y fácil de usar.</p>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast">Copiado al portapapeles ✅</div>
+
+  <script>
+    const toast = document.getElementById('toast');
+    const importCode = document.getElementById('importCode');
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    async function copyImportCode() {
+      const value = importCode.value.trim();
+      try {
+        await navigator.clipboard.writeText(value);
+        showToast('Código de importación copiado ✅');
+      } catch (err) {
+        importCode.focus();
+        importCode.select();
+        document.execCommand('copy');
+        showToast('Código seleccionado/copiado ✅');
+      }
+    }
+
+    document.querySelectorAll('[data-copy-import]').forEach(btn => {
+      btn.addEventListener('click', copyImportCode);
+    });
+
+    document.querySelectorAll('[data-select-import]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        importCode.focus();
+        importCode.select();
+        showToast('Texto seleccionado ✅');
+      });
+    });
+  </script>
+</body>
+</html>

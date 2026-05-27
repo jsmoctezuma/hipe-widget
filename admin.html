@@ -1036,6 +1036,33 @@
           <div class="tog-sub">Muestra la imagen y nombre de la categoría del directo.</div>
         </div><label class="tog"><input type="checkbox" id="showCategory" checked><span class="tog-sl"></span></label>
       </div>
+      <div class="tog-row" id="tr-weather">
+        <div>
+          <div class="tog-lbl">Mostrar clima local</div>
+          <div class="tog-sub">Muestra temperatura, estado del clima e icono grande en la misma rotación.</div>
+        </div><label class="tog"><input type="checkbox" id="showWeather"><span class="tog-sl"></span></label>
+      </div>
+      <div id="weather-content" style="display:none;margin-left:24px;border-left:2px solid var(--bord);padding-left:16px;margin-top:12px;">
+        <div class="r3">
+          <div class="field">
+            <label>Ciudad visible</label>
+            <input type="text" id="weatherCity" placeholder="Ej. Emiliano Zapata, Ver." onchange="saveToLocalStorage()">
+            <span class="fhint">Texto que aparecerá en la tarjeta.</span>
+          </div>
+          <div class="field">
+            <label>Latitud</label>
+            <input type="number" id="weatherLat" placeholder="19.5438" step="0.0001" onchange="saveToLocalStorage()">
+            <span class="fhint">Puedes usar una ubicación aproximada.</span>
+          </div>
+          <div class="field">
+            <label>Longitud</label>
+            <input type="number" id="weatherLon" placeholder="-96.9102" step="0.0001" onchange="saveToLocalStorage()">
+            <span class="fhint">No necesitas poner tu dirección exacta.</span>
+          </div>
+        </div>
+        <button type="button" class="btn-test" id="detectWeatherLocationBtn">Detectar ubicación</button>
+        <div class="fhint" style="margin-top:10px;">La detección se hace desde el Admin. OBS solo recibe latitud/longitud en el enlace, así evitamos permisos dentro de la fuente de navegador.</div>
+      </div>
     </div>
 
     <!-- ========== REDES SOCIALES Y CÓDIGO DE CREADOR ========== -->
@@ -1226,6 +1253,121 @@
     function toggleCategoryUI() {
       const on = document.getElementById('showCategory').checked;
       document.getElementById('tr-category').classList.toggle('on', on);
+    }
+    function toggleWeatherUI() {
+      const on = document.getElementById('showWeather').checked;
+      document.getElementById('weather-content').style.display = on ? '' : 'none';
+      document.getElementById('tr-weather').classList.toggle('on', on);
+    }
+        const MX_STATE_ABBR = {
+      'aguascalientes': 'AGS.',
+      'baja california': 'BC',
+      'baja california sur': 'BCS',
+      'campeche': 'CAMP.',
+      'chiapas': 'CHIS.',
+      'chihuahua': 'CHIH.',
+      'ciudad de mexico': 'CDMX',
+      'ciudad de méxico': 'CDMX',
+      'coahuila': 'COAH.',
+      'coahuila de zaragoza': 'COAH.',
+      'colima': 'COL.',
+      'durango': 'DGO.',
+      'guanajuato': 'GTO.',
+      'guerrero': 'GRO.',
+      'hidalgo': 'HGO.',
+      'jalisco': 'JAL.',
+      'mexico': 'EDOMEX',
+      'méxico': 'EDOMEX',
+      'estado de mexico': 'EDOMEX',
+      'estado de méxico': 'EDOMEX',
+      'michoacan': 'MICH.',
+      'michoacán': 'MICH.',
+      'morelos': 'MOR.',
+      'nayarit': 'NAY.',
+      'nuevo leon': 'NL',
+      'nuevo león': 'NL',
+      'oaxaca': 'OAX.',
+      'puebla': 'PUE.',
+      'queretaro': 'QRO.',
+      'querétaro': 'QRO.',
+      'quintana roo': 'Q. ROO',
+      'san luis potosi': 'SLP',
+      'san luis potosí': 'SLP',
+      'sinaloa': 'SIN.',
+      'sonora': 'SON.',
+      'tabasco': 'TAB.',
+      'tamaulipas': 'TAMPS.',
+      'tlaxcala': 'TLAX.',
+      'veracruz': 'VER.',
+      'veracruz de ignacio de la llave': 'VER.',
+      'yucatan': 'YUC.',
+      'yucatán': 'YUC.',
+      'zacatecas': 'ZAC.'
+    };
+
+    function normalizeWeatherKey(value) {
+      return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function compactWeatherPlace(place) {
+      return String(place || '')
+        .replace(/-?enriquez/ig, '')
+        .replace(/-?enríquez/ig, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function compactWeatherLocation(city, state) {
+      const cleanCity = compactWeatherPlace(city);
+      const stateAbbr = MX_STATE_ABBR[normalizeWeatherKey(state)] || String(state || '').trim();
+      return stateAbbr ? `${cleanCity}, ${stateAbbr}` : cleanCity;
+    }
+
+async function reverseWeatherCity(lat, lon) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&accept-language=es&zoom=10`;
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('reverse geocode status ' + res.status);
+        const data = await res.json();
+        const a = data.address || {};
+        const city = a.city || a.town || a.village || a.municipality || a.county || '';
+        const state = a.state || '';
+        if (city || state) return compactWeatherLocation(city, state);
+      } catch (err) {
+        console.warn('[HipeWidget] No se pudo resolver ciudad visible', err);
+      }
+      return '';
+    }
+
+    async function detectWeatherLocation() {
+      if (!navigator.geolocation) {
+        toast('Este navegador no permite detectar ubicación.', 'warning');
+        return;
+      }
+      toast('Solicitando ubicación aproximada...');
+      navigator.geolocation.getCurrentPosition(async pos => {
+        const lat = Number(pos.coords.latitude).toFixed(4);
+        const lon = Number(pos.coords.longitude).toFixed(4);
+        document.getElementById('weatherLat').value = lat;
+        document.getElementById('weatherLon').value = lon;
+
+        const cityInput = document.getElementById('weatherCity');
+        const currentCity = (cityInput.value || '').trim();
+        if (!currentCity || /^clima local$/i.test(currentCity)) {
+          const detectedCity = await reverseWeatherCity(lat, lon);
+          cityInput.value = detectedCity || 'Clima local';
+        }
+
+        saveToLocalStorage();
+        toast('Ubicación guardada para la tarjeta de clima.');
+      }, () => {
+        toast('No se pudo detectar la ubicación. Puedes escribir latitud y longitud manualmente.', 'warning');
+      }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 3600000 });
     }
     function toggleSocialsUI() {
       const on = document.getElementById('showSocials').checked;
@@ -1450,6 +1592,14 @@
         showSponsors: document.getElementById('showSponsors').checked,
         showUptime: document.getElementById('showUptime').checked,
         showCategory: document.getElementById('showCategory').checked,
+        showWeather: document.getElementById('showWeather').checked,
+        weather: {
+          active: document.getElementById('showWeather').checked,
+          city: /^clima local$/i.test(document.getElementById('weatherCity').value.trim()) ? '' : document.getElementById('weatherCity').value.trim(),
+          lat: parseFloat(document.getElementById('weatherLat').value),
+          lon: parseFloat(document.getElementById('weatherLon').value),
+          unit: 'celsius'
+        },
         goalRotationSeconds: parseInt(document.getElementById('goalRotSecs').value) || 30,
         sponsors,
         sponsorTransition: document.getElementById('sponsorTransition').value,
@@ -1590,6 +1740,11 @@
         document.getElementById('showSponsors').checked = cfg.showSponsors !== false;
         document.getElementById('showUptime').checked = cfg.showUptime !== false;
         document.getElementById('showCategory').checked = cfg.showCategory !== false;
+        document.getElementById('showWeather').checked = cfg.weather?.active === true || cfg.showWeather === true;
+        const savedWeatherCity = (cfg.weather?.city || '').trim();
+        document.getElementById('weatherCity').value = /^clima local$/i.test(savedWeatherCity) ? '' : savedWeatherCity;
+        document.getElementById('weatherLat').value = Number.isFinite(Number(cfg.weather?.lat)) ? cfg.weather.lat : '';
+        document.getElementById('weatherLon').value = Number.isFinite(Number(cfg.weather?.lon)) ? cfg.weather.lon : '';
         document.getElementById('goalRotSecs').value = cfg.goalRotationSeconds || 30;
         document.getElementById('sponsorTransition').value = cfg.sponsorTransition || 'fade';
         document.getElementById('showSocials').checked = cfg.showSocials !== false;
@@ -1647,6 +1802,7 @@
         toggleSponsorsUI();
         toggleUptimeUI();
         toggleCategoryUI();
+        toggleWeatherUI();
         toggleSocialsUI();
         toggleCreatorUI();
         toggleGoalFollowsUI();
@@ -1825,6 +1981,7 @@ function testConnection() {
         document.getElementById('enableSounds').checked = true;
         document.getElementById('showSocials').checked = true;
         document.getElementById('showCreatorCode').checked = false;
+        document.getElementById('showWeather').checked = false;
         document.querySelectorAll('.soc-row').forEach(row => {
           const cb = row.querySelector('input[type="checkbox"]');
           if (cb) cb.checked = true;
@@ -1852,6 +2009,8 @@ function testConnection() {
       document.getElementById('showSponsors').addEventListener('change', () => { toggleSponsorsUI(); saveToLocalStorage(); });
       document.getElementById('showUptime').addEventListener('change', () => { toggleUptimeUI(); saveToLocalStorage(); });
       document.getElementById('showCategory').addEventListener('change', () => { toggleCategoryUI(); saveToLocalStorage(); });
+      document.getElementById('showWeather').addEventListener('change', () => { toggleWeatherUI(); saveToLocalStorage(); });
+      document.getElementById('detectWeatherLocationBtn').addEventListener('click', detectWeatherLocation);
       document.getElementById('showSocials').addEventListener('change', () => { toggleSocialsUI(); saveToLocalStorage(); });
       document.getElementById('showCreatorCode').addEventListener('change', () => { toggleCreatorUI(); saveToLocalStorage(); });
       document.getElementById('enableSounds').addEventListener('change', () => { toggleSoundGlobal(); saveToLocalStorage(); });
@@ -1911,6 +2070,7 @@ function testConnection() {
       toggleSponsorsUI();
       toggleUptimeUI();
       toggleCategoryUI();
+      toggleWeatherUI();
       toggleSocialsUI();
       toggleCreatorUI();
       toggleSoundGlobal();

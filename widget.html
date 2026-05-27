@@ -623,6 +623,351 @@
       font-size: 13px;
     }
 
+    #sp-weather {
+      justify-content: center;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    #sp-weather-wrap {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 94px 120px minmax(0, .72fr);
+      align-items: center;
+      gap: 10px;
+    }
+
+    #sp-weather-details {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 6px;
+      padding-left: 2px;
+      opacity: .98;
+    }
+
+    .weather-detail {
+      display: grid;
+      grid-template-columns: 50px minmax(0, 1fr);
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      font-family: 'Barlow Condensed', 'Rajdhani', sans-serif;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .weather-detail-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .weather-detail-meta iconify-icon {
+      color: #ffffff;
+      font-size: 12px;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,.18));
+      flex-shrink: 0;
+    }
+
+    .weather-detail span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      min-width: 30px;
+      min-height: 15px;
+      padding: 2px 0 1px;
+      border-radius: 4px;
+      border: 1px solid rgba(var(--accent-rgb), .40);
+      background: rgba(var(--accent-rgb), .16);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      box-shadow: 0 1px 5px rgba(var(--accent-rgb), .10);
+      text-shadow: none;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .weather-detail strong {
+      color: rgba(255,255,255,.90);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: .01em;
+      font-variant-numeric: tabular-nums;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #sp-weather-info {
+      width: 120px;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+      padding-right: 0;
+      transform: translateY(0);
+    }
+
+    #sp-weather-city {
+      width: fit-content;
+      max-width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 18px;
+      font-size: 10px;
+      font-weight: 900;
+      color: #fff;
+      background: rgba(var(--accent-rgb), 0.34);
+      border: 1px solid rgba(var(--accent-rgb), 0.52);
+      padding: 3px 9px 2px;
+      border-radius: 4px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 2px 7px rgba(var(--accent-rgb), .18);
+      align-self: center;
+      margin-bottom: 1px;
+    }
+
+    #sp-weather-temp {
+      font-size: 58px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: .78;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      text-shadow: 0 2px 8px rgba(0,0,0,.38);
+      margin-top: 1px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #sp-weather-desc {
+      position: relative;
+      max-width: 120px;
+      padding-left: 13px;
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--muted);
+      letter-spacing: .075em;
+      text-transform: uppercase;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 0;
+      align-self: center;
+    }
+
+    #sp-weather-desc::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 5px;
+      height: 5px;
+      transform: translateY(-50%);
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 7px var(--accent);
+    }
+
+    @keyframes floatWeather {
+      0%, 100% { transform: translateY(-1px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes pulseSun {
+      0%, 100% { box-shadow: 0 0 22px rgba(255, 190, 70, .50); }
+      50% { box-shadow: 0 0 38px rgba(255, 190, 70, .80); }
+    }
+
+    @keyframes rainDrift {
+      0%, 100% { transform: translateY(0) rotate(14deg); opacity: .85; }
+      50% { transform: translateY(4px) rotate(14deg); opacity: 1; }
+    }
+
+    @keyframes floatCloud {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(4px); }
+    }
+
+    @keyframes fallRain {
+      0% { transform: translate(0, -5px) rotate(14deg); opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translate(-10px, 18px) rotate(14deg); opacity: 0; }
+    }
+
+    @keyframes flashBolt {
+      0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(255,217,74,.6)); }
+      45% { opacity: 1; }
+      50% { opacity: .12; filter: none; }
+      55% { opacity: 1; filter: drop-shadow(0 0 24px rgba(255,217,74,1)); }
+      60% { opacity: .12; filter: none; }
+      65% { opacity: 1; }
+    }
+
+    .weather-visual {
+      position: relative;
+      width: 98px;
+      height: 70px;
+      justify-self: start;
+      align-self: center;
+      flex-shrink: 0;
+      margin-left: 2px;
+      transform: translateY(-1px);
+      animation: floatWeather 4.5s ease-in-out infinite;
+    }
+
+    .weather-sun {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      right: 7px;
+      top: 1px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 34% 30%, #fff6a8 0%, #ffd45b 42%, #ff9a2e 74%, #ff6a1f 100%);
+      box-shadow: 0 0 22px rgba(255, 190, 70, .50);
+      animation: pulseSun 3s ease-in-out infinite;
+    }
+
+    .weather-cloud {
+      position: absolute;
+      width: 76px;
+      height: 32px;
+      right: 8px;
+      bottom: 10px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(218,226,242,.94));
+      filter: drop-shadow(0 6px 9px rgba(0,0,0,.28));
+      z-index: 2;
+      animation: floatCloud 7s ease-in-out infinite;
+    }
+
+    .weather-cloud::before,
+    .weather-cloud::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: inherit;
+    }
+
+    .weather-cloud::before {
+      width: 38px;
+      height: 38px;
+      left: 10px;
+      top: -18px;
+    }
+
+    .weather-cloud::after {
+      width: 44px;
+      height: 44px;
+      right: 8px;
+      top: -23px;
+    }
+
+    .weather-rain {
+      position: absolute;
+      right: 28px;
+      bottom: 0px;
+      display: none;
+      gap: 10px;
+      z-index: 3;
+    }
+
+    .weather-rain i {
+      width: 4px;
+      height: 16px;
+      border-radius: 999px;
+      background: #54d8ff;
+      transform: rotate(14deg);
+      box-shadow: 0 0 8px rgba(84,216,255,.45);
+      animation: fallRain .9s linear infinite;
+    }
+
+    .weather-rain i:nth-child(2) { animation-delay: .3s; }
+    .weather-rain i:nth-child(3) { animation-delay: .6s; }
+
+    .weather-bolt {
+      position: absolute;
+      right: 34px;
+      bottom: -2px;
+      display: none;
+      width: 22px;
+      height: 30px;
+      background: #ffd94a;
+      clip-path: polygon(45% 0, 100% 0, 63% 42%, 92% 42%, 28% 100%, 45% 54%, 12% 54%);
+      filter: drop-shadow(0 0 8px rgba(255,217,74,.6));
+      z-index: 4;
+      animation: flashBolt 4s infinite;
+    }
+
+    .weather-fog-lines {
+      position: absolute;
+      left: 18px;
+      right: 10px;
+      bottom: 3px;
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 4;
+    }
+
+    .weather-fog-lines i {
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+    }
+
+    .weather-visual.weather-clear .weather-cloud { display: none; }
+    .weather-visual.weather-cloudy .weather-sun,
+    .weather-visual.weather-rainy .weather-sun,
+    .weather-visual.weather-storm .weather-sun,
+    .weather-visual.weather-snow .weather-sun,
+    .weather-visual.weather-fog .weather-sun { opacity: .18; }
+    .weather-visual.weather-rainy .weather-rain,
+    .weather-visual.weather-snow .weather-rain { display: flex; }
+    .weather-visual.weather-snow .weather-rain i { background: #ffffff; height: 8px; width: 8px; border-radius: 50%; transform: none; }
+    .weather-visual.weather-storm .weather-bolt { display: block; }
+    .weather-visual.weather-fog .weather-fog-lines { display: flex; }
+
+    #widget.layout-completo #sp-weather { padding: 0 16px; }
+    #widget.layout-completo #sp-weather-wrap { grid-template-columns: 82px 90px 72px; gap: 6px; justify-content: center; }
+    #widget.layout-completo #sp-weather-details { gap: 4px; padding-left: 0; }
+    #widget.layout-completo .weather-detail { grid-template-columns: 44px minmax(0, 1fr); gap: 6px; }
+    #widget.layout-completo .weather-detail-meta { gap: 4px; }
+    #widget.layout-completo .weather-detail-meta iconify-icon { font-size: 10px; color: #ffffff; }
+    #widget.layout-completo .weather-detail span { width: 28px; min-width: 28px; font-size: 8px; min-height: 14px; padding: 2px 0 1px; }
+    #widget.layout-completo .weather-detail strong { font-size: 13px; }
+    #widget.layout-completo #sp-weather-info { width: 90px; gap: 4px; padding-right: 0; align-items: center; text-align: center; }
+    #widget.layout-completo #sp-weather-city { font-size: 9px; max-width: 90px; min-height: 16px; padding: 3px 8px 2px; }
+    #widget.layout-completo #sp-weather-temp { font-size: 41px; line-height: .78; margin-top: 1px; }
+    #widget.layout-completo #sp-weather-desc { font-size: 11px; max-width: 84px; margin-top: 0; padding-left: 12px; align-self: center; }
+    #widget.layout-completo .weather-visual { width: 76px; height: 56px; justify-self: start; margin-left: -12px; }
+    #widget.layout-completo .weather-sun { width: 35px; height: 35px; right: 4px; top: 0; }
+    #widget.layout-completo .weather-cloud { width: 59px; height: 25px; right: 6px; bottom: 7px; }
+    #widget.layout-completo .weather-cloud::before { width: 29px; height: 29px; left: 8px; top: -14px; }
+    #widget.layout-completo .weather-cloud::after { width: 34px; height: 34px; right: 6px; top: -18px; }
+    #widget.layout-completo .weather-rain { right: 20px; bottom: -2px; gap: 8px; }
+    #widget.layout-completo .weather-rain i { height: 13px; width: 3px; }
+
     .sp-slide img,
     .sp-slide video {
       max-height: calc(100% - 16px);
@@ -1078,6 +1423,27 @@
             </div>
           </div>
         </div>
+        <div class="sp-slide" id="sp-weather">
+          <div id="sp-weather-wrap">
+            <div id="sp-weather-details" aria-hidden="true">
+              <div class="weather-detail"><div class="weather-detail-meta"><iconify-icon icon="mdi:thermometer"></iconify-icon><span>ST</span></div><strong id="sp-weather-feels">--°</strong></div>
+              <div class="weather-detail"><div class="weather-detail-meta"><iconify-icon icon="mdi:water-percent"></iconify-icon><span>HUM</span></div><strong id="sp-weather-humidity">--%</strong></div>
+              <div class="weather-detail"><div class="weather-detail-meta"><iconify-icon icon="mdi:weather-windy"></iconify-icon><span>VTO</span></div><strong id="sp-weather-wind">--</strong></div>
+            </div>
+            <div id="sp-weather-info">
+              <div id="sp-weather-city">CLIMA LOCAL</div>
+              <div id="sp-weather-temp">--°</div>
+              <div id="sp-weather-desc">Cargando...</div>
+            </div>
+            <div class="weather-visual weather-partly" id="sp-weather-visual" aria-hidden="true">
+              <span class="weather-sun"></span>
+              <span class="weather-cloud"></span>
+              <span class="weather-rain"><i></i><i></i><i></i></span>
+              <span class="weather-bolt"></span>
+              <span class="weather-fog-lines"><i></i><i></i></span>
+            </div>
+          </div>
+        </div>
         <div class="rot-ind" id="sponsor-indicators"></div>
       </div>
     </div>
@@ -1311,9 +1677,13 @@
     const showSponsors = CFG.showSponsors !== false;
     const showUptime = CFG.showUptime !== false;
     const showCategory = CFG.showCategory !== false;
+    const weatherCfg = CFG.weather || {};
+    const weatherLat = Number(weatherCfg.lat);
+    const weatherLon = Number(weatherCfg.lon);
+    const showWeather = (weatherCfg.active === true || CFG.showWeather === true) && Number.isFinite(weatherLat) && Number.isFinite(weatherLon);
     const showSocials = CFG.showSocials !== false;
     const showCreatorCode = !!(CFG.showCreatorCode ?? CFG.creatorCode?.active ?? false);
-    const hasSponsorBlock = showSponsors || showUptime || showCategory;
+    const hasSponsorBlock = showSponsors || showUptime || showCategory || showWeather;
     const subsActive = goalSubsActive;
     const anyGoalActive = subsActive || followsActive || bitsActive;
 
@@ -1713,12 +2083,150 @@
       }
     }
 
+    function getWeatherMeta(code, isDay = 1) {
+      const c = Number(code);
+      if (c === 0) return { desc: isDay ? 'Soleado' : 'Despejado', cls: 'weather-clear' };
+      if (c === 1 || c === 2) return { desc: 'Parcialmente nublado', cls: 'weather-partly' };
+      if (c === 3) return { desc: 'Nublado', cls: 'weather-cloudy' };
+      if (c === 45 || c === 48) return { desc: 'Niebla', cls: 'weather-fog' };
+      if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return { desc: 'Lluvia', cls: 'weather-rainy' };
+      if ((c >= 71 && c <= 77) || (c >= 85 && c <= 86)) return { desc: 'Nieve', cls: 'weather-snow' };
+      if (c >= 95 && c <= 99) return { desc: 'Tormenta', cls: 'weather-storm' };
+      return { desc: 'Clima actual', cls: 'weather-partly' };
+    }
+
+    const MX_STATE_ABBR = {
+      'aguascalientes': 'AGS.',
+      'baja california': 'BC',
+      'baja california sur': 'BCS',
+      'campeche': 'CAMP.',
+      'chiapas': 'CHIS.',
+      'chihuahua': 'CHIH.',
+      'ciudad de mexico': 'CDMX',
+      'ciudad de méxico': 'CDMX',
+      'coahuila': 'COAH.',
+      'coahuila de zaragoza': 'COAH.',
+      'colima': 'COL.',
+      'durango': 'DGO.',
+      'guanajuato': 'GTO.',
+      'guerrero': 'GRO.',
+      'hidalgo': 'HGO.',
+      'jalisco': 'JAL.',
+      'mexico': 'EDOMEX',
+      'méxico': 'EDOMEX',
+      'estado de mexico': 'EDOMEX',
+      'estado de méxico': 'EDOMEX',
+      'michoacan': 'MICH.',
+      'michoacán': 'MICH.',
+      'morelos': 'MOR.',
+      'nayarit': 'NAY.',
+      'nuevo leon': 'NL',
+      'nuevo león': 'NL',
+      'oaxaca': 'OAX.',
+      'puebla': 'PUE.',
+      'queretaro': 'QRO.',
+      'querétaro': 'QRO.',
+      'quintana roo': 'Q. ROO',
+      'san luis potosi': 'SLP',
+      'san luis potosí': 'SLP',
+      'sinaloa': 'SIN.',
+      'sonora': 'SON.',
+      'tabasco': 'TAB.',
+      'tamaulipas': 'TAMPS.',
+      'tlaxcala': 'TLAX.',
+      'veracruz': 'VER.',
+      'veracruz de ignacio de la llave': 'VER.',
+      'yucatan': 'YUC.',
+      'yucatán': 'YUC.',
+      'zacatecas': 'ZAC.'
+    };
+
+    function normalizeTextKey(value) {
+      return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function compactPlacePart(place) {
+      return String(place || '')
+        .replace(/-?enriquez/ig, '')
+        .replace(/-?enríquez/ig, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function compactWeatherCity(value) {
+      const raw = String(value || '').trim();
+      if (!raw || /^clima local$/i.test(raw)) return 'Clima local';
+
+      const parts = raw.split(',').map(p => p.trim()).filter(Boolean);
+      let city = compactPlacePart(parts[0] || raw);
+      let state = '';
+
+      if (parts.length > 1) {
+        const stateRaw = parts[parts.length - 1];
+        state = MX_STATE_ABBR[normalizeTextKey(stateRaw)] || stateRaw;
+      }
+
+      let label = state ? `${city}, ${state}` : city;
+
+      return label;
+    }
+
+    function setWeatherCard(temp, code, isDay, feels, humidity, wind) {
+      const cityEl = document.getElementById('sp-weather-city');
+      const tempEl = document.getElementById('sp-weather-temp');
+      const descEl = document.getElementById('sp-weather-desc');
+      const visualEl = document.getElementById('sp-weather-visual');
+      const feelsEl = document.getElementById('sp-weather-feels');
+      const humidityEl = document.getElementById('sp-weather-humidity');
+      const windEl = document.getElementById('sp-weather-wind');
+      if (!cityEl || !tempEl || !descEl || !visualEl) return;
+      const meta = getWeatherMeta(code, isDay);
+      cityEl.textContent = compactWeatherCity(weatherCfg.city).toUpperCase();
+      tempEl.textContent = Number.isFinite(Number(temp)) ? `${Math.round(Number(temp))}°` : '--°';
+      descEl.textContent = meta.desc.toUpperCase();
+      if (feelsEl) feelsEl.textContent = Number.isFinite(Number(feels)) ? `${Math.round(Number(feels))}°` : '--°';
+      if (humidityEl) humidityEl.textContent = Number.isFinite(Number(humidity)) ? `${Math.round(Number(humidity))}%` : '--%';
+      if (windEl) windEl.textContent = Number.isFinite(Number(wind)) ? `${Math.round(Number(wind))}` : '--';
+      visualEl.className = 'weather-visual ' + meta.cls;
+    }
+
+    async function fetchWeather() {
+      if (!showWeather) return;
+      const cityEl = document.getElementById('sp-weather-city');
+      const tempEl = document.getElementById('sp-weather-temp');
+      const descEl = document.getElementById('sp-weather-desc');
+      if (cityEl) cityEl.textContent = (weatherCfg.city || 'Clima local').toUpperCase();
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(weatherLat)}&longitude=${encodeURIComponent(weatherLon)}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day&temperature_unit=celsius&wind_speed_unit=kmh&timezone=auto`;
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('weather status ' + res.status);
+        const data = await res.json();
+        const current = data.current || {};
+        setWeatherCard(current.temperature_2m, current.weather_code, current.is_day, current.apparent_temperature, current.relative_humidity_2m, current.wind_speed_10m);
+      } catch (err) {
+        console.warn('[HipeWidget] No se pudo cargar el clima', err);
+        if (tempEl) tempEl.textContent = '--°';
+        if (descEl) descEl.textContent = 'NO DISPONIBLE';
+        const feelsEl = document.getElementById('sp-weather-feels');
+        const humidityEl = document.getElementById('sp-weather-humidity');
+        const windEl = document.getElementById('sp-weather-wind');
+        if (feelsEl) feelsEl.textContent = '--°';
+        if (humidityEl) humidityEl.textContent = '--%';
+        if (windEl) windEl.textContent = '--';
+      }
+    }
+
     // Sponsors
     const sponsorSlides = [];
     const sponsorIndicatorsEl = document.getElementById('sponsor-indicators');
     if (hasSponsorBlock && secSponsor.style.display !== 'none') {
       const activeSp = showSponsors ? (CFG.sponsors || []).filter(s => s.active) : [];
-      if (activeSp.length > 0 || showUptime || showCategory) document.getElementById('sp-empty').style.display = 'none';
+      if (activeSp.length > 0 || showUptime || showCategory || showWeather) document.getElementById('sp-empty').style.display = 'none';
       activeSp.forEach(sp => {
         const div = document.createElement('div');
         div.className = 'sp-slide';
@@ -1737,6 +2245,11 @@
       });
       if (showUptime) sponsorSlides.push({ el: document.getElementById('sp-uptime'), duration: (CFG.goalRotationSeconds || 30) * 1000 });
       if (showCategory) sponsorSlides.push({ el: document.getElementById('sp-category'), duration: (CFG.goalRotationSeconds || 30) * 1000 });
+      if (showWeather) {
+        fetchWeather();
+        setInterval(fetchWeather, 10 * 60 * 1000);
+        sponsorSlides.push({ el: document.getElementById('sp-weather'), duration: (CFG.goalRotationSeconds || 30) * 1000 });
+      }
       if (sponsorSlides.length > 0) {
         let si = 0;
         sponsorSlides[0].el.classList.add('on');
